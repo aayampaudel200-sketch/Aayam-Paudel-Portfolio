@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aayam Paudel — CSIT Student &amp; Full-Stack Developer</title>
+  <meta name="description" content="Portfolio of Aayam Paudel, a B.Sc. CSIT student from Nepal building practical web applications and digital products.">
+  <meta property="og:title" content="Aayam Paudel — CSIT Student &amp; Developer">
+  <meta property="og:description" content="Building ideas into real-world digital products from Gaindakot, Nepal.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/aayam-portrait-1.jpg">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0e17'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2338bdf8' font-family='monospace'>A</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="Aayam Paudel — Home">
+        AAYAM<span class="wordmark-dot">.</span>P
+      </a>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+      <a href="#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a href="index.html" class="mobile-link active">Home</a>
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="#contact" class="mobile-link">Contact</a>
+      <a href="#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <canvas id="bgCanvas" aria-hidden="true"></canvas>
+      <div class="hero-ambient" aria-hidden="true"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow reveal-up">CSIT STUDENT · DEVELOPER · BUILDER</p>
+          <h1 class="hero-title reveal-up">
+            Building ideas into <span class="gradient-text">real-world</span> digital products.
+          </h1>
+          <p class="hero-lede reveal-up">
+            I’m Aayam Paudel, a Computer Science and IT student from Nepal with a passion for building practical web applications, exploring modern technologies, and turning ideas into useful digital experiences.
+          </p>
+          <div class="hero-actions reveal-up">
+            <a href="projects.html" class="btn btn-primary">Explore My Work <span class="btn-arrow">→</span></a>
+            <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+            <a href="https://github.com/aayampaudel200-sketch" class="icon-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in new tab)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.69 5.4-5.25 5.69.41.36.78 1.06.78 2.14v3.17c0 .3.21.66.8.55A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="hero-visual reveal-up">
+          <div class="portrait-frame">
+            <div class="portrait-orbit" aria-hidden="true"></div>
+            <div class="portrait-orbit orbit-2" aria-hidden="true"></div>
+            <div class="portrait-glow" aria-hidden="true"></div>
+            <img
+              src="assets/images/aayam-portrait-1.jpg"
+              alt="Portrait of Aayam Paudel"
+              class="portrait-img"
+              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
+            >
+            <div class="img-fallback-text" aria-hidden="true">A. P.</div>
+            <span class="tech-label label-1" aria-hidden="true">const build = () =&gt; “useful”</span>
+            <span class="tech-label label-2" aria-hidden="true">&lt;full-stack /&gt;</span>
+            <span class="tech-label label-3" aria-hidden="true">Nepal · 2026</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK STRIP -->
+    <section class="quick-strip" aria-label="What I do">
+      <div class="container strip-grid">
+        <div class="strip-item reveal-up">
+          <span class="strip-index">01</span>
+          <div><strong>CSIT Student</strong><p>Learning fundamentals at Lumbini I.C.T. Campus.</p></div>
+        </div>
+        <div class="strip-item reveal-up">
+          <span class="strip-index">02</span>
+          <div><strong>Web Developer</strong><p>Building practical applications with modern tools.</p></div>
+        </div>
+        <div class="strip-item reveal-up">
+          <span class="strip-index">03</span>
+          <div><strong>Digital Entrepreneur</strong><p>Running a local digital service center in Gaindakot.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURED PROJECTS -->
+    <section class="section featured-projects" id="featured">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">SELECTED WORK</p>
+            <h2 class="section-title">Featured projects.</h2>
+          </div>
+          <a href="projects.html" class="text-link">View all projects <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="project-grid" id="featuredGrid">
+          <!-- Cards are rendered by projects.js so both pages share the same data source -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS PREVIEW -->
+    <section class="section skills-preview" id="skills">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">TOOLKIT</p>
+            <h2 class="section-title">Technologies I work with.</h2>
+          </div>
+          <a href="about.html#skills" class="text-link">Full skill breakdown <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="skills-grid reveal-up">
+          <div class="skill-group">
+            <h3>Programming</h3>
+            <div class="tag-row"><span class="tag">C</span><span class="tag">C++</span><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">PHP</span></div>
+          </div>
+          <div class="skill-group">
+            <h3>Web &amp; Backend</h3>
+            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">API Integration</span><span class="tag">Backend Development</span></div>
+          </div>
+          <div class="skill-group">
+            <h3>Database &amp; Tools</h3>
+            <div class="tag-row"><span class="tag">SQL</span><span class="tag">phpMyAdmin</span><span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span><span class="tag">XAMPP</span><span class="tag">Vercel</span></div>
+          </div>
+          <div class="skill-group">
+            <h3>Creative</h3>
+            <div class="tag-row"><span class="tag">Adobe Photoshop</span><span class="tag">Wondershare Filmora</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT CTA -->
+    <section class="section contact-cta" id="contact">
+      <div class="container contact-inner reveal-up">
+        <p class="eyebrow">CONTACT</p>
+        <h2 class="cta-title">Have an idea <span class="gradient-text">worth building?</span></h2>
+        <p class="cta-lede">Let’s connect, exchange ideas, and explore what we can create.</p>
+        <div class="contact-actions">
+          <a href="mailto:aayampaudel200@gmail.com" class="btn btn-primary">Send an email</a>
+          <a href="https://wa.me/9779742335474" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <button type="button" class="btn btn-ghost" id="copyEmailBtn" aria-label="Copy email address to clipboard">Copy Email</button>
+        </div>
+        <div class="contact-meta">
+          <span>Gaindakot, Nawalparasi East, Nepal</span>
+          <span aria-hidden="true">·</span>
+          <a href="mailto:aayampaudel200@gmail.com">aayampaudel200@gmail.com</a>
+          <span aria-hidden="true">·</span>
+          <a href="tel:+9779742335474">+977 9742335474</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT DETAILS MODAL -->
+    <div class="modal-overlay" id="projectModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+        <button type="button" class="modal-close" id="modalClose" aria-label="Close project details">×</button>
+        <div class="modal-body" id="modalBody">
+          <!-- Filled dynamically by projects.js -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-name">Aayam Paudel</p>
+        <p class="footer-location">Gaindakot, Gandaki Province, Nepal</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="mailto:aayampaudel200@gmail.com">Email</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        <!-- LinkedIn: add your URL and remove the hidden attribute below -->
+        <a href="#" hidden data-config="linkedin" aria-label="LinkedIn">LinkedIn</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+      <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
+    </div>
+  </footer>
+
+  <script src="js/background.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/projects.js" defer></script>
+</body>
+</html>

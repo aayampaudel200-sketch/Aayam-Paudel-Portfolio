@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects — Aayam Paudel</title>
+  <meta name="description" content="Selected projects by Aayam Paudel: Haat Bazzar marketplace concept and a Municipal Citizenship Recommendation Portal prototype.">
+  <meta property="og:title" content="Projects — Aayam Paudel">
+  <meta property="og:description" content="Practical ideas, technical experiments, and digital products focused on real problems.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0e17'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%2338bdf8' font-family='monospace'>A</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a class="wordmark" href="index.html" aria-label="Aayam Paudel — Home">AAYAM<span class="wordmark-dot">.</span>P</a>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link active">Projects</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </nav>
+      <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a href="index.html" class="mobile-link">Home</a>
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="projects.html" class="mobile-link active">Projects</a>
+      <a href="index.html#contact" class="mobile-link">Contact</a>
+      <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-intro section">
+      <div class="container">
+        <p class="eyebrow reveal-up">SELECTED WORK</p>
+        <h1 class="page-title reveal-up">Things I’ve been building.</h1>
+        <p class="page-lede reveal-up">Practical ideas, technical experiments, and digital products focused on solving real problems.</p>
+      </div>
+    </section>
+
+    <section class="section projects-page">
+      <div class="container">
+        <div class="filter-bar reveal-up" role="group" aria-label="Filter projects">
+          <button type="button" class="filter-btn active" data-filter="all">All</button>
+          <button type="button" class="filter-btn" data-filter="web">Web Applications</button>
+          <button type="button" class="filter-btn" data-filter="civic">Civic Technology</button>
+          <button type="button" class="filter-btn" data-filter="experiments">Experiments</button>
+        </div>
+
+        <div class="project-grid project-grid--full" id="allProjectsGrid">
+          <!-- Populated by projects.js -->
+        </div>
+        <p class="empty-state" id="emptyState" hidden>No projects match this category yet. New experiments and prototypes are currently in development.</p>
+      </div>
+    </section>
+
+    <!-- PROJECT MODAL -->
+    <div class="modal-overlay" id="projectModal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+        <button type="button" class="modal-close" id="modalClose" aria-label="Close project details">×</button>
+        <div class="modal-body" id="modalBody">
+          <!-- Filled dynamically by projects.js -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-name">Aayam Paudel</p>
+        <p class="footer-location">Gaindakot, Gandaki Province, Nepal</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="mailto:aayampaudel200@gmail.com">Email</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        <!-- LinkedIn: add your URL and remove the hidden attribute below -->
+        <a href="#" hidden data-config="linkedin" aria-label="LinkedIn">LinkedIn</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+      <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js" defer></script>
+  <script src="js/projects.js" defer></script>
+</body>
+</html>
