@@ -175,26 +175,51 @@ function initMain() {
   /* ---------- Copy Email Button ---------- */
   const copyEmailBtn = document.getElementById('copyEmailBtn');
   if (copyEmailBtn) {
+    let copyFeedbackTimer;
     copyEmailBtn.addEventListener('click', async () => {
       const email = 'aayampaudel200@gmail.com';
+      let copied = false;
+
       try {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(email);
-        } else {
-          // Fallback for older browsers
-          const textarea = document.createElement('textarea');
-          textarea.value = email;
-          textarea.style.position = 'fixed';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textarea);
+          copied = true;
         }
-        showToast('Email copied to clipboard!');
-      } catch (err) {
-        showToast('aayampaudel200@gmail.com');
+      } catch (_) {
+        // Fall back when clipboard permission is unavailable.
       }
+
+      if (!copied) {
+        const textarea = document.createElement('textarea');
+        textarea.value = email;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          copied = document.execCommand('copy');
+        } catch (_) {
+          copied = false;
+        } finally {
+          textarea.remove();
+        }
+      }
+
+      if (copied) {
+        showToast('Email copied to clipboard!');
+        copyEmailBtn.textContent = 'Copied!';
+        copyEmailBtn.setAttribute('aria-label', 'Email copied to clipboard');
+      } else {
+        showToast('Copy failed. Please copy the email address directly.');
+        copyEmailBtn.textContent = 'Copy failed';
+        copyEmailBtn.setAttribute('aria-label', 'Copy failed; select the email address to copy it');
+      }
+
+      clearTimeout(copyFeedbackTimer);
+      copyFeedbackTimer = setTimeout(() => {
+        copyEmailBtn.textContent = 'Copy Email';
+        copyEmailBtn.setAttribute('aria-label', 'Copy email address to clipboard');
+      }, 1800);
     });
   }
 

@@ -35,9 +35,9 @@
   }
 
   function particleCount() {
-    if (width < 600) return 28;
-    if (width < 1000) return 48;
-    return 72;
+    if (width < 600) return 14;
+    if (width < 1000) return 22;
+    return 30;
   }
 
   function createParticles() {
@@ -45,8 +45,8 @@
     particles = Array.from({ length: count }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.22,
-      vy: (Math.random() - 0.5) * 0.22,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
       r: Math.random() * 1.4 + 0.4,
       hue: Math.random() > 0.5 ? '56,189,248' : '129,140,248',
     }));
@@ -69,7 +69,7 @@
         const dy = a.y - b.y;
         const dist = Math.hypot(dx, dy);
         if (dist < maxDist) {
-          const alpha = (1 - dist / maxDist) * 0.16;
+          const alpha = (1 - dist / maxDist) * 0.1;
           ctx.strokeStyle = `rgba(56,189,248,${alpha})`;
           ctx.beginPath();
           ctx.moveTo(a.x + offsetX, a.y + offsetY);
@@ -90,7 +90,7 @@
 
       ctx.beginPath();
       ctx.arc(p.x + offsetX, p.y + offsetY, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${p.hue},0.55)`;
+      ctx.fillStyle = `rgba(${p.hue},0.38)`;
       ctx.fill();
     }
   }
