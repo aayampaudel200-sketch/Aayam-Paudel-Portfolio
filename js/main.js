@@ -61,6 +61,8 @@ function initMain() {
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   /* ---------- Header scroll state & scroll progress ---------- */
   const header = document.getElementById('siteHeader');
   const progress = document.querySelector('.scroll-progress');
@@ -76,6 +78,46 @@ function initMain() {
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  /* ---------- Homepage ambient motion responds to scrolling and pointer movement ---------- */
+  const homeHero = document.querySelector('.hero');
+  const heroAmbient = homeHero && homeHero.querySelector('.hero-ambient');
+  if (homeHero && heroAmbient && !reducedMotion) {
+    let pointerX = 0;
+    let pointerY = 0;
+    let motionFrame = null;
+
+    function updateAmbientMotion() {
+      if (motionFrame !== null) return;
+      motionFrame = requestAnimationFrame(() => {
+        motionFrame = null;
+        const heroTop = homeHero.getBoundingClientRect().top;
+        const scrollProgress = Math.min(Math.max(-heroTop, 0), homeHero.offsetHeight);
+        heroAmbient.style.setProperty('--ambient-scroll-shift', `${scrollProgress * -0.04}px`);
+        heroAmbient.style.setProperty('--ambient-pointer-x', `${pointerX}px`);
+        heroAmbient.style.setProperty('--ambient-pointer-y', `${pointerY}px`);
+      });
+    }
+
+    if (window.matchMedia('(pointer: fine)').matches) {
+      homeHero.addEventListener('pointermove', (event) => {
+        const bounds = homeHero.getBoundingClientRect();
+        pointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 20;
+        pointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 20;
+        updateAmbientMotion();
+      }, { passive: true });
+
+      homeHero.addEventListener('pointerleave', () => {
+        pointerX = 0;
+        pointerY = 0;
+        updateAmbientMotion();
+      }, { passive: true });
+    }
+
+    window.addEventListener('scroll', updateAmbientMotion, { passive: true });
+    window.addEventListener('resize', updateAmbientMotion, { passive: true });
+    updateAmbientMotion();
+  }
 
   /* ---------- Mobile menu ---------- */
   const hamburger = document.getElementById('hamburger');
@@ -134,7 +176,6 @@ function initMain() {
   observeReveals();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
     document.querySelectorAll('[data-tilt]').forEach((card) => {
       const maxTilt = Number(card.dataset.tiltMax || 6);
