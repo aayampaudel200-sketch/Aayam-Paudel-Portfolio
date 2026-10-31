@@ -133,6 +133,33 @@ function initMain() {
   /* ---------- Initial scroll reveal ---------- */
   observeReveals();
 
+  /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
+    document.querySelectorAll('[data-tilt]').forEach((card) => {
+      const maxTilt = Number(card.dataset.tiltMax || 6);
+      let frame = null;
+
+      card.addEventListener('pointermove', (event) => {
+        const bounds = card.getBoundingClientRect();
+        const x = (event.clientX - bounds.left) / bounds.width;
+        const y = (event.clientY - bounds.top) / bounds.height;
+        const rotateY = (x - 0.5) * maxTilt * 2;
+        const rotateX = (0.5 - y) * maxTilt * 2;
+
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
+        });
+      });
+
+      card.addEventListener('pointerleave', () => {
+        cancelAnimationFrame(frame);
+        card.style.transform = '';
+      });
+    });
+  }
+
   /* ---------- Configurable social links ---------- */
   const LINKEDIN_URL = ''; // e.g. 'https://www.linkedin.com/in/aayampaudel'
 
