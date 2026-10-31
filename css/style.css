@@ -311,6 +311,52 @@ ul { list-style: none; }
   max-width: 480px;
 }
 
+.live-activity-counter {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: max-content;
+  max-width: calc(100% - 60px);
+  margin: 0;
+  padding: 8px 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  font-size: 0.85rem;
+  z-index: 100;
+}
+
+.live-activity-counter .metric-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.live-activity-counter .metric-status { gap: 0.4rem; }
+.live-activity-counter .metric-source-hint { display: none; }
+.live-activity-counter .metric-content { gap: 0.6rem; }
+.live-activity-counter .metric-item {
+  flex-direction: row;
+  align-items: baseline;
+  flex: 0 1 auto;
+  gap: 0.3rem;
+}
+.live-activity-counter .metric-value { font-size: 0.85rem; }
+.live-activity-counter .metric-label {
+  font-size: 0.58rem;
+  margin-top: 0;
+}
+.live-activity-counter .metric-divider { height: 16px; }
+
 .metric-card {
   display: flex;
   flex-direction: column;
@@ -820,6 +866,9 @@ ul { list-style: none; }
   .hero-actions .btn, .hero-actions .icon-link { width: 100%; }
   .hero-actions .icon-link { width: 42px; align-self: flex-start; }
   .hero-metrics { max-width: 100%; }
+  .live-activity-counter { right: 12px; max-width: calc(100% - 24px); padding: 8px 12px; gap: 8px; }
+  .live-activity-counter .metric-card { gap: 8px; }
+  .live-activity-counter .metric-content { gap: 0.4rem; }
   .metric-content { gap: var(--space-sm); }
   .metric-value { font-size: 1.25rem; }
   .skills-grid { grid-template-columns: 1fr; }
