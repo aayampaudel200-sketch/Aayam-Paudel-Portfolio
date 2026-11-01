@@ -55,6 +55,54 @@ function showToast(message) {
   }, 2600);
 }
 
+/* ---------- Persistent light/dark theme ---------- */
+function initThemeToggle() {
+  const toggles = document.querySelectorAll('.theme-toggle');
+  if (!toggles.length) return;
+
+  function applyTheme(theme) {
+    const isLight = theme === 'light';
+    document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+    toggles.forEach((toggle) => {
+      toggle.setAttribute('aria-label', `Switch to ${isLight ? 'dark' : 'light'} theme`);
+      toggle.querySelector('.theme-toggle-icon').textContent = isLight ? '☾' : '☀';
+      toggle.querySelector('.theme-toggle-label').textContent = isLight ? 'Dark' : 'Light';
+    });
+  }
+
+  applyTheme(document.documentElement.dataset.theme || 'dark');
+  toggles.forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      applyTheme(nextTheme);
+      try {
+        localStorage.setItem('site-theme', nextTheme);
+      } catch (error) {
+        console.warn('Unable to save the selected color theme:', error);
+      }
+    });
+  });
+}
+
+/* ---------- A spoken greeting, started only when the portrait is activated ---------- */
+function initPortraitGreeting() {
+  const portrait = document.getElementById('sayHelloButton');
+  if (!portrait) return;
+
+  portrait.addEventListener('click', () => {
+    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
+      showToast('Spoken greetings are not supported by this browser.');
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const greeting = new SpeechSynthesisUtterance("Hello! I'm Aayam Paudel. Welcome to my website.");
+    greeting.lang = 'en-US';
+    greeting.rate = 0.95;
+    window.speechSynthesis.speak(greeting);
+  });
+}
+
 /* ---------- Optional, user-started ambient sound ---------- */
 function initAmbientSound() {
   const toggle = document.getElementById('ambientSoundToggle');
@@ -129,16 +177,16 @@ function initAmbientSound() {
       oscillators.push(modulation);
       soundNodes.push(modulation, modulationDepth, filter, masterGain);
 
-      updateToggle(true, 'Sound on');
+      updateToggle(true, 'Ambient sound on');
     } catch (error) {
       console.error('Unable to start ambient sound:', error);
-      updateToggle(false, 'Sound off');
+      updateToggle(false, 'Ambient sound off');
       showToast('Could not start ambient sound. Check your browser audio settings.');
     }
   }
 
   function stopSound() {
-    updateToggle(false, 'Sound off');
+    updateToggle(false, 'Ambient sound off');
     if (!audioContext || !masterGain || !soundNodes.length || audioContext.state === 'closed') return;
 
     const now = audioContext.currentTime;
@@ -294,6 +342,8 @@ function initMain() {
 
   /* ---------- Initial scroll reveal ---------- */
   observeReveals();
+  initThemeToggle();
+  initPortraitGreeting();
   initAmbientSound();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */

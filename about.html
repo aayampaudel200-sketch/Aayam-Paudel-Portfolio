@@ -10,6 +10,7 @@
   <meta property="og:url" content="https://aayampaudel.com.np/about.html">
   <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-2.jpg">
   <link rel="canonical" href="https://aayampaudel.com.np/about.html">
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -34,6 +35,9 @@
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button type="button" class="btn btn-ghost btn-sm theme-toggle" aria-label="Switch to light theme">
+        <span class="theme-toggle-icon" aria-hidden="true">☀</span><span class="theme-toggle-label">Light</span>
+      </button>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
@@ -69,6 +73,24 @@
           <p>Alongside my studies, I operate <strong>Namaste Suman Communication</strong>, a local digital service center. This experience connects technology with everyday customer needs and has helped shape my interest in useful digital solutions and entrepreneurship.</p>
           <a href="projects.html" class="btn btn-primary">See my projects</a>
         </div>
+      </div>
+    </section>
+
+    <section class="section about-video-section" id="car-video">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">A MOMENT ON THE ROAD</p>
+            <h2 class="section-title">A little beyond the screen.</h2>
+          </div>
+        </div>
+        <figure class="about-video-card reveal-up">
+          <video class="about-video" controls playsinline preload="metadata" aria-label="Video of Aayam out for a drive">
+            <source src="assets/videos/aayam-in-car.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+          <figcaption>A short clip of me out for a drive.</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -231,24 +253,6 @@ Portfolio crawler policy and sitemap checks passed.</code></pre>
           <li>Entrepreneurship and digital services</li>
           <li>Cricket and football/futsal</li>
         </ul>
-      </div>
-    </section>
-
-    <section class="section about-video-section" id="car-video">
-      <div class="container">
-        <div class="section-head reveal-up">
-          <div>
-            <p class="eyebrow">A MOMENT ON THE ROAD</p>
-            <h2 class="section-title">A little beyond the screen.</h2>
-          </div>
-        </div>
-        <figure class="about-video-card reveal-up">
-          <video class="about-video" controls playsinline preload="metadata">
-            <source src="assets/videos/aayam-in-car.mp4" type="video/mp4">
-            Your browser does not support HTML video.
-          </video>
-          <figcaption>A short clip of me out for a drive.</figcaption>
-        </figure>
       </div>
     </section>
 
