@@ -350,7 +350,63 @@ ul { list-style: none; }
   font-weight: 700; letter-spacing: -0.04em; line-height: 1.06;
   max-width: 18ch; margin-bottom: var(--space-md);
 }
-.hero-lede { color: #b2bfd0; max-width: 54ch; font-size: 1.08rem; line-height: 1.75; margin-bottom: var(--space-xl); }
+.hero-lede { color: #b2bfd0; max-width: 54ch; font-size: 1.08rem; line-height: 1.75; margin-bottom: var(--space-md); }
+.code-caret {
+  display: inline-block;
+  margin-right: 0.4rem;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+}
+.hero-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: var(--space-xl);
+  max-width: 46ch;
+}
+.hero-skills .tag {
+  font-size: 0.72rem;
+  padding: 0.32rem 0.62rem;
+  color: var(--text);
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.28);
+}
+.hero-role {
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+.hero-profile-card {
+  width: min(100%, 340px);
+  margin: 0.85rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(8, 11, 18, 0.88), rgba(20, 31, 50, 0.72));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+.profile-card-label { display: block; color: var(--accent); font: 0.62rem var(--font-mono); letter-spacing: 0.1em; }
+.hero-profile-card strong { display: block; margin-top: 0.35rem; color: var(--text); font-size: 0.78rem; font-weight: 500; line-height: 1.5; }
+.profile-card-stack { display: block; margin-top: 0.55rem; color: var(--text-dim); font: 0.65rem var(--font-mono); }.profile-card-stack b { color: #c4b5fd; font-weight: 500; }
+.hero-code {
+  width: min(100%, 340px);
+  margin: 0.85rem 0 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-md);
+  background: rgba(8, 11, 18, 0.82);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.55;
+  overflow: auto;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+}
+.hero-code .code-kw { color: var(--violet); }
+.hero-code .code-str { color: var(--accent); }
 
 .hero-actions { display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
 .hero-socials {
@@ -651,7 +707,10 @@ ul { list-style: none; }
 .business-highlight-copy strong { color: var(--text); }
 .business-services { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.9rem; }
 .business-services span { padding: 0.3rem 0.58rem; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 999px; background: rgba(56, 189, 248, 0.06); color: var(--text-muted); font: 0.65rem var(--font-mono); }
-.business-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; flex-shrink: 0; }
+.business-details { min-width: 275px; padding: 1rem; border: 1px solid rgba(148, 163, 184, 0.15); border-radius: var(--radius-md); background: rgba(8, 11, 18, 0.34); }
+.business-detail-label { display: block; color: var(--accent); font: 0.62rem var(--font-mono); letter-spacing: 0.1em; }
+.business-address { color: var(--text-muted); font-size: 0.85rem; line-height: 1.55; }.business-address address { margin-top: 0.35rem; font-style: normal; }
+.business-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.9rem; }
 
 /* ============================================================
    PROJECT CARDS
@@ -1016,7 +1075,8 @@ ul { list-style: none; }
   .hero-grid { grid-template-columns: 1fr; gap: var(--space-xl); }
   .hero-copy { order: 2; }
   .hero-visual { order: 1; }
-  .business-highlight-card { align-items: flex-start; flex-direction: column; gap: var(--space-md); }
+  .business-highlight-card { align-items: stretch; flex-direction: column; gap: var(--space-md); }
+  .business-details { width: 100%; min-width: 0; }
   .portrait-frame { width: min(280px, 70vw); }
   .tech-label { display: none; }
   .hero-title { max-width: none; }
@@ -1066,7 +1126,7 @@ ul { list-style: none; }
   .manifesto-card { padding: 1.6rem; }.manifesto-footer { align-items: flex-start; flex-direction: column; }.manifesto-orbit { display: none; }.manifesto-footer .btn { margin-left: 0; }
   .focus-stats { grid-template-columns: 1fr; }
   .business-actions { width: 100%; }
-  .business-actions .btn { flex: 1; }
+  .business-actions .btn { flex: 1; min-width: 0; }
 }
 
 @media (max-width: 560px) {
