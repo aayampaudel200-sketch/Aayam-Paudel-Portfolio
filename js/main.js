@@ -70,7 +70,13 @@ function initThemeToggle() {
     });
   }
 
-  applyTheme(document.documentElement.dataset.theme || 'dark');
+  let savedTheme = 'dark';
+  try {
+    savedTheme = localStorage.getItem('site-theme') === 'light' ? 'light' : 'dark';
+  } catch (error) {
+    console.warn('Unable to read the saved color theme:', error);
+  }
+  applyTheme(savedTheme);
   toggles.forEach((toggle) => {
     toggle.addEventListener('click', () => {
       const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
@@ -119,6 +125,19 @@ function normalizeSearchText(value) {
     .trim();
 }
 
+function getSearchSectionTitle(section, pageTitle) {
+  const heading = section.querySelector('h1, h2, h3');
+  const labelledBy = section.getAttribute('aria-labelledby');
+  const labelledHeading = labelledBy
+    ? section.ownerDocument.getElementById(labelledBy)?.textContent.trim()
+    : '';
+  return (heading && heading.textContent.trim())
+    || labelledHeading
+    || section.getAttribute('aria-label')
+    || section.querySelector('.eyebrow')?.textContent.trim()
+    || pageTitle;
+}
+
 async function loadSiteSearchIndex() {
   const pages = ['index.html', 'about.html', 'projects.html'];
   const pageResults = await Promise.allSettled(pages.map(async (path) => {
@@ -128,9 +147,19 @@ async function loadSiteSearchIndex() {
 
     const pageDocument = new DOMParser().parseFromString(await response.text(), 'text/html');
     const pageTitle = pageDocument.title.split(/[—|]/, 1)[0].trim();
-    return [...pageDocument.querySelectorAll('main section')].map((section) => {
-      const heading = section.querySelector('h1, h2, h3');
-      const title = heading ? heading.textContent.trim() : pageTitle;
+    const pageSlug = path.replace(/\.html$/i, '').replace(/[^a-z0-9-]+/gi, '-');
+    const sections = [...pageDocument.querySelectorAll('main section')];
+
+    sections.forEach((section, index) => {
+      if (section.id) return;
+      const headingSlug = normalizeSearchText(getSearchSectionTitle(section, pageTitle))
+        .replace(/\s+/g, '-')
+        .slice(0, 40) || 'section';
+      section.id = `search-${pageSlug}-${headingSlug}-${index + 1}`;
+    });
+
+    return sections.map((section) => {
+      const title = getSearchSectionTitle(section, pageTitle);
       const extraText = [...section.querySelectorAll('img[alt], video[aria-label]')]
         .map((media) => media.getAttribute('alt') || media.getAttribute('aria-label'))
         .filter(Boolean)
@@ -172,6 +201,17 @@ async function loadSiteSearchIndex() {
 function initSiteSearch() {
   const forms = [...document.querySelectorAll('.site-search')];
   if (!forms.length) return;
+
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const pageSlug = currentPage.replace(/\.html$/i, '');
+  [...document.querySelectorAll('main section')].forEach((section, index) => {
+    if (section.id) return;
+    const pageTitle = document.title.split(/[—|]/, 1)[0].trim();
+    const headingSlug = normalizeSearchText(getSearchSectionTitle(section, pageTitle))
+      .replace(/\s+/g, '-')
+      .slice(0, 40) || 'section';
+    section.id = `search-${pageSlug}-${headingSlug}-${index + 1}`;
+  });
 
   function closeResults(form) {
     const input = form.querySelector('input[type="search"]');
@@ -226,17 +266,32 @@ function initSiteSearch() {
     matches.forEach((match) => {
       const link = document.createElement('a');
       link.className = 'site-search-result';
-      link.href = match.url;
+      const destination = new URL(match.url);
+      destination.searchParams.set('search', '1');
+      link.href = destination.href;
       link.setAttribute('role', 'option');
 
       const title = document.createElement('strong');
       title.textContent = match.title;
       const excerpt = document.createElement('span');
       const lowerText = match.text.toLocaleLowerCase();
-      const terms = form.querySelector('input[type="search"]').value.toLocaleLowerCase().split(/\s+/);
-      const matchPosition = terms.map((term) => lowerText.indexOf(term)).find((position) => position >= 0);
-      const start = matchPosition > 55 ? matchPosition - 55 : 0;
-      const end = Math.min(match.text.length, start + 160);
+      const terms = form.querySelector('input[type="search"]').value
+        .toLocaleLowerCase()
+        .split(/\s+/);
+      const matchPosition = terms
+        .map((term) => lowerText.indexOf(term))
+        .filter((position) => position >= 0)
+        .sort((a, b) => a - b)[0] ?? 0;
+      let start = matchPosition > 55 ? matchPosition - 55 : 0;
+      if (start > 0) {
+        const nextWord = match.text.indexOf(' ', start);
+        if (nextWord > start && nextWord < matchPosition) start = nextWord + 1;
+      }
+      let end = Math.min(match.text.length, start + 160);
+      if (end < match.text.length) {
+        const lastWord = match.text.lastIndexOf(' ', end);
+        if (lastWord > start) end = lastWord;
+      }
       excerpt.textContent = `${start > 0 ? '…' : ''}${match.text.slice(start, end).trim()}${end < match.text.length ? '…' : ''}`;
       link.append(title, excerpt);
       results.append(link);
@@ -250,11 +305,11 @@ function initSiteSearch() {
   async function search(form, query, isCurrent = () => true) {
     const trimmedQuery = query.trim();
     if (trimmedQuery.length < 2) {
-      showMessage(form, 'Enter at least 2 characters to search.');
+      if (isCurrent()) showMessage(form, 'Enter at least 2 characters to search.');
       return { matches: [], failedPages: [] };
     }
 
-    showMessage(form, 'Searching…');
+    if (isCurrent()) showMessage(form, 'Searching…');
     try {
       if (!siteSearchIndexPromise) siteSearchIndexPromise = loadSiteSearchIndex();
       const index = await siteSearchIndexPromise;
@@ -275,6 +330,12 @@ function initSiteSearch() {
   forms.forEach((form) => {
     const input = form.querySelector('input[type="search"]');
     let activeSearch = 0;
+    input.setAttribute('role', 'combobox');
+    input.setAttribute('aria-autocomplete', 'list');
+    input.setAttribute('aria-haspopup', 'listbox');
+    input.setAttribute('autocomplete', 'off');
+    const results = form.querySelector('.site-search-results');
+    if (results.id) input.setAttribute('aria-controls', results.id);
 
     input.addEventListener('input', async () => {
       const searchNumber = ++activeSearch;
@@ -328,6 +389,25 @@ function initSiteSearch() {
       if (!form.contains(event.target)) closeResults(form);
     });
   });
+}
+
+function highlightSearchDestination() {
+  if (new URLSearchParams(window.location.search).get('search') !== '1' || !window.location.hash) return;
+  let targetId;
+  try {
+    targetId = decodeURIComponent(window.location.hash.slice(1));
+  } catch (error) {
+    console.warn('Unable to decode the search destination:', error);
+    return;
+  }
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    target.scrollIntoView({ block: 'start' });
+    target.classList.add('search-target-highlight');
+    window.setTimeout(() => target.classList.remove('search-target-highlight'), 2200);
+  }));
 }
 
 /* ---------- Main Initialisation ---------- */
@@ -452,6 +532,7 @@ function initMain() {
   initThemeToggle();
   initPortraitGreeting();
   initSiteSearch();
+  highlightSearchDestination();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
   if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
