@@ -90,136 +90,21 @@ function initPortraitGreeting() {
   const greetingAudio = document.getElementById('helloGreetingAudio');
   if (!portrait || !(greetingAudio instanceof HTMLAudioElement)) return;
 
-  portrait.addEventListener('click', async () => {
+  async function playGreeting(showError) {
+    if (!greetingAudio.paused && !greetingAudio.ended) return;
     try {
-      greetingAudio.pause();
-      greetingAudio.currentTime = 0;
+      if (greetingAudio.ended) greetingAudio.currentTime = 0;
       await greetingAudio.play();
     } catch (error) {
-      console.error('Unable to play the greeting audio:', error);
-      showToast('Could not play the greeting. Please check your device audio.');
-    }
-  });
-}
-
-/* ---------- Optional, user-started ambient sound ---------- */
-function initAmbientSound() {
-  const toggle = document.getElementById('ambientSoundToggle');
-  if (!toggle) return;
-
-  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
-  let audioContext = null;
-  let masterGain = null;
-  let soundNodes = [];
-  let oscillators = [];
-  let isPlaying = false;
-
-  function updateToggle(playing, label) {
-    isPlaying = playing;
-    toggle.setAttribute('aria-pressed', String(playing));
-    toggle.setAttribute('aria-label', playing ? 'Turn ambient sound off' : 'Turn ambient sound on');
-    toggle.querySelector('.sound-toggle-label').textContent = label;
-  }
-
-  async function startSound() {
-    if (!AudioContextConstructor) {
-      showToast('Ambient sound is not supported by this browser.');
-      return;
-    }
-
-    try {
-      if (!audioContext || audioContext.state === 'closed') {
-        audioContext = new AudioContextConstructor();
+      if (showError) {
+        console.error('Unable to play the greeting audio:', error);
+        showToast('Could not play the greeting. Please check your device audio.');
       }
-      if (audioContext.state === 'suspended') await audioContext.resume();
-
-      const now = audioContext.currentTime;
-      const filter = audioContext.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 620;
-      filter.Q.value = 0.6;
-
-      masterGain = audioContext.createGain();
-      masterGain.gain.setValueAtTime(0, now);
-      masterGain.gain.linearRampToValueAtTime(0.055, now + 1.2);
-      filter.connect(masterGain);
-      masterGain.connect(audioContext.destination);
-
-      const voices = [
-        { frequency: 110, type: 'sine', volume: 0.25 },
-        { frequency: 164.81, type: 'triangle', volume: 0.12 },
-        { frequency: 220, type: 'sine', volume: 0.08 },
-      ];
-      soundNodes = [];
-      oscillators = [];
-
-      voices.forEach((voice) => {
-        const oscillator = audioContext.createOscillator();
-        const voiceGain = audioContext.createGain();
-        oscillator.type = voice.type;
-        oscillator.frequency.value = voice.frequency;
-        voiceGain.gain.value = voice.volume;
-        oscillator.connect(voiceGain);
-        voiceGain.connect(filter);
-        oscillator.start(now);
-        oscillators.push(oscillator);
-        soundNodes.push(oscillator, voiceGain);
-      });
-
-      const modulation = audioContext.createOscillator();
-      const modulationDepth = audioContext.createGain();
-      modulation.frequency.value = 0.07;
-      modulationDepth.gain.value = 170;
-      modulation.connect(modulationDepth);
-      modulationDepth.connect(filter.frequency);
-      modulation.start(now);
-      oscillators.push(modulation);
-      soundNodes.push(modulation, modulationDepth, filter, masterGain);
-
-      updateToggle(true, 'Ambient sound on');
-    } catch (error) {
-      console.error('Unable to start ambient sound:', error);
-      updateToggle(false, 'Ambient sound off');
-      showToast('Could not start ambient sound. Check your browser audio settings.');
     }
   }
 
-  function stopSound() {
-    updateToggle(false, 'Ambient sound off');
-    if (!audioContext || !masterGain || !soundNodes.length || audioContext.state === 'closed') return;
-
-    const now = audioContext.currentTime;
-    masterGain.gain.cancelScheduledValues(now);
-    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-    masterGain.gain.linearRampToValueAtTime(0, now + 0.18);
-    oscillators.forEach((oscillator) => oscillator.stop(now + 0.2));
-    oscillators = [];
-
-    const nodesToDisconnect = soundNodes;
-    soundNodes = [];
-    masterGain = null;
-    window.setTimeout(() => {
-      nodesToDisconnect.forEach((node) => node.disconnect());
-    }, 250);
-  }
-
-  toggle.addEventListener('click', async () => {
-    toggle.disabled = true;
-    if (isPlaying) stopSound();
-    else await startSound();
-    toggle.disabled = false;
-  });
-
-  document.addEventListener('visibilitychange', () => {
-    if (!audioContext || audioContext.state === 'closed') return;
-    if (document.hidden && audioContext.state === 'running') {
-      audioContext.suspend().catch((error) => console.error('Unable to pause ambient sound:', error));
-    } else if (!document.hidden && isPlaying && audioContext.state === 'suspended') {
-      audioContext.resume().catch((error) => console.error('Unable to resume ambient sound:', error));
-    }
-  });
-
-  window.addEventListener('pagehide', stopSound);
+  portrait.addEventListener('pointerenter', () => playGreeting(false));
+  portrait.addEventListener('click', () => playGreeting(true));
 }
 
 /* ---------- Main Initialisation ---------- */
@@ -343,7 +228,6 @@ function initMain() {
   observeReveals();
   initThemeToggle();
   initPortraitGreeting();
-  initAmbientSound();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
   if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
