@@ -1037,31 +1037,19 @@ ul { list-style: none; }
    ============================================================ */
 .about-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--space-xl); align-items: center; }
 .portrait-frame--about { width: 100%; max-width: 320px; margin-inline: auto; }
-.about-monogram-frame {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(56,189,248,.14), transparent 45%),
-    linear-gradient(145deg, rgba(17,24,39,.95), rgba(8,11,18,.92));
-}
-.about-monogram-mark {
-  position: relative;
-  z-index: 2;
-  color: transparent;
-  background: var(--gradient-accent);
-  -webkit-background-clip: text;
-  background-clip: text;
-  font: 700 clamp(5rem, 16vw, 8rem)/1 var(--font-mono);
-  letter-spacing: -.12em;
-  filter: drop-shadow(0 0 30px rgba(56,189,248,.24));
-}
-.about-monogram-label { position: relative; z-index: 2; color: var(--text-muted); font: .62rem var(--font-mono); letter-spacing: .2em; }
 .about-copy p { color: var(--text-muted); margin-bottom: var(--space-md); max-width: 56ch; }
 .about-copy .btn { margin-top: var(--space-sm); }
+.about-video-card {
+  max-width: 880px;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+}
+.about-video { display: block; width: 100%; max-height: 70vh; background: #000; }
+.about-video-card figcaption { padding: .85rem 1rem; color: var(--text-muted); font-size: .88rem; }
 
 /* Timeline */
 .timeline { position: relative; padding-left: var(--space-lg); }
