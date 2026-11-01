@@ -58,17 +58,13 @@
 
     <section class="section about-profile">
       <div class="container about-grid">
-        <div class="about-portrait reveal-up">
-          <div class="portrait-frame portrait-frame--about">
+        <div class="about-portrait reveal-up" aria-hidden="true">
+          <div class="portrait-frame portrait-frame--about about-monogram-frame">
             <div class="portrait-glow" aria-hidden="true"></div>
-            <img
-              src="assets/images/aayam-portrait-2.jpg"
-              alt="Aayam Paudel, second portrait"
-              class="portrait-img portrait-img--about"
-              loading="lazy"
-              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
-            >
-            <div class="img-fallback-text" aria-hidden="true">A. P.</div>
+            <div class="portrait-orbit" aria-hidden="true"></div>
+            <div class="portrait-orbit orbit-2" aria-hidden="true"></div>
+            <span class="about-monogram-mark">AP</span>
+            <span class="about-monogram-label">B.SC. CSIT · NEPAL</span>
           </div>
         </div>
         <div class="about-copy reveal-up">
@@ -82,8 +78,14 @@
 
     <section class="section about-focus">
       <div class="container focus-grid">
-        <div class="focus-photo reveal-up" data-tilt data-tilt-max="6">
-          <img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working with a laptop" loading="lazy">
+        <div class="focus-visual reveal-up" data-tilt data-tilt-max="4" aria-hidden="true">
+          <div class="focus-visual-orbit"></div>
+          <div class="focus-visual-orbit focus-visual-orbit--inner"></div>
+          <div class="focus-visual-core">
+            <span>IDEA → BUILD</span>
+            <strong>MAKE IT<br>USEFUL.</strong>
+            <span class="focus-visual-cursor">_</span>
+          </div>
           <span class="focus-chip"><i></i> WORKING WITH INTENT</span>
         </div>
         <div class="focus-copy reveal-up">

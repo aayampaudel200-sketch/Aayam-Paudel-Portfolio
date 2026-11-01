@@ -951,10 +951,82 @@ ul { list-style: none; }
    ============================================================ */
 .about-focus { background: radial-gradient(ellipse 50% 65% at 20% 55%, rgba(56,189,248,.075), transparent 74%); }
 .focus-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(2.5rem, 7vw, 6rem); align-items: center; }
-.focus-photo { width: min(100%, 440px); margin-inline: auto; }
-.focus-photo { position: relative; overflow: hidden; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-lg); box-shadow: 18px 20px 0 rgba(129,140,248,.075), 0 28px 70px rgba(0,0,0,.36); }
-.focus-photo img { width: 100%; aspect-ratio: 1.25/1; object-fit: cover; object-position: center 18%; }
-.focus-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,11,18,.6)); pointer-events: none; }
+.focus-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 440px);
+  min-height: 340px;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(56,189,248,.16), transparent 48%),
+    linear-gradient(145deg, rgba(17,24,39,.95), rgba(8,11,18,.84));
+  box-shadow: 18px 20px 0 rgba(129,140,248,.075), 0 28px 70px rgba(0,0,0,.36);
+}
+.focus-visual::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  opacity: .46;
+  background: conic-gradient(from 25deg, transparent 0 35%, rgba(56,189,248,.16) 43%, transparent 52% 76%, rgba(129,140,248,.14) 84%, transparent 92%);
+  animation: focusVisualSweep 18s linear infinite;
+}
+.focus-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .2;
+  background-image: linear-gradient(rgba(148,163,184,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 12%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 12%, transparent 78%);
+}
+.focus-visual-orbit {
+  position: absolute;
+  width: min(70%, 250px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(125,211,252,.38);
+  border-radius: 50%;
+  box-shadow: 0 0 28px rgba(56,189,248,.12), inset 0 0 28px rgba(56,189,248,.08);
+  animation: focusVisualOrbit 15s linear infinite;
+}
+.focus-visual-orbit::before,
+.focus-visual-orbit::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #7dd3fc;
+  box-shadow: 0 0 18px 4px rgba(56,189,248,.6);
+}
+.focus-visual-orbit::before { top: 16%; left: 18%; }
+.focus-visual-orbit::after { right: 12%; bottom: 24%; width: 6px; height: 6px; background: #c4b5fd; box-shadow: 0 0 16px 3px rgba(129,140,248,.65); }
+.focus-visual-orbit--inner {
+  width: min(52%, 180px);
+  border-color: rgba(196,181,253,.28);
+  border-style: dashed;
+  animation-duration: 22s;
+  animation-direction: reverse;
+}
+.focus-visual-core {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: .55rem;
+  text-align: center;
+  text-shadow: 0 0 24px rgba(56,189,248,.24);
+}
+.focus-visual-core > span:first-child { color: var(--accent); font: .64rem var(--font-mono); letter-spacing: .15em; }
+.focus-visual-core strong { font-size: clamp(1.7rem, 5vw, 2.4rem); line-height: 1; letter-spacing: -.05em; }
+.focus-visual-cursor { color: var(--green); font: 1.2rem var(--font-mono); animation: cursorBlink 1s steps(2, start) infinite; }
+@keyframes focusVisualSweep { to { transform: rotate(360deg); } }
+@keyframes focusVisualOrbit { to { transform: rotate(360deg); } }
+@keyframes cursorBlink { 50% { opacity: 0; } }
 .focus-chip { position: absolute; z-index: 1; left: 1rem; bottom: 1rem; display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .6rem; color: #fff; border: 1px solid rgba(255,255,255,.17); border-radius: 999px; background: rgba(8,11,18,.55); backdrop-filter: blur(8px); font: .58rem var(--font-mono); letter-spacing: .08em; }.focus-chip i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 7px var(--green); }
 .focus-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-top: var(--space-lg); }.focus-stats div { padding: .8rem; border: 1px solid var(--surface-border); border-radius: 10px; background: rgba(17,24,39,.55); }.focus-stats strong { display: block; color: var(--accent); font: 600 .82rem var(--font-mono); }.focus-stats span { display: block; margin-top: .25rem; color: var(--text-dim); font-size: .7rem; line-height: 1.35; }
 
@@ -965,6 +1037,29 @@ ul { list-style: none; }
    ============================================================ */
 .about-grid { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: var(--space-xl); align-items: center; }
 .portrait-frame--about { width: 100%; max-width: 320px; margin-inline: auto; }
+.about-monogram-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(56,189,248,.14), transparent 45%),
+    linear-gradient(145deg, rgba(17,24,39,.95), rgba(8,11,18,.92));
+}
+.about-monogram-mark {
+  position: relative;
+  z-index: 2;
+  color: transparent;
+  background: var(--gradient-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  font: 700 clamp(5rem, 16vw, 8rem)/1 var(--font-mono);
+  letter-spacing: -.12em;
+  filter: drop-shadow(0 0 30px rgba(56,189,248,.24));
+}
+.about-monogram-label { position: relative; z-index: 2; color: var(--text-muted); font: .62rem var(--font-mono); letter-spacing: .2em; }
 .about-copy p { color: var(--text-muted); margin-bottom: var(--space-md); max-width: 56ch; }
 .about-copy .btn { margin-top: var(--space-sm); }
 
@@ -1187,7 +1282,6 @@ ul { list-style: none; }
   .build-lab-grid, .focus-grid { grid-template-columns: 1fr; }
   .python-showcase-grid { grid-template-columns: 1fr; }
   .build-stage { min-height: 380px; max-width: 540px; width: 100%; margin-inline: auto; }
-  .focus-photo { max-width: 440px; width: min(100%, 440px); margin-inline: auto; }
 
   .strip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
   .strip-item { padding: var(--space-md); }
