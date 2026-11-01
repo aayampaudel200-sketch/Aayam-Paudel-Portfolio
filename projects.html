@@ -34,6 +34,17 @@
         <a href="projects.html" class="nav-link active">Projects</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
       <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
         <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
@@ -44,6 +55,17 @@
       </button>
     </div>
     <div class="mobile-menu" id="mobileMenu" hidden>
+      <form class="site-search site-search--mobile" role="search">
+        <label class="visually-hidden" for="siteSearchMobile">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchMobile" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchMobileResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchMobileResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html" class="mobile-link">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link active">Projects</a>
@@ -115,6 +137,6 @@
   </footer>
 
   <script src="js/main.js" defer></script>
-  <script src="js/projects.js" defer></script>
+  <script src="js/projects.js?v=site-search" defer></script>
 </body>
 </html>

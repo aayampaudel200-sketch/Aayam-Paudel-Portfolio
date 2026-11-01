@@ -107,6 +107,229 @@ function initPortraitGreeting() {
   portrait.addEventListener('click', () => playGreeting(true));
 }
 
+/* ---------- Search indexed sections across the static site pages ---------- */
+let siteSearchIndexPromise = null;
+
+function normalizeSearchText(value) {
+  return value
+    .toLocaleLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+async function loadSiteSearchIndex() {
+  const pages = ['index.html', 'about.html', 'projects.html'];
+  const pageResults = await Promise.allSettled(pages.map(async (path) => {
+    const pageUrl = new URL(path, window.location.href);
+    const response = await fetch(pageUrl, { headers: { Accept: 'text/html' } });
+    if (!response.ok) throw new Error(`Search index request failed for ${path}: ${response.status}`);
+
+    const pageDocument = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const pageTitle = pageDocument.title.split(/[—|]/, 1)[0].trim();
+    return [...pageDocument.querySelectorAll('main section')].map((section) => {
+      const heading = section.querySelector('h1, h2, h3');
+      const title = heading ? heading.textContent.trim() : pageTitle;
+      const extraText = [...section.querySelectorAll('img[alt], video[aria-label]')]
+        .map((media) => media.getAttribute('alt') || media.getAttribute('aria-label'))
+        .filter(Boolean)
+        .join(' ');
+      const text = `${title} ${section.textContent} ${extraText}`.replace(/\s+/g, ' ').trim();
+      const url = new URL(pageUrl);
+      if (section.id) url.hash = section.id;
+
+      return { title, text, normalizedText: normalizeSearchText(text), url: url.href };
+    }).filter((entry) => entry.normalizedText.length > 0);
+  }));
+
+  const entries = [];
+  const failedPages = [];
+  pageResults.forEach((result, index) => {
+    if (result.status === 'fulfilled') entries.push(...result.value);
+    else {
+      failedPages.push(pages[index]);
+      console.error(`Unable to index ${pages[index]} for site search:`, result.reason);
+    }
+  });
+
+  if (Array.isArray(window.__portfolioSearchEntries)) {
+    window.__portfolioSearchEntries.forEach((entry) => {
+      const text = `${entry.title} ${entry.text}`.replace(/\s+/g, ' ').trim();
+      entries.push({
+        title: entry.title,
+        text,
+        normalizedText: normalizeSearchText(text),
+        url: entry.url,
+      });
+    });
+  }
+
+  if (!entries.length) throw new Error('No site pages could be indexed for search.');
+  return { entries, failedPages };
+}
+
+function initSiteSearch() {
+  const forms = [...document.querySelectorAll('.site-search')];
+  if (!forms.length) return;
+
+  function closeResults(form) {
+    const input = form.querySelector('input[type="search"]');
+    const results = form.querySelector('.site-search-results');
+    results.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+  }
+
+  function showMessage(form, message) {
+    const results = form.querySelector('.site-search-results');
+    const input = form.querySelector('input[type="search"]');
+    form.querySelector('.site-search-status').textContent = message;
+    results.replaceChildren();
+    const messageElement = document.createElement('p');
+    messageElement.className = 'site-search-empty';
+    messageElement.textContent = message;
+    results.append(messageElement);
+    results.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  }
+
+  function findMatches(index, query) {
+    const normalizedQuery = normalizeSearchText(query);
+    const terms = normalizedQuery.split(/\s+/).filter(Boolean);
+    if (terms.length === 0) return [];
+
+    return index.entries
+      .map((entry) => {
+        if (!terms.every((term) => entry.normalizedText.includes(term))) return null;
+        const titleText = normalizeSearchText(entry.title);
+        const score = (entry.normalizedText.includes(normalizedQuery) ? 10 : 0)
+          + terms.reduce((total, term) => total + (titleText.includes(term) ? 5 : 0), 0);
+        return { ...entry, score };
+      })
+      .filter(Boolean)
+      .sort((left, right) => right.score - left.score)
+      .slice(0, 6);
+  }
+
+  function renderMatches(form, matches, failedPages) {
+    const results = form.querySelector('.site-search-results');
+    const input = form.querySelector('input[type="search"]');
+    const status = form.querySelector('.site-search-status');
+    results.replaceChildren();
+
+    if (!matches.length) {
+      showMessage(form, 'No matches found. Try another search.');
+      status.textContent = 'No search results found.';
+      return;
+    }
+
+    matches.forEach((match) => {
+      const link = document.createElement('a');
+      link.className = 'site-search-result';
+      link.href = match.url;
+      link.setAttribute('role', 'option');
+
+      const title = document.createElement('strong');
+      title.textContent = match.title;
+      const excerpt = document.createElement('span');
+      const lowerText = match.text.toLocaleLowerCase();
+      const terms = form.querySelector('input[type="search"]').value.toLocaleLowerCase().split(/\s+/);
+      const matchPosition = terms.map((term) => lowerText.indexOf(term)).find((position) => position >= 0);
+      const start = matchPosition > 55 ? matchPosition - 55 : 0;
+      const end = Math.min(match.text.length, start + 160);
+      excerpt.textContent = `${start > 0 ? '…' : ''}${match.text.slice(start, end).trim()}${end < match.text.length ? '…' : ''}`;
+      link.append(title, excerpt);
+      results.append(link);
+    });
+
+    results.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    status.textContent = `${matches.length} search result${matches.length === 1 ? '' : 's'} found${failedPages.length ? '. Some pages could not be searched.' : '.'}`;
+  }
+
+  async function search(form, query, isCurrent = () => true) {
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length < 2) {
+      showMessage(form, 'Enter at least 2 characters to search.');
+      return { matches: [], failedPages: [] };
+    }
+
+    showMessage(form, 'Searching…');
+    try {
+      if (!siteSearchIndexPromise) siteSearchIndexPromise = loadSiteSearchIndex();
+      const index = await siteSearchIndexPromise;
+      const matches = findMatches(index, trimmedQuery);
+      if (isCurrent()) renderMatches(form, matches, index.failedPages);
+      return { matches, failedPages: index.failedPages };
+    } catch (error) {
+      siteSearchIndexPromise = null;
+      console.error('Unable to complete site search:', error);
+      if (isCurrent()) {
+        showMessage(form, 'Search is temporarily unavailable. Please try again.');
+        form.querySelector('.site-search-status').textContent = 'Search is temporarily unavailable.';
+      }
+      return { matches: [], failedPages: [] };
+    }
+  }
+
+  forms.forEach((form) => {
+    const input = form.querySelector('input[type="search"]');
+    let activeSearch = 0;
+
+    input.addEventListener('input', async () => {
+      const searchNumber = ++activeSearch;
+      if (!input.value.trim()) {
+        closeResults(form);
+        form.querySelector('.site-search-status').textContent = '';
+        return;
+      }
+      const { matches } = await search(form, input.value, () => searchNumber === activeSearch);
+      if (searchNumber !== activeSearch) return;
+      if (matches.length) form.querySelector('.site-search-results').hidden = false;
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const searchNumber = ++activeSearch;
+      const { matches } = await search(form, input.value, () => searchNumber === activeSearch);
+      if (searchNumber === activeSearch && matches.length) window.location.assign(matches[0].url);
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeResults(form);
+      } else if (event.key === 'ArrowDown') {
+        const firstResult = form.querySelector('.site-search-result');
+        if (firstResult && !form.querySelector('.site-search-results').hidden) {
+          event.preventDefault();
+          firstResult.focus();
+        }
+      }
+    });
+
+    form.addEventListener('keydown', (event) => {
+      if (!event.target.classList.contains('site-search-result')) return;
+      const links = [...form.querySelectorAll('.site-search-result')];
+      const currentIndex = links.indexOf(event.target);
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const direction = event.key === 'ArrowDown' ? 1 : -1;
+        const nextIndex = (currentIndex + direction + links.length) % links.length;
+        links[nextIndex].focus();
+      } else if (event.key === 'Escape') {
+        closeResults(form);
+        input.focus();
+      }
+    });
+  });
+
+  document.addEventListener('pointerdown', (event) => {
+    forms.forEach((form) => {
+      if (!form.contains(event.target)) closeResults(form);
+    });
+  });
+}
+
 /* ---------- Main Initialisation ---------- */
 function initMain() {
   /* ---------- Current year ---------- */
@@ -220,7 +443,7 @@ function initMain() {
     });
 
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 820) closeMenu();
+      if (window.innerWidth > 1024) closeMenu();
     });
   }
 
@@ -228,6 +451,7 @@ function initMain() {
   observeReveals();
   initThemeToggle();
   initPortraitGreeting();
+  initSiteSearch();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
   if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {

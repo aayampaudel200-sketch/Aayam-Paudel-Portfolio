@@ -61,6 +61,18 @@ const PROJECTS = [
   // Add future projects here following the same shape.
 ];
 
+window.__portfolioSearchEntries = PROJECTS.map((project) => ({
+  title: project.title,
+  text: [
+    project.categoryLabel,
+    project.status,
+    project.description,
+    ...project.tags,
+    ...Object.values(project.details),
+  ].join(' '),
+  url: new URL(`projects.html#${encodeURIComponent(project.id)}`, window.location.href).href,
+}));
+
 const CATEGORY_FILTERS = {
   all: () => true,
   web: (p) => p.category === 'web',
@@ -73,6 +85,7 @@ const CATEGORY_FILTERS = {
 function createProjectCard(project, isFiltered = false) {
   const card = document.createElement('article');
   card.className = isFiltered ? 'project-card reveal-up is-visible' : 'project-card reveal-up';
+  card.id = project.id;
   card.dataset.category = project.category;
 
   const demoBtn = project.demo
