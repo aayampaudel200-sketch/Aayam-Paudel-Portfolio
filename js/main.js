@@ -64,9 +64,9 @@ function initThemeToggle() {
     const isLight = theme === 'light';
     document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
     toggles.forEach((toggle) => {
-      toggle.setAttribute('aria-label', `Switch to ${isLight ? 'dark' : 'light'} theme`);
-      toggle.querySelector('.theme-toggle-icon').textContent = isLight ? '☾' : '☀';
-      toggle.querySelector('.theme-toggle-label').textContent = isLight ? 'Dark' : 'Light';
+      const label = `Switch to ${isLight ? 'dark' : 'light'} theme`;
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
     });
   }
 
@@ -87,19 +87,18 @@ function initThemeToggle() {
 /* ---------- A spoken greeting, started only when the portrait is activated ---------- */
 function initPortraitGreeting() {
   const portrait = document.getElementById('sayHelloButton');
-  if (!portrait) return;
+  const greetingAudio = document.getElementById('helloGreetingAudio');
+  if (!portrait || !(greetingAudio instanceof HTMLAudioElement)) return;
 
-  portrait.addEventListener('click', () => {
-    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-      showToast('Spoken greetings are not supported by this browser.');
-      return;
+  portrait.addEventListener('click', async () => {
+    try {
+      greetingAudio.pause();
+      greetingAudio.currentTime = 0;
+      await greetingAudio.play();
+    } catch (error) {
+      console.error('Unable to play the greeting audio:', error);
+      showToast('Could not play the greeting. Please check your device audio.');
     }
-
-    window.speechSynthesis.cancel();
-    const greeting = new SpeechSynthesisUtterance("Hello! I'm Aayam Paudel. Welcome to my website.");
-    greeting.lang = 'en-US';
-    greeting.rate = 0.95;
-    window.speechSynthesis.speak(greeting);
   });
 }
 

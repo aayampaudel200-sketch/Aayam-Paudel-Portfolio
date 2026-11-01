@@ -243,8 +243,27 @@ ul { list-style: none; }
 
 .header-cta { margin-left: var(--space-sm); }
 .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
-.theme-toggle { flex: 0 0 auto; gap: 0.4rem; }
-.theme-toggle-icon { font-size: 1rem; line-height: 1; }
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin-left: var(--space-sm);
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 50%;
+  background: rgba(148, 163, 184, 0.06);
+  color: var(--text);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.theme-toggle:hover { border-color: var(--accent); background: rgba(56, 189, 248, 0.1); transform: rotate(12deg); }
+.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.theme-icon { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.theme-icon--moon { display: none; }
+:root[data-theme="light"] .theme-icon--sun { display: none; }
+:root[data-theme="light"] .theme-icon--moon { display: block; }
 
 .hamburger { display: none; margin-left: auto; width: 40px; height: 40px; position: relative; }
 .hamburger span {
@@ -1311,8 +1330,7 @@ ul { list-style: none; }
   :root { --header-h: 64px; }
   .header-inner { gap: 0.75rem; }
   .desktop-nav, .header-cta { display: none; }
-  .theme-toggle { margin-left: auto; padding-inline: 0.65rem; }
-  .theme-toggle-label { display: none; }
+  .theme-toggle { margin-left: auto; }
   .hamburger { display: block; flex: 0 0 40px; margin-left: 0; }
 
   .hero { min-height: auto; padding-top: calc(var(--header-h) + 2.5rem); padding-bottom: var(--space-xl); }
