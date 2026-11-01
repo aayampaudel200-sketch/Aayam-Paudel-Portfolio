@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aayam Paudel (Aayam Poudel) | Full-Stack Web Developer</title>
-  <meta name="description" content="Official developer portfolio of Aayam Paudel (also known as Aayam Poudel / Aayam). B.Sc. CSIT student and web developer from Nepal — HTML, CSS, JavaScript, PHP, Python." />
+  <title>Aayam Paudel | Web Developer in Gaindakot, Nepal</title>
+  <meta name="description" content="Aayam Paudel is a B.Sc. CSIT student and web developer in Gaindakot, Nepal, building practical web projects with JavaScript, PHP, Python, and SQL." />
   <meta property="og:title" content="Aayam Paudel — CSIT Student &amp; Web Developer">
-  <meta property="og:description" content="B.Sc. CSIT student and web developer from Nepal. I write code and ship websites.">
+  <meta property="og:description" content="B.Sc. CSIT student and web developer in Gaindakot, Nepal. I write code and ship practical web projects.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://aayampaudel.com.np/">
-  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
-  <link rel="canonical" href="https://aayampaudel.com.np/">
+  <meta property="og:url" content="https://www.aayampaudel.com.np/">
+  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aayam Paudel — CSIT Student &amp; Web Developer">
+  <meta name="twitter:description" content="B.Sc. CSIT student and web developer in Gaindakot, Nepal.">
+  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
+  <link rel="canonical" href="https://www.aayampaudel.com.np/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -19,28 +23,48 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Aayam Paudel",
-    "alternateName": ["Aayam Poudel", "Aayam", "Ayam"],
-    "url": "https://aayampaudel.com.np",
-    "sameAs": [
-      "https://github.com/aayampaudel200-sketch",
-      "https://www.linkedin.com/in/aayam-paudel-885a78371",
-      "https://www.instagram.com/aayam.paudel",
-      "https://x.com/APaudel75350",
-      "https://www.facebook.com/share/1BmWn1BXPm/",
-      "https://www.wikidata.org/wiki/Q141947551"
-    ],
-    "jobTitle": "B.Sc. CSIT Student & Full-Stack Developer",
-    "description": "Portfolio of Aayam Paudel, a B.Sc. CSIT student and web developer from Nepal writing HTML, CSS, JavaScript, PHP, and Python.",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Gaindakot",
-      "addressRegion": "Gandaki Province",
-      "addressCountry": "NP"
-    },
-    "email": "aayampaudel200@gmail.com",
-    "telephone": "+9779742335474"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://www.aayampaudel.com.np/#website",
+        "url": "https://www.aayampaudel.com.np/",
+        "name": "Aayam Paudel — Developer Portfolio",
+        "inLanguage": "en"
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://www.aayampaudel.com.np/#webpage",
+        "url": "https://www.aayampaudel.com.np/",
+        "name": "Aayam Paudel — CSIT Student & Web Developer",
+        "isPartOf": { "@id": "https://www.aayampaudel.com.np/#website" },
+        "mainEntity": { "@id": "https://www.aayampaudel.com.np/#person" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.aayampaudel.com.np/#person",
+        "name": "Aayam Paudel",
+        "alternateName": ["Aayam Poudel", "Aayam", "Ayam"],
+        "url": "https://www.aayampaudel.com.np/",
+        "sameAs": [
+          "https://github.com/aayampaudel200-sketch",
+          "https://www.linkedin.com/in/aayam-paudel-885a78371",
+          "https://www.instagram.com/aayam.paudel",
+          "https://x.com/APaudel75350",
+          "https://www.facebook.com/share/1BmWn1BXPm/",
+          "https://www.wikidata.org/wiki/Q141947551"
+        ],
+        "jobTitle": "B.Sc. CSIT Student & Full-Stack Developer",
+        "description": "Portfolio of Aayam Paudel, a B.Sc. CSIT student and web developer in Gaindakot, Nepal, working with HTML, CSS, JavaScript, PHP, and Python.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Gaindakot",
+          "addressRegion": "Gandaki Province",
+          "addressCountry": "NP"
+        },
+        "email": "aayampaudel200@gmail.com",
+        "telephone": "+9779742335474"
+      }
+    ]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,13 +81,14 @@
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
       <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home">
-        <img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" />
+        <picture><source srcset="/assets/images/optimized-images/logo.webp" type="image/webp"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" width="512" height="512" style="height: 40px; width: auto;" /></picture>
         <span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span>
       </a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link active">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="projects.html" class="nav-link">Projects</a>
+        <a href="notes.html" class="nav-link">Notes</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
       <a href="#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
@@ -75,6 +100,7 @@
       <a href="index.html" class="mobile-link active">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="notes.html" class="mobile-link">Notes</a>
       <a href="#contact" class="mobile-link">Contact</a>
       <a href="#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
@@ -92,7 +118,7 @@
             I write <span class="gradient-text">code</span>. I ship websites.
           </h1>
           <p class="hero-lede reveal-up">
-            I’m Aayam Paudel — a B.Sc. CSIT student and web developer from Nepal. First and foremost I code: HTML, CSS, JavaScript, PHP, Python, and SQL. I turn ideas into working web applications.
+            I’m Aayam Paudel — a B.Sc. CSIT student and web developer based in Gaindakot, Nawalparasi East (Nawalpur), Nepal. First and foremost I code: HTML, CSS, JavaScript, PHP, Python, and SQL. I turn ideas into working web applications.
           </p>
           <div class="hero-skills reveal-up" aria-label="Core skills">
             <span class="tag">HTML</span>
@@ -128,11 +154,11 @@
         </div>
         <div class="hero-visual reveal-up">
           <!-- LIVE VIEWS METRICS CAPSULE -->
-          <div class="hero-metrics live-activity-counter" id="heroMetrics" aria-label="Live portfolio traffic metrics">
+          <div class="hero-metrics live-activity-counter" id="heroMetrics" aria-label="Portfolio traffic metrics are loading">
             <div class="metric-card">
               <div class="metric-status">
                 <span class="live-pulse-dot" aria-hidden="true"></span>
-                <span class="metric-status-text">LIVE ACTIVITY</span>
+                <span class="metric-status-text">CONNECTING</span>
                 <span class="metric-source-hint">Real-time Telemetry</span>
               </div>
               <div class="metric-content">
@@ -152,12 +178,18 @@
             <div class="portrait-orbit" aria-hidden="true"></div>
             <div class="portrait-orbit orbit-2" aria-hidden="true"></div>
             <div class="portrait-glow" aria-hidden="true"></div>
+            <picture>
+            <source srcset="assets/images/optimized-images/aayam-portrait-1.webp" type="image/webp">
             <img
               src="assets/images/aayam-portrait-1.jpg"
               alt="Portrait of Aayam Paudel"
               class="portrait-img"
-              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
+              width="1122"
+              height="1402"
+              fetchpriority="high"
+              onerror="this.style.display='none'; this.closest('.portrait-frame').classList.add('img-fallback')"
             >
+            </picture>
             <div class="img-fallback-text" aria-hidden="true">A. P.</div>
             <span class="tech-label label-1" aria-hidden="true">function code() {}</span>
             <span class="tech-label label-2" aria-hidden="true">&lt;web-dev /&gt;</span>
@@ -241,7 +273,47 @@
           <a href="projects.html" class="text-link">View all projects <span aria-hidden="true">→</span></a>
         </div>
         <div class="project-grid" id="featuredGrid">
-          <!-- Cards are rendered by projects.js so both pages share the same data source -->
+          <article class="project-card reveal-up" data-category="web">
+            <div class="project-media">
+              <picture><source srcset="assets/images/optimized-images/project-haat-bazzar.webp" type="image/webp"><img src="assets/images/project-haat-bazzar.jpg" alt="Haat Bazzar marketplace concept mockup" loading="lazy" width="1200" height="750"></picture>
+              <span class="project-status" data-status="prototype">Prototype</span>
+            </div>
+            <div class="project-body">
+              <p class="project-category">Marketplace / Web Application</p>
+              <h3 class="project-title">Haat Bazzar — हट बजार</h3>
+              <p class="project-desc">A responsive, multi-page farm-to-consumer marketplace prototype exploring direct connections between local farmers and customers.</p>
+              <details class="project-card-details">
+                <summary>Project overview</summary>
+                <p>A static, multi-page prototype with farmer, shop, and outlet experiences. Browser localStorage remembers the selected role, language, basket, and demo pickup state.</p>
+              </details>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Vercel</span></div>
+              <div class="project-actions">
+                <a href="https://haat-bazzar-15hju1vsp-aayampaudel200-9685.vercel.app/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Live Demo</a>
+                <a href="https://github.com/aayampaudel200-sketch/Haat-Bazzar" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <button type="button" class="btn btn-outline details-btn" data-project-id="haat-bazzar" aria-label="View details for Haat Bazzar">Details</button>
+              </div>
+            </div>
+          </article>
+          <article class="project-card reveal-up" data-category="civic">
+            <div class="project-media">
+              <picture><source srcset="assets/images/optimized-images/project-municipal.webp" type="image/webp"><img src="assets/images/project-municipal.jpg" alt="Municipal citizenship recommendation portal prototype mockup" loading="lazy" width="1200" height="750"></picture>
+              <span class="project-status" data-status="prototype">Prototype</span>
+            </div>
+            <div class="project-body">
+              <p class="project-category">Civic Technology / E-Governance</p>
+              <h3 class="project-title">Municipal Citizenship Recommendation Portal</h3>
+              <p class="project-desc">A civic technology prototype developed during a 48-hour hackathon to explore digitizing a municipal recommendation workflow.</p>
+              <details class="project-card-details">
+                <summary>Project overview</summary>
+                <p>A prototype interface modelling an application, document upload, review, and status-tracking flow. It is not deployed or officially adopted.</p>
+              </details>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Civic Tech</span></div>
+              <div class="project-actions">
+                <span class="btn btn-outline" aria-disabled="true">Demo unavailable</span>
+                <button type="button" class="btn btn-outline details-btn" data-project-id="municipal-portal" aria-label="View details for Municipal Citizenship Recommendation Portal">Details</button>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -294,7 +366,7 @@
           <div class="stage-glow" aria-hidden="true"></div>
           <div class="laptop-window">
             <div class="window-bar"><i></i><i></i><i></i><span>web-dev.js</span></div>
-            <img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working on a laptop" loading="lazy">
+            <picture><source srcset="assets/images/optimized-images/aayam-portrait-2.webp" type="image/webp"><img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working on a laptop" loading="lazy" width="1536" height="1024"></picture>
             <div class="window-code" aria-hidden="true"><span>const</span> aayam = <b>"web developer"</b>;</div>
           </div>
           <div class="stage-card stage-card--one"><span class="stage-icon">✦</span><span>Learning<br>by building</span></div>
@@ -361,6 +433,7 @@
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
         <a href="mailto:aayampaudel200@gmail.com">Email</a>
       </nav>
       <div class="footer-social">
@@ -376,7 +449,7 @@
         <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
         <span class="footer-views-badge">
           <span class="live-dot-sm" aria-hidden="true"></span>
-          <span><strong id="footerTotalViews">--</strong> live views tracked</span>
+          <span><strong id="footerTotalViews">--</strong> views tracked</span>
         </span>
       </div>
       <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>

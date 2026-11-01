@@ -34,6 +34,7 @@
     document.getElementById('stripRecentViews'),
     document.getElementById('footerRecentViews')
   ].filter(Boolean);
+  const statusEls = document.querySelectorAll('.metric-status-text');
 
   if (!totalEls.length && !recentEls.length) return;
 
@@ -65,6 +66,14 @@
     recentEls.forEach((el) => {
       el.textContent = formatNumber(recent);
     });
+  }
+
+  function setStatus(message, accessibleLabel) {
+    statusEls.forEach((el) => {
+      el.textContent = message;
+    });
+    const badge = document.getElementById('heroMetrics');
+    if (badge) badge.setAttribute('aria-label', accessibleLabel);
   }
 
   function animateCounter(elements, startVal, endVal, duration = 1200) {
@@ -108,16 +117,22 @@
   let startTotal = 0;
   let startRecent = 0;
 
-  if (cached && typeof cached.total === 'number') {
+  if (cached && typeof cached.total === 'number' && Number.isFinite(cached.total) && cached.total >= 0) {
     startTotal = cached.total + CLOUDFLARE_OFFSET;
-    startRecent = (cached.recent48h || 0);
+    startRecent = typeof cached.recent48h === 'number' ? cached.recent48h : 0;
     renderValues(startTotal, startRecent);
+    setStatus('CACHED DATA', 'Cached portfolio traffic metrics. Updating from the counter service.');
   }
 
   // ============================================================
   // LIVE API TRACKING & ROLLING 48-HOUR BREAKDOWN
   // ============================================================
   async function trackAndFetchViews() {
+    if (!['aayampaudel.com.np', 'www.aayampaudel.com.np'].includes(window.location.hostname.toLowerCase())) {
+      setStatus('PREVIEW MODE', 'Visitor counter is disabled outside the production domain.');
+      return;
+    }
+
     const now = new Date();
     // UTC date strings for consistent cross-timezone daily buckets
     const todayStr = now.toISOString().slice(0, 10);
@@ -165,22 +180,18 @@
           badge.classList.add('pulse-update');
           setTimeout(() => badge.classList.remove('pulse-update'), 800);
         }
+        setStatus('LIVE ACTIVITY', 'Live portfolio traffic metrics');
         return;
       }
     } catch (err) {
-      console.warn('Live views fetch error, falling back to local storage cache:', err);
+      console.warn('Live views fetch failed; retaining the last known values:', err);
     }
 
-    // Fallback: If offline or API fails, increment local count so counter always increments
-    const fallbackTotal = (startTotal > 0 ? startTotal : 130) + 1;
-    const fallbackRecent = (startRecent > 0 ? startRecent : 64) + 1;
-    animateCounter(totalEls, startTotal, fallbackTotal);
-    animateCounter(recentEls, startRecent, fallbackRecent);
-    setCachedData({
-      total: fallbackTotal - CLOUDFLARE_OFFSET,
-      recent48h: fallbackRecent,
-      timestamp: Date.now()
-    });
+    console.warn('Live views service returned no usable count; existing visitor data was not changed.');
+    setStatus(
+      cached ? 'CACHED DATA' : 'COUNTER UNAVAILABLE',
+      cached ? 'Showing cached portfolio traffic metrics; live updates are unavailable.' : 'Portfolio traffic metrics are currently unavailable.'
+    );
   }
 
   // Execute after DOM is ready

@@ -3,13 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Projects — Aayam Paudel</title>
-  <meta name="description" content="Selected projects by Aayam Paudel: Haat Bazzar marketplace concept and a Municipal Citizenship Recommendation Portal prototype.">
+  <title>Projects by Aayam Paudel | Web Development in Nepal</title>
+  <meta name="description" content="Explore Aayam Paudel's web development and civic technology projects, including the Haat Bazzar marketplace prototype and municipal portal.">
   <meta property="og:title" content="Projects — Aayam Paudel">
-  <meta property="og:description" content="Practical ideas, technical experiments, and digital products focused on real problems.">
-  <meta property="og:url" content="https://aayampaudel.com.np/projects.html">
-  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
-  <link rel="canonical" href="https://aayampaudel.com.np/projects.html">
+  <meta property="og:description" content="Web development and civic technology projects by Aayam Paudel, a CSIT student in Nepal.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.aayampaudel.com.np/projects.html">
+  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Projects by Aayam Paudel">
+  <meta name="twitter:description" content="Web development and civic technology projects by Aayam Paudel, a CSIT student in Nepal.">
+  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
+  <link rel="canonical" href="https://www.aayampaudel.com.np/projects.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "https://www.aayampaudel.com.np/projects.html#webpage",
+    "url": "https://www.aayampaudel.com.np/projects.html",
+    "name": "Projects by Aayam Paudel",
+    "isPartOf": { "@id": "https://www.aayampaudel.com.np/#website" },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.aayampaudel.com.np/" },
+        { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://www.aayampaudel.com.np/projects.html" }
+      ]
+    }
+  }
+  </script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -26,11 +48,12 @@
 
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><picture><source srcset="/assets/images/optimized-images/logo.webp" type="image/webp"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" width="512" height="512" style="height: 40px; width: auto;" /></picture><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="projects.html" class="nav-link active">Projects</a>
+        <a href="notes.html" class="nav-link">Notes</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
@@ -42,6 +65,7 @@
       <a href="index.html" class="mobile-link">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link active">Projects</a>
+      <a href="notes.html" class="mobile-link">Notes</a>
       <a href="index.html#contact" class="mobile-link">Contact</a>
       <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
@@ -59,14 +83,54 @@
     <section class="section projects-page">
       <div class="container">
         <div class="filter-bar reveal-up" role="group" aria-label="Filter projects">
-          <button type="button" class="filter-btn active" data-filter="all">All</button>
-          <button type="button" class="filter-btn" data-filter="web">Web Applications</button>
-          <button type="button" class="filter-btn" data-filter="civic">Civic Technology</button>
-          <button type="button" class="filter-btn" data-filter="experiments">Experiments</button>
+          <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="filter-btn" data-filter="web" aria-pressed="false">Web Applications</button>
+          <button type="button" class="filter-btn" data-filter="civic" aria-pressed="false">Civic Technology</button>
+          <button type="button" class="filter-btn" data-filter="experiments" aria-pressed="false">Experiments</button>
         </div>
 
         <div class="project-grid project-grid--full" id="allProjectsGrid">
-          <!-- Populated by projects.js -->
+          <article class="project-card reveal-up" data-category="web">
+            <div class="project-media">
+              <picture><source srcset="assets/images/optimized-images/project-haat-bazzar.webp" type="image/webp"><img src="assets/images/project-haat-bazzar.jpg" alt="Haat Bazzar marketplace concept mockup" loading="lazy" width="1200" height="750"></picture>
+              <span class="project-status" data-status="prototype">Prototype</span>
+            </div>
+            <div class="project-body">
+              <p class="project-category">Marketplace / Web Application</p>
+              <h2 class="project-title">Haat Bazzar — हट बजार</h2>
+              <p class="project-desc">A responsive, multi-page farm-to-consumer marketplace prototype exploring direct connections between local farmers and customers.</p>
+              <details class="project-card-details">
+                <summary>Project overview</summary>
+                <p>A static, multi-page prototype with farmer, shop, and outlet experiences. Browser localStorage remembers the selected role, language, basket, and demo pickup state.</p>
+              </details>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Vercel</span></div>
+              <div class="project-actions">
+                <a href="https://haat-bazzar-15hju1vsp-aayampaudel200-9685.vercel.app/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Live Demo</a>
+                <a href="https://github.com/aayampaudel200-sketch/Haat-Bazzar" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <button type="button" class="btn btn-outline details-btn" data-project-id="haat-bazzar" aria-label="View details for Haat Bazzar">Details</button>
+              </div>
+            </div>
+          </article>
+          <article class="project-card reveal-up" data-category="civic">
+            <div class="project-media">
+              <picture><source srcset="assets/images/optimized-images/project-municipal.webp" type="image/webp"><img src="assets/images/project-municipal.jpg" alt="Municipal citizenship recommendation portal prototype mockup" loading="lazy" width="1200" height="750"></picture>
+              <span class="project-status" data-status="prototype">Prototype</span>
+            </div>
+            <div class="project-body">
+              <p class="project-category">Civic Technology / E-Governance</p>
+              <h2 class="project-title">Municipal Citizenship Recommendation Portal</h2>
+              <p class="project-desc">A civic technology prototype developed during a 48-hour hackathon to explore digitizing a municipal recommendation workflow.</p>
+              <details class="project-card-details">
+                <summary>Project overview</summary>
+                <p>A prototype interface modelling an application, document upload, review, and status-tracking flow. It is not deployed or officially adopted.</p>
+              </details>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Civic Tech</span></div>
+              <div class="project-actions">
+                <span class="btn btn-outline" aria-disabled="true">Demo unavailable</span>
+                <button type="button" class="btn btn-outline details-btn" data-project-id="municipal-portal" aria-label="View details for Municipal Citizenship Recommendation Portal">Details</button>
+              </div>
+            </div>
+          </article>
         </div>
         <p class="empty-state" id="emptyState" hidden>No projects match this category yet. New experiments and prototypes are currently in development.</p>
       </div>
@@ -93,6 +157,7 @@
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
         <a href="mailto:aayampaudel200@gmail.com">Email</a>
       </nav>
       <div class="footer-social">

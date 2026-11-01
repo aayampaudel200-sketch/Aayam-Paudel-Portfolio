@@ -3,13 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About — Aayam Paudel</title>
-  <meta name="description" content="A little about Aayam Paudel: CSIT student, full-stack developer, and founder of Namaste Suman Communication.">
+  <title>About Aayam Paudel | Web Developer in Gaindakot</title>
+  <meta name="description" content="Meet Aayam Paudel, a B.Sc. CSIT student and full-stack web developer in Gaindakot, Nawalpur (Nawalparasi East), Nepal, and operator of Namaste Suman Communication.">
   <meta property="og:title" content="About Aayam Paudel">
-  <meta property="og:description" content="Learning the fundamentals, building real projects, and turning curiosity into practical experience.">
-  <meta property="og:url" content="https://aayampaudel.com.np/about.html">
-  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-2.jpg">
-  <link rel="canonical" href="https://aayampaudel.com.np/about.html">
+  <meta property="og:description" content="A B.Sc. CSIT student and web developer in Gaindakot, Nawalpur (Nawalparasi East), Nepal.">
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://www.aayampaudel.com.np/about.html">
+  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-2.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="About Aayam Paudel">
+  <meta name="twitter:description" content="A B.Sc. CSIT student and web developer in Gaindakot, Nawalpur (Nawalparasi East), Nepal.">
+  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-portrait-2.jpg">
+  <link rel="canonical" href="https://www.aayampaudel.com.np/about.html">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "@id": "https://www.aayampaudel.com.np/about.html#webpage",
+    "url": "https://www.aayampaudel.com.np/about.html",
+    "name": "About Aayam Paudel",
+    "isPartOf": { "@id": "https://www.aayampaudel.com.np/#website" },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.aayampaudel.com.np/" },
+        { "@type": "ListItem", "position": 2, "name": "About", "item": "https://www.aayampaudel.com.np/about.html" }
+      ]
+    }
+  }
+  </script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -26,11 +48,12 @@
 
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><picture><source srcset="/assets/images/optimized-images/logo.webp" type="image/webp"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" width="512" height="512" style="height: 40px; width: auto;" /></picture><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link active">About</a>
         <a href="projects.html" class="nav-link">Projects</a>
+        <a href="notes.html" class="nav-link">Notes</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
@@ -42,6 +65,7 @@
       <a href="index.html" class="mobile-link">Home</a>
       <a href="about.html" class="mobile-link active">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="notes.html" class="mobile-link">Notes</a>
       <a href="index.html#contact" class="mobile-link">Contact</a>
       <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
@@ -61,19 +85,24 @@
         <div class="about-portrait reveal-up">
           <div class="portrait-frame portrait-frame--about">
             <div class="portrait-glow" aria-hidden="true"></div>
+            <picture>
+            <source srcset="assets/images/optimized-images/aayam-portrait-2.webp" type="image/webp">
             <img
               src="assets/images/aayam-portrait-2.jpg"
               alt="Aayam Paudel, second portrait"
               class="portrait-img portrait-img--about"
               loading="lazy"
-              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
+              width="1536"
+              height="1024"
+              onerror="this.style.display='none'; this.closest('.portrait-frame').classList.add('img-fallback')"
             >
+            </picture>
             <div class="img-fallback-text" aria-hidden="true">A. P.</div>
           </div>
         </div>
         <div class="about-copy reveal-up">
           <h2 class="section-title">Curious by default. Practical by habit.</h2>
-          <p>I am a B.Sc. CSIT student at Lumbini I.C.T. Campus, affiliated with Tribhuvan University, Nepal. I am interested in software development, modern web technologies, and building digital products that solve practical problems.</p>
+          <p>I am a B.Sc. CSIT student at Lumbini I.C.T. Campus in Gaindakot, Nawalparasi East (Nawalpur), Nepal, affiliated with Tribhuvan University. I am interested in software development, modern web technologies, and building digital products that solve practical problems.</p>
           <p>Alongside my studies, I operate <strong>Namaste Suman Communication</strong>, a local digital service center. This experience connects technology with everyday customer needs and has helped shape my interest in useful digital solutions and entrepreneurship.</p>
           <a href="projects.html" class="btn btn-primary">See my projects</a>
         </div>
@@ -83,7 +112,7 @@
     <section class="section about-focus">
       <div class="container focus-grid">
         <div class="focus-photo reveal-up" data-tilt data-tilt-max="6">
-          <img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working with a laptop" loading="lazy">
+          <picture><source srcset="assets/images/optimized-images/aayam-portrait-2.webp" type="image/webp"><img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working with a laptop" loading="lazy" width="1536" height="1024"></picture>
           <span class="focus-chip"><i></i> WORKING WITH INTENT</span>
         </div>
         <div class="focus-copy reveal-up">
@@ -225,6 +254,7 @@
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
+        <a href="notes.html">Notes</a>
         <a href="mailto:aayampaudel200@gmail.com">Email</a>
       </nav>
       <div class="footer-social">

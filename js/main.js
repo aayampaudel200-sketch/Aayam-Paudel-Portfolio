@@ -3,6 +3,7 @@
  * scroll reveals, year, configurable social links, image fallbacks,
  * and email clipboard helper.
  */
+document.documentElement.classList.add('js-enabled');
 
 /* ---------- Scroll reveal with IntersectionObserver ---------- */
 let revealObserver = null;

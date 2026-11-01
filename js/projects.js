@@ -9,12 +9,13 @@ const PROJECTS = [
     title: 'Haat Bazzar — हट बजार',
     category: 'web',
     categoryLabel: 'Marketplace / Web Application',
-    status: 'Live',
-    statusKey: 'live',
+    status: 'Prototype',
+    statusKey: 'prototype',
     description:
-      'A farm-to-consumer marketplace concept designed to connect local farmers directly with customers in Nepal, reducing reliance on intermediaries.',
+      'A responsive, multi-page farm-to-consumer marketplace prototype exploring direct connections between local farmers and customers in Nepal.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
     image: 'assets/images/project-haat-bazzar.jpg',
+    imageWebp: 'assets/images/optimized-images/project-haat-bazzar.webp',
     demo: 'https://haat-bazzar-15hju1vsp-aayampaudel200-9685.vercel.app/',
     github: 'https://github.com/aayampaudel200-sketch/Haat-Bazzar',
     details: {
@@ -29,6 +30,8 @@ const PROJECTS = [
       stack: 'HTML, CSS, JavaScript, deployed on Vercel.',
       contribution:
         'Designed and built the front-end experience, structured the listing and browsing flow, and deployed the live application.',
+      architecture:
+        'The GitHub project is a self-contained static prototype with separate farmer, shop, and outlet experiences. Browser localStorage remembers the selected role, language, basket, and demo pickup state; it has no package install or build step.',
     },
   },
   {
@@ -42,6 +45,7 @@ const PROJECTS = [
       'A civic technology prototype developed during a 48-hour hackathon, focused on digitizing a municipal recommendation workflow for public service delivery.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Civic Tech'],
     image: 'assets/images/project-municipal.jpg',
+    imageWebp: 'assets/images/optimized-images/project-municipal.webp',
     demo: '',
     github: '',
     details: {
@@ -77,7 +81,7 @@ function createProjectCard(project, isFiltered = false) {
 
   const demoBtn = project.demo
     ? `<a href="${project.demo}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Live Demo</a>`
-    : `<span class="btn btn-outline" aria-disabled="true">Demo coming soon</span>`;
+    :     `<span class="btn btn-outline" aria-disabled="true">Demo unavailable</span>`;
 
   const githubBtn = project.github
     ? `<a href="${project.github}" class="btn btn-outline" target="_blank" rel="noopener noreferrer">GitHub</a>`
@@ -87,8 +91,10 @@ function createProjectCard(project, isFiltered = false) {
   let mediaHtml = '';
   if (project.image) {
     mediaHtml = `
-      <img src="${project.image}" alt="${project.title} screenshot" loading="lazy" class="project-img"
-        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
+      <picture>
+        ${project.imageWebp ? `<source srcset="${project.imageWebp}" type="image/webp">` : ''}
+        <img src="${project.image}" alt="${project.title} project mockup" loading="lazy" class="project-img">
+      </picture>
       <div class="project-media-placeholder" style="display:none;" aria-hidden="true">Screenshot coming soon</div>
     `;
   } else {
@@ -113,6 +119,15 @@ function createProjectCard(project, isFiltered = false) {
       </div>
     </div>
   `;
+
+  const projectImage = card.querySelector('.project-img');
+  if (projectImage) {
+    projectImage.addEventListener('error', () => {
+      projectImage.hidden = true;
+      const placeholder = projectImage.closest('.project-media')?.querySelector('.project-media-placeholder');
+      if (placeholder) placeholder.style.display = 'flex';
+    }, { once: true });
+  }
 
   // Whole-card click (except links/buttons) opens details
   card.addEventListener('click', (e) => {
@@ -160,8 +175,12 @@ function initFilters() {
 
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      buttons.forEach((b) => b.classList.remove('active'));
+      buttons.forEach((b) => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
       btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
       renderAllProjects(btn.dataset.filter, true);
       // Re-observe newly rendered cards
       if (typeof window.__observeReveals === 'function') {
@@ -194,6 +213,7 @@ function openProjectModal(projectId) {
     ${d.users ? `<div class="modal-section"><h4>Intended users</h4><p>${d.users}</p></div>` : ''}
     ${d.solution ? `<div class="modal-section"><h4>Solution approach</h4><p>${d.solution}</p></div>` : ''}
     ${d.stack ? `<div class="modal-section"><h4>Technology stack</h4><p>${d.stack}</p></div>` : ''}
+    ${d.architecture ? `<div class="modal-section"><h4>Architecture</h4><p>${d.architecture}</p></div>` : ''}
     ${d.contribution ? `<div class="modal-section"><h4>My contribution</h4><p>${d.contribution}</p></div>` : ''}
 
     <div class="modal-actions">
