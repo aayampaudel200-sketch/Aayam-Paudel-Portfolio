@@ -100,9 +100,8 @@ function createProjectCard(project, isFiltered = false) {
   let mediaHtml = '';
   if (project.image) {
     mediaHtml = `
-      <img src="${project.image}" alt="${project.title} screenshot" loading="lazy" class="project-img"
-        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-      <div class="project-media-placeholder" style="display:none;" aria-hidden="true">Screenshot coming soon</div>
+      <img src="${project.image}" alt="${project.title} screenshot" loading="lazy" class="project-img">
+      <div class="project-media-placeholder" hidden aria-hidden="true">Screenshot coming soon</div>
     `;
   } else {
     mediaHtml = `<div class="project-media-placeholder">Screenshot coming soon</div>`;
@@ -126,6 +125,15 @@ function createProjectCard(project, isFiltered = false) {
       </div>
     </div>
   `;
+
+  const projectImage = card.querySelector('.project-img');
+  const imagePlaceholder = card.querySelector('.project-media-placeholder');
+  if (projectImage && imagePlaceholder) {
+    projectImage.addEventListener('error', () => {
+      projectImage.hidden = true;
+      imagePlaceholder.hidden = false;
+    }, { once: true });
+  }
 
   // Whole-card click (except links/buttons) opens details
   card.addEventListener('click', (e) => {

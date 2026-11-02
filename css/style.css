@@ -822,6 +822,7 @@ ul { list-style: none; }
   letter-spacing: 0.1em;
 }
 .portrait-frame.img-fallback .img-fallback-text { display: flex; }
+.portrait-img[hidden], .project-img[hidden], .project-media-placeholder[hidden] { display: none; }
 
 .tech-label {
   position: absolute; z-index: 3;

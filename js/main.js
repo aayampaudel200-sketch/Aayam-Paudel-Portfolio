@@ -624,6 +624,13 @@ function initMain() {
   }
 
   /* ---------- Fallback for inline images that fail ---------- */
+  document.querySelectorAll('.portrait-img').forEach((img) => {
+    img.addEventListener('error', () => {
+      img.hidden = true;
+      img.closest('.portrait-frame')?.classList.add('img-fallback');
+    }, { once: true });
+  });
+
   document.querySelectorAll('img[data-fallback]').forEach((img) => {
     img.addEventListener('error', () => {
       const fb = img.getAttribute('data-fallback');
