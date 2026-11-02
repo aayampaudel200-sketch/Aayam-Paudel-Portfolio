@@ -12,20 +12,13 @@ ALLOWED_AGENTS = (
     "Googlebot",
     "Googlebot-Image",
     "Bingbot",
-    "OAI-SearchBot",
     "ChatGPT-User",
-    "Claude-SearchBot",
+    "OAI-SearchBot",
     "PerplexityBot",
-)
-BLOCKED_AGENTS = (
-    "GPTBot",
+    "Claude-SearchBot",
     "ClaudeBot",
-    "anthropic-ai",
+    "GPTBot",
     "Google-Extended",
-    "CCBot",
-    "Bytespider",
-    "Amazonbot",
-    "FacebookBot",
 )
 SITEMAP_URL = "https://aayampaudel.com.np/sitemap.xml"
 SITE_HOST = "aayampaudel.com.np"
@@ -60,14 +53,18 @@ def validate_robots(path: Path) -> list[str]:
         return [f"Cannot read {path}: {exc}"]
 
     groups = parse_robots(text)
+    wildcard_directives = groups.get("*", [])
+    if "allow:/" not in wildcard_directives:
+        errors.append("Unlisted crawlers must be allowed by the wildcard policy.")
+    if "disallow:/" in wildcard_directives:
+        errors.append("The wildcard policy must not disallow the site.")
+
     for agent in ALLOWED_AGENTS:
-        if "allow:/" not in groups.get(agent.casefold(), []):
+        directives = groups.get(agent.casefold(), [])
+        if "allow:/" not in directives:
             errors.append(f"{agent} must explicitly be allowed to crawl the site.")
-    for agent in BLOCKED_AGENTS:
-        if "disallow:/" not in groups.get(agent.casefold(), []):
-            errors.append(f"{agent} must explicitly be disallowed from the site.")
-    if "disallow:/" not in groups.get("*", []):
-        errors.append("Unlisted crawlers must be denied by the wildcard policy.")
+        if "disallow:/" in directives:
+            errors.append(f"{agent} must not be disallowed from the site.")
 
     sitemap_lines = [
         line.strip().split(":", 1)[1].strip()

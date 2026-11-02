@@ -6,7 +6,6 @@ from pathlib import Path
 
 from portfolio_audit import (
     ALLOWED_AGENTS,
-    BLOCKED_AGENTS,
     SITEMAP_URL,
     audit,
     parse_robots,
@@ -32,12 +31,10 @@ class PortfolioAuditTests(unittest.TestCase):
         lines = []
         for agent in ALLOWED_AGENTS:
             lines.extend((f"User-agent: {agent}", "Allow: /", ""))
-        for agent in BLOCKED_AGENTS:
-            lines.extend((f"User-agent: {agent}", "Disallow: /", ""))
         lines.extend(
             (
                 "User-agent: *",
-                "Disallow: /",
+                "Allow: /",
                 "",
                 f"Sitemap: {SITEMAP_URL}",
             )
@@ -61,15 +58,35 @@ class PortfolioAuditTests(unittest.TestCase):
     def test_audit_accepts_valid_site(self):
         self.assertEqual(audit(self.root), [])
 
-    def test_audit_reports_missing_allow_and_default_deny_rules(self):
+    def test_audit_reports_missing_allow_rules(self):
         robots = self.root / "robots.txt"
         robots.write_text("User-agent: *\nAllow: /\n", encoding="utf-8")
 
         errors = audit(self.root)
 
         self.assertTrue(any("Googlebot must explicitly" in error for error in errors))
-        self.assertTrue(any("wildcard policy" in error for error in errors))
         self.assertTrue(any(SITEMAP_URL in error for error in errors))
+
+    def test_audit_rejects_wildcard_disallow(self):
+        robots = self.root / "robots.txt"
+        robots.write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
+
+        errors = audit(self.root)
+
+        self.assertTrue(any("wildcard policy" in error for error in errors))
+
+    def test_audit_rejects_disallowed_search_bot(self):
+        robots = self.root / "robots.txt"
+        robots.write_text(
+            "User-agent: Googlebot\nAllow: /\nDisallow: /\n"
+            "User-agent: *\nAllow: /\n"
+            f"Sitemap: {SITEMAP_URL}\n",
+            encoding="utf-8",
+        )
+
+        errors = audit(self.root)
+
+        self.assertTrue(any("Googlebot must not be disallowed" in error for error in errors))
 
     def test_sitemap_reports_missing_local_page(self):
         (self.root / "sitemap.xml").write_text(
