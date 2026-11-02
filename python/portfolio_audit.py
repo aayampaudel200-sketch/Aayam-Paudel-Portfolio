@@ -20,8 +20,8 @@ ALLOWED_AGENTS = (
     "GPTBot",
     "Google-Extended",
 )
-SITEMAP_URL = "https://aayampaudel.com.np/sitemap.xml"
-SITE_HOST = "aayampaudel.com.np"
+SITEMAP_URL = "https://www.aayampaudel.com.np/sitemap.xml"
+SITE_HOST = "www.aayampaudel.com.np"
 SITEMAP_NAMESPACE = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 
 

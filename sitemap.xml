@@ -1,21 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://aayampaudel.com.np/</loc>
-    <lastmod>2026-10-31</lastmod>
+    <loc>https://www.aayampaudel.com.np/</loc>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-web-developer-nepal.jpg</image:loc>
+      <image:title>Aayam Paudel, full-stack web developer from Gaindakot, Nepal</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
+      <image:title>Aayam Paudel working on a laptop</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
+      <image:title>Haat Bazzar marketplace project by Aayam Paudel</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
+      <image:title>Municipal citizenship recommendation portal prototype by Aayam Paudel</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://aayampaudel.com.np/about.html</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://www.aayampaudel.com.np/about.html</loc>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
+      <image:title>Aayam Paudel working on a laptop</image:title>
+    </image:image>
   </url>
   <url>
-    <loc>https://aayampaudel.com.np/projects.html</loc>
-    <lastmod>2026-10-31</lastmod>
+    <loc>https://www.aayampaudel.com.np/projects.html</loc>
+    <lastmod>2026-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
+      <image:title>Haat Bazzar marketplace project by Aayam Paudel</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
+      <image:title>Municipal citizenship recommendation portal prototype by Aayam Paudel</image:title>
+    </image:image>
   </url>
 </urlset>

@@ -23,10 +23,10 @@ aayam/
 │   └── test_portfolio_audit.py # Unit tests for the Python audit
 ├── assets/
 │   └── images/
-│       ├── aayam-portrait-1.jpg       # Hero portrait photograph
-│       ├── aayam-portrait-2.jpg       # About page profile photograph
-│       ├── project-haat-bazzar.jpg    # Visual mockup of Haat Bazzar marketplace
-│       └── project-municipal.jpg      # Visual mockup of Municipal E-Governance Portal
+│       ├── aayam-paudel-web-developer-nepal.jpg             # Hero portrait photograph
+│       ├── aayam-paudel-working-on-laptop.jpeg              # Shared laptop photograph
+│       ├── aayam-paudel-haat-bazzar-marketplace.jpg         # Haat Bazzar marketplace mockup
+│       └── aayam-paudel-citizenship-recommendation-portal.jpg # Municipal portal mockup
 └── README.md
 ```
 

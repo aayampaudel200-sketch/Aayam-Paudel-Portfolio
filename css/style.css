@@ -788,19 +788,16 @@ ul { list-style: none; }
   z-index: 4;
   right: 1rem;
   bottom: 1rem;
-  padding: 0.35rem 0.55rem;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.55rem 0.85rem;
+  border: 1px solid rgba(56, 189, 248, 0.65);
   border-radius: 999px;
-  background: rgba(8, 11, 18, 0.72);
+  background: rgba(8, 11, 18, 0.9);
   color: #fff;
-  font-size: 0.65rem;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.2s, transform 0.2s;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.38);
   pointer-events: none;
 }
-.portrait-frame--greeting:hover .portrait-greeting-hint,
-.portrait-frame--greeting:focus-visible .portrait-greeting-hint { opacity: 1; transform: translateY(0); }
 .portrait-glow {
   position: absolute; inset: -18%; z-index: 1;
   background: radial-gradient(circle at 65% 25%, rgba(56, 189, 248, 0.22), transparent 55%),

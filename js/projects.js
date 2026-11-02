@@ -14,7 +14,8 @@ const PROJECTS = [
     description:
       'A farm-to-consumer marketplace concept designed to connect local farmers directly with customers in Nepal, reducing reliance on intermediaries.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
-    image: 'assets/images/project-haat-bazzar.jpg',
+    image: 'assets/images/aayam-paudel-haat-bazzar-marketplace.jpg',
+    imageAlt: "Haat Bazzar farm-to-consumer marketplace project by Aayam Paudel",
     demo: 'https://haat-bazzar-15hju1vsp-aayampaudel200-9685.vercel.app/',
     github: 'https://github.com/aayampaudel200-sketch/Haat-Bazzar',
     details: {
@@ -41,7 +42,8 @@ const PROJECTS = [
     description:
       'A civic technology prototype developed during a 48-hour hackathon, focused on digitizing a municipal recommendation workflow for public service delivery.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Civic Tech'],
-    image: 'assets/images/project-municipal.jpg',
+    image: 'assets/images/aayam-paudel-citizenship-recommendation-portal.jpg',
+    imageAlt: 'Municipal citizenship recommendation portal prototype by Aayam Paudel',
     demo: '',
     github: '',
     details: {
@@ -100,7 +102,7 @@ function createProjectCard(project, isFiltered = false) {
   let mediaHtml = '';
   if (project.image) {
     mediaHtml = `
-      <img src="${project.image}" alt="${project.title} screenshot" loading="lazy" class="project-img">
+      <img src="${project.image}" alt="${project.imageAlt}" loading="lazy" class="project-img">
       <div class="project-media-placeholder" hidden aria-hidden="true">Screenshot coming soon</div>
     `;
   } else {
