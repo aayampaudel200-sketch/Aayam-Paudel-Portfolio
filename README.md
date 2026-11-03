@@ -26,6 +26,7 @@ aayam/
 │   ├── portfolio_audit.py     # Standard-library audit for crawler rules and sitemap pages
 │   └── test_portfolio_audit.py # Unit tests for the Python audit
 ├── assets/
+│   ├── Aayam_Paudel_Resume.pdf # Downloadable CV linked from the homepage
 │   └── images/
 │       ├── aayam-paudel-web-developer-nepal.jpg             # Hero portrait photograph
 │       ├── aayam-paudel-working-on-laptop.jpeg              # Shared laptop photograph
