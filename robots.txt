@@ -12,7 +12,29 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
 # 3. EXPLICITLY ALLOW AI SEARCH & MODEL CRAWLERS
+
 User-agent: ChatGPT-User
 Allow: /
 
@@ -26,6 +48,12 @@ User-agent: Claude-SearchBot
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Perplexity-User
 Allow: /
 
 User-agent: GPTBot

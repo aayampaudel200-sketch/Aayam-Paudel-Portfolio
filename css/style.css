@@ -1477,7 +1477,11 @@ ul { list-style: none; }
 :root[data-theme="light"] .python-code-head { background: #e9eff6; color: var(--text-muted); }
 :root[data-theme="light"] .tag { background: rgba(14, 165, 233, 0.07); border-color: var(--surface-border); }
 :root[data-theme="light"] .focus-visual { background: radial-gradient(circle at 50% 45%, rgba(14, 165, 233, 0.11), transparent 46%), linear-gradient(145deg, #fff, #edf3fa); }
-:root[data-theme="light"] .hero-lede { color: #334155; font-weight: 500; }
+:root[data-theme="light"] .hero-lede { color: #0f172a; font-weight: 600; }
+
+@media (max-width: 640px) {
+  :root[data-theme="light"] .hero-lede { font-size: 1rem; line-height: 1.7; }
+}
 
 :root[data-theme="light"] .hero-profile-card,
 :root[data-theme="light"] .business-side-card {
