@@ -60,6 +60,34 @@ const PROJECTS = [
         'Contributed to the prototype concept, interface design, and front-end implementation within the hackathon timeframe.',
     },
   },
+  {
+    id: 'aayam-portfolio',
+    title: 'Aayam Paudel Portfolio',
+    category: 'web',
+    categoryLabel: 'Personal Portfolio / Web Application',
+    status: 'Live',
+    statusKey: 'live',
+    description:
+        'A responsive developer portfolio featuring accessible project browsing, site search, a light and dark theme, and a server-backed contact workflow.',
+    tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
+    image: 'assets/images/aayam-paudel-social-preview.jpg',
+    imageAlt: 'Aayam Paudel developer portfolio website preview',
+    demo: 'https://www.aayampaudel.com.np/',
+    github: 'https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio',
+    details: {
+        overview:
+          'The portfolio brings together Aayam Paudel’s work, background, and contact information in a responsive website.',
+        problem:
+          'A portfolio should make projects easy to discover while staying fast, usable on mobile, and accessible without a frontend framework.',
+        users:
+          'Recruiters, collaborators, clients, and anyone interested in Aayam’s work.',
+        solution:
+          'A static HTML, CSS, and JavaScript site with searchable project content, responsive themes, and a Vercel serverless contact endpoint.',
+        stack: 'Semantic HTML, CSS, vanilla JavaScript, and Vercel Functions.',
+        contribution:
+          'Designed and built the portfolio, project browser, accessibility features, crawler-friendly metadata, and contact workflow.',
+    },
+  },
   // Add future projects here following the same shape.
 ];
 

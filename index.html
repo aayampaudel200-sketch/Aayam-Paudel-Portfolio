@@ -377,6 +377,27 @@
           <a href="https://wa.me/9779742335474" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <button type="button" class="btn btn-ghost" id="copyEmailBtn" aria-label="Copy email address to clipboard">Copy Email</button>
         </div>
+        <form class="contact-form" id="contactForm" action="/api/contact" method="post">
+          <div class="contact-field">
+            <label for="contactName">Name <span>(optional)</span></label>
+            <input id="contactName" name="name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
+          </div>
+          <div class="contact-field">
+            <label for="contactEmail">Email address</label>
+            <input id="contactEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="contact-field">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" minlength="10" maxlength="5000" required placeholder="What would you like to talk about?"></textarea>
+          </div>
+          <div class="contact-honeypot" aria-hidden="true">
+            <label for="contactWebsite">Leave this field empty</label>
+            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary contact-submit" id="contactSubmit">Send message</button>
+          <p class="contact-form-status" id="contactFormStatus" role="status" aria-live="polite"></p>
+          <p class="contact-form-note">To protect your inbox, you’ll receive a confirmation link before your message is sent.</p>
+        </form>
         <div class="contact-meta">
           <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer">Namaste Suman Communication · Gaindakot, Nawalparasi East, Nepal</a>
           <span aria-hidden="true">·</span>
@@ -434,5 +455,6 @@
   <script src="js/main.js?v=search-theme-fix" defer></script>
   <script src="js/views.js" defer></script>
   <script src="js/projects.js?v=site-search" defer></script>
+  <script src="js/contact.js" defer></script>
 </body>
 </html>
