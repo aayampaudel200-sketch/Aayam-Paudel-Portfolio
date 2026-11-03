@@ -33,7 +33,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY=' 'sha256-KeA1xiSJswhcWWxiAxOfszth/BSWAgZ96JjUuQJcWvc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY=' 'sha256-OOKUcuXncH9CcDFcbZuJLf4VzDBcFHZHa28fEJrzqAo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",

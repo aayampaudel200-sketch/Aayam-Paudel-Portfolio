@@ -95,8 +95,11 @@ function initPortraitGreeting() {
   const portrait = document.getElementById('sayHelloButton');
   const greetingAudio = document.getElementById('helloGreetingAudio');
   if (!portrait || !(greetingAudio instanceof HTMLAudioElement)) return;
+  const muteToggle = document.getElementById('portraitMuteToggle');
+  greetingAudio.muted = false;
 
   async function playGreeting(showError) {
+    if (greetingAudio.muted) return;
     if (!greetingAudio.paused && !greetingAudio.ended) return;
     try {
       if (greetingAudio.ended) greetingAudio.currentTime = 0;
@@ -110,7 +113,24 @@ function initPortraitGreeting() {
   }
 
   portrait.addEventListener('pointerenter', () => playGreeting(false));
-  portrait.addEventListener('click', () => playGreeting(true));
+  portrait.addEventListener('click', (event) => {
+    if (event.target.closest('#portraitMuteToggle')) return;
+    playGreeting(true);
+  });
+  portrait.addEventListener('keydown', (event) => {
+    if (event.target.closest('button')) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    playGreeting(true);
+  });
+  muteToggle?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    greetingAudio.muted = !greetingAudio.muted;
+    muteToggle.setAttribute('aria-pressed', String(greetingAudio.muted));
+    const label = `${greetingAudio.muted ? 'Unmute' : 'Mute'} greeting audio`;
+    muteToggle.setAttribute('aria-label', label);
+    muteToggle.title = label;
+  });
 }
 
 /* ---------- Search indexed sections across the static site pages ---------- */
