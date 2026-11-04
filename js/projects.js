@@ -14,7 +14,8 @@ const PROJECTS = [
     description:
       'A farm-to-consumer marketplace concept designed to connect local farmers directly with customers in Nepal, reducing reliance on intermediaries.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
-    image: 'assets/images/project-haat-bazzar.jpg',
+    image: 'assets/images/aayam-paudel-haat-bazzar-marketplace.jpg',
+    imageAlt: "Haat Bazzar farm-to-consumer marketplace project by Aayam Paudel",
     demo: 'https://haat-bazzar-15hju1vsp-aayampaudel200-9685.vercel.app/',
     github: 'https://github.com/aayampaudel200-sketch/Haat-Bazzar',
     details: {
@@ -41,7 +42,8 @@ const PROJECTS = [
     description:
       'A civic technology prototype developed during a 48-hour hackathon, focused on digitizing a municipal recommendation workflow for public service delivery.',
     tags: ['HTML', 'CSS', 'JavaScript', 'Civic Tech'],
-    image: 'assets/images/project-municipal.jpg',
+    image: 'assets/images/aayam-paudel-citizenship-recommendation-portal.jpg',
+    imageAlt: 'Municipal citizenship recommendation portal prototype by Aayam Paudel',
     demo: '',
     github: '',
     details: {
@@ -58,8 +60,48 @@ const PROJECTS = [
         'Contributed to the prototype concept, interface design, and front-end implementation within the hackathon timeframe.',
     },
   },
+  {
+    id: 'aayam-portfolio',
+    title: 'Aayam Paudel Portfolio',
+    category: 'web',
+    categoryLabel: 'Personal Portfolio / Web Application',
+    status: 'Live',
+    statusKey: 'live',
+    description:
+        'A responsive developer portfolio featuring accessible project browsing, site search, a light and dark theme, and a server-backed contact workflow.',
+    tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
+    image: 'assets/images/aayam-paudel-social-preview.jpg',
+    imageAlt: 'Aayam Paudel developer portfolio website preview',
+    demo: 'https://www.aayampaudel.com.np/',
+    github: 'https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio',
+    details: {
+        overview:
+          'The portfolio brings together Aayam Paudel’s work, background, and contact information in a responsive website.',
+        problem:
+          'A portfolio should make projects easy to discover while staying fast, usable on mobile, and accessible without a frontend framework.',
+        users:
+          'Recruiters, collaborators, clients, and anyone interested in Aayam’s work.',
+        solution:
+          'A static HTML, CSS, and JavaScript site with searchable project content, responsive themes, and a Vercel serverless contact endpoint.',
+        stack: 'Semantic HTML, CSS, vanilla JavaScript, and Vercel Functions.',
+        contribution:
+          'Designed and built the portfolio, project browser, accessibility features, crawler-friendly metadata, and contact workflow.',
+    },
+  },
   // Add future projects here following the same shape.
 ];
+
+window.__portfolioSearchEntries = PROJECTS.map((project) => ({
+  title: project.title,
+  text: [
+    project.categoryLabel,
+    project.status,
+    project.description,
+    ...project.tags,
+    ...Object.values(project.details),
+  ].join(' '),
+  url: new URL(`projects.html#${encodeURIComponent(project.id)}`, window.location.href).href,
+}));
 
 const CATEGORY_FILTERS = {
   all: () => true,
@@ -73,6 +115,7 @@ const CATEGORY_FILTERS = {
 function createProjectCard(project, isFiltered = false) {
   const card = document.createElement('article');
   card.className = isFiltered ? 'project-card reveal-up is-visible' : 'project-card reveal-up';
+  card.id = project.id;
   card.dataset.category = project.category;
 
   const demoBtn = project.demo
@@ -87,9 +130,8 @@ function createProjectCard(project, isFiltered = false) {
   let mediaHtml = '';
   if (project.image) {
     mediaHtml = `
-      <img src="${project.image}" alt="${project.title} screenshot" loading="lazy" class="project-img"
-        onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';">
-      <div class="project-media-placeholder" style="display:none;" aria-hidden="true">Screenshot coming soon</div>
+      <img src="${project.image}" alt="${project.imageAlt}" loading="lazy" class="project-img">
+      <div class="project-media-placeholder" hidden aria-hidden="true">Screenshot coming soon</div>
     `;
   } else {
     mediaHtml = `<div class="project-media-placeholder">Screenshot coming soon</div>`;
@@ -113,6 +155,15 @@ function createProjectCard(project, isFiltered = false) {
       </div>
     </div>
   `;
+
+  const projectImage = card.querySelector('.project-img');
+  const imagePlaceholder = card.querySelector('.project-media-placeholder');
+  if (projectImage && imagePlaceholder) {
+    projectImage.addEventListener('error', () => {
+      projectImage.hidden = true;
+      imagePlaceholder.hidden = false;
+    }, { once: true });
+  }
 
   // Whole-card click (except links/buttons) opens details
   card.addEventListener('click', (e) => {

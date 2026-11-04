@@ -1,0 +1,12 @@
+{
+  "name": "aayam-paudel-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "test": "node --test api/contact.test.js"
+  },
+  "dependencies": {
+    "resend": "^6.37.0"
+  }
+}
