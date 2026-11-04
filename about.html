@@ -4,13 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About — Aayam Paudel</title>
-  <meta name="description" content="A little about Aayam Paudel: CSIT student, full-stack developer, and founder of Namaste Suman Communication.">
+  <meta name="description" content="About Aayam Paudel: CSIT student, full-stack developer, and operator of Namaste Suman Communication in Gaindakot, Nepal.">
   <meta property="og:title" content="About Aayam Paudel">
   <meta property="og:description" content="Learning the fundamentals, building real projects, and turning curiosity into practical experience.">
-  <meta property="og:url" content="https://aayampaudel.com.np/about.html">
-  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-2.jpg">
-  <link rel="canonical" href="https://aayampaudel.com.np/about.html">
+  <meta property="og:site_name" content="Aayam Paudel Portfolio">
+  <meta property="og:url" content="https://www.aayampaudel.com.np/about.html">
+  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Aayam Paudel working on a laptop">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="About — Aayam Paudel">
+  <meta name="twitter:description" content="Learning the fundamentals, building real projects, and turning curiosity into practical experience.">
+  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <link rel="canonical" href="https://www.aayampaudel.com.np/about.html">
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -18,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=search-theme-fix">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -33,12 +43,38 @@
         <a href="projects.html" class="nav-link">Projects</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path></svg>
+      </button>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
     <div class="mobile-menu" id="mobileMenu" hidden>
+      <form class="site-search site-search--mobile" role="search">
+        <label class="visually-hidden" for="siteSearchMobile">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchMobile" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchMobileResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchMobileResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html" class="mobile-link">Home</a>
       <a href="about.html" class="mobile-link active">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
@@ -60,30 +96,46 @@
       <div class="container about-grid">
         <div class="about-portrait reveal-up">
           <div class="portrait-frame portrait-frame--about">
-            <div class="portrait-glow" aria-hidden="true"></div>
-            <img
-              src="assets/images/aayam-portrait-2.jpg"
-              alt="Aayam Paudel, second portrait"
-              class="portrait-img portrait-img--about"
-              loading="lazy"
-              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
-            >
-            <div class="img-fallback-text" aria-hidden="true">A. P.</div>
+            <img class="portrait-img portrait-img--about" src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel, full-stack web developer from Gaindakot, working on a laptop">
           </div>
         </div>
         <div class="about-copy reveal-up">
           <h2 class="section-title">Curious by default. Practical by habit.</h2>
-          <p>I am a B.Sc. CSIT student at Lumbini I.C.T. Campus, affiliated with Tribhuvan University, Nepal. I am interested in software development, modern web technologies, and building digital products that solve practical problems.</p>
+          <p>I’m Aayam Paudel, also known as Aayam: a B.Sc. CSIT student at Lumbini I.C.T. Campus, affiliated with Tribhuvan University, and a full-stack web developer based in Gaindakot, Nawalparasi East, Nepal. I build digital products that solve practical problems.</p>
           <p>Alongside my studies, I operate <strong>Namaste Suman Communication</strong>, a local digital service center. This experience connects technology with everyday customer needs and has helped shape my interest in useful digital solutions and entrepreneurship.</p>
           <a href="projects.html" class="btn btn-primary">See my projects</a>
         </div>
       </div>
     </section>
 
+    <section class="section about-video-section" id="car-video">
+      <div class="container">
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">A MOMENT ON THE ROAD</p>
+            <h2 class="section-title">A little beyond the screen.</h2>
+          </div>
+        </div>
+        <figure class="about-video-card reveal-up">
+          <video class="about-video" controls playsinline preload="metadata" aria-label="Video of Aayam out for a drive">
+            <source src="assets/videos/aayam-in-car.mp4" type="video/mp4">
+            Your browser does not support HTML video.
+          </video>
+          <figcaption>A short clip of me out for a drive.</figcaption>
+        </figure>
+      </div>
+    </section>
+
     <section class="section about-focus">
       <div class="container focus-grid">
-        <div class="focus-photo reveal-up" data-tilt data-tilt-max="6">
-          <img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working with a laptop" loading="lazy">
+        <div class="focus-visual reveal-up" data-tilt data-tilt-max="4" aria-hidden="true">
+          <div class="focus-visual-orbit"></div>
+          <div class="focus-visual-orbit focus-visual-orbit--inner"></div>
+          <div class="focus-visual-core">
+            <span>IDEA → BUILD</span>
+            <strong>MAKE IT<br>USEFUL.</strong>
+            <span class="focus-visual-cursor">_</span>
+          </div>
           <span class="focus-chip"><i></i> WORKING WITH INTENT</span>
         </div>
         <div class="focus-copy reveal-up">
@@ -192,6 +244,32 @@
             <h3>Creative Tools</h3>
             <div class="tag-row"><span class="tag">Adobe Photoshop</span><span class="tag">Wondershare Filmora</span></div>
           </div>
+          <div class="skill-block">
+            <h3>Currently Learning</h3>
+            <div class="tag-row"><span class="tag">Artificial Intelligence</span><span class="tag">Machine Learning</span><span class="tag">Data Science</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section python-showcase" id="python-work">
+      <div class="container python-showcase-grid">
+        <div class="python-showcase-copy reveal-up">
+          <p class="eyebrow">PYTHON · PRACTICAL TOOLING</p>
+          <h2 class="section-title">Small tools. Real checks.</h2>
+          <p>I built a lightweight Python audit for this portfolio. It checks the crawler rules and confirms that every page listed in the sitemap exists. It uses only Python’s standard library.</p>
+          <div class="python-showcase-links">
+            <a class="btn btn-primary" href="https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio/blob/main/python/portfolio_audit.py" target="_blank" rel="noopener noreferrer">View Python tool</a>
+            <a class="btn btn-ghost" href="https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio/blob/main/python/test_portfolio_audit.py" target="_blank" rel="noopener noreferrer">View its tests</a>
+          </div>
+        </div>
+        <div class="python-code-card reveal-up" aria-label="Python audit command example">
+          <div class="python-code-head" aria-hidden="true"><span></span><span></span><span></span>portfolio_audit.py</div>
+          <pre><code><span class="code-comment"># Run from the repository root</span>
+python python/portfolio_audit.py
+
+<span class="code-comment"># Example result</span>
+Portfolio crawler policy and sitemap checks passed.</code></pre>
         </div>
       </div>
     </section>
@@ -213,13 +291,14 @@
         </ul>
       </div>
     </section>
+
   </main>
 
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
         <p class="footer-name">Aayam Paudel</p>
-        <p class="footer-location">Gaindakot, Gandaki Province, Nepal</p>
+        <p class="footer-location">Gaindakot, Nawalparasi East, Gandaki Province, Nepal</p>
       </div>
       <nav aria-label="Footer">
         <a href="index.html">Home</a>
@@ -232,7 +311,7 @@
         <a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
         <a href="https://www.instagram.com/aayam.paudel" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
         <a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">X</a>
-        <a href="https://www.facebook.com/share/1BmWn1BXPm/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+        <a href="https://www.facebook.com/aayam.paudel07" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
       </div>
     </div>
     <div class="container footer-bottom">
@@ -241,6 +320,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js" defer></script>
+  <script src="js/main.js?v=search-theme-fix" defer></script>
+  <script src="js/projects.js?v=site-search" defer></script>
 </body>
 </html>

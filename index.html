@@ -4,13 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aayam Paudel (Aayam Poudel) | Full-Stack Web Developer</title>
-  <meta name="description" content="Official developer portfolio of Aayam Paudel (also known as Aayam Poudel / Aayam). B.Sc. CSIT student and web developer from Nepal — HTML, CSS, JavaScript, PHP, Python." />
+  <meta name="description" content="Official developer portfolio of Aayam Paudel. B.Sc. CSIT student and full-stack web developer from Nepal writing code and building modern web applications.">
   <meta property="og:title" content="Aayam Paudel — CSIT Student &amp; Web Developer">
-  <meta property="og:description" content="B.Sc. CSIT student and web developer from Nepal. I write code and ship websites.">
+  <meta property="og:description" content="Official developer portfolio of Aayam Paudel. B.Sc. CSIT student and full-stack web developer from Nepal writing code and building modern web applications.">
+  <meta property="og:site_name" content="Aayam Paudel Portfolio">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://aayampaudel.com.np/">
-  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-portrait-1.jpg">
-  <link rel="canonical" href="https://aayampaudel.com.np/">
+  <meta property="og:url" content="https://www.aayampaudel.com.np/">
+  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Aayam Paudel working on a laptop">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Aayam Paudel — CSIT Student &amp; Web Developer">
+  <meta name="twitter:description" content="Official developer portfolio of Aayam Paudel. B.Sc. CSIT student and full-stack web developer from Nepal writing code and building modern web applications.">
+  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <link rel="canonical" href="https://www.aayampaudel.com.np/">
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -22,14 +31,16 @@
     "@type": "Person",
     "name": "Aayam Paudel",
     "alternateName": ["Aayam Poudel", "Aayam", "Ayam"],
-    "url": "https://aayampaudel.com.np",
+    "url": "https://www.aayampaudel.com.np/",
     "sameAs": [
-      "https://github.com/aayampaudel200-sketch",
-      "https://www.linkedin.com/in/aayam-paudel-885a78371",
+      "https://github.com/aayampaudel",
+      "https://www.linkedin.com/in/aayam-paudel/",
       "https://www.instagram.com/aayam.paudel",
-      "https://x.com/APaudel75350",
+      "https://twitter.com/aayampaudel",
       "https://www.facebook.com/share/1BmWn1BXPm/",
-      "https://www.wikidata.org/wiki/Q141947551"
+      "https://www.wikidata.org/wiki/Q141947551",
+      "https://orcid.org/0009-0000-1874-8874",
+      "https://scholar.google.com/citations?user=YcRd3a4AAAAJ"
     ],
     "jobTitle": "B.Sc. CSIT Student & Full-Stack Developer",
     "description": "Portfolio of Aayam Paudel, a B.Sc. CSIT student and web developer from Nepal writing HTML, CSS, JavaScript, PHP, and Python.",
@@ -46,7 +57,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=search-theme-fix">
   <!-- Cloudflare Web Analytics (Optional: uncomment and add your token if using Cloudflare Web Analytics) -->
   <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CLOUDFLARE_BEACON_TOKEN"}'></script> -->
 </head>
@@ -66,12 +77,38 @@
         <a href="projects.html" class="nav-link">Projects</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path></svg>
+      </button>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
         <span></span><span></span><span></span>
       </button>
     </div>
     <div class="mobile-menu" id="mobileMenu" hidden>
+      <form class="site-search site-search--mobile" role="search">
+        <label class="visually-hidden" for="siteSearchMobile">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchMobile" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchMobileResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchMobileResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html" class="mobile-link active">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
@@ -106,7 +143,9 @@
           </div>
           <div class="hero-actions reveal-up">
             <a href="projects.html" class="btn btn-primary">See my code <span class="btn-arrow">→</span></a>
+            <a href="assets/Aayam_Paudel_Resume.pdf" class="btn btn-ghost" download="Aayam_Paudel_Resume.pdf">Download CV <span class="btn-arrow" aria-hidden="true">↓</span></a>
             <a href="#skills" class="btn btn-ghost">View skills</a>
+            <a href="#namaste-suman" class="btn btn-ghost">Meet me in person</a>
           </div>
           <div class="hero-socials reveal-up" aria-label="Social profiles">
             <a href="https://github.com/aayampaudel200-sketch" class="icon-link" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in new tab)">
@@ -148,21 +187,26 @@
               </div>
             </div>
           </div>
-          <div class="portrait-frame">
+          <div class="portrait-frame portrait-frame--greeting" id="sayHelloButton" role="button" tabindex="0" aria-label="Hover over or click to hear Aayam say hello" title="Hover over or click to hear Aayam say hello">
             <div class="portrait-orbit" aria-hidden="true"></div>
             <div class="portrait-orbit orbit-2" aria-hidden="true"></div>
             <div class="portrait-glow" aria-hidden="true"></div>
             <img
-              src="assets/images/aayam-portrait-1.jpg"
+              src="assets/images/aayam-paudel-web-developer-nepal.jpg"
               alt="Portrait of Aayam Paudel"
               class="portrait-img"
-              onerror="this.style.display='none'; this.parentElement.classList.add('img-fallback')"
             >
             <div class="img-fallback-text" aria-hidden="true">A. P.</div>
+            <span class="portrait-greeting-hint" aria-hidden="true">Click me to say hello</span>
+            <button type="button" class="portrait-mute-toggle" id="portraitMuteToggle" aria-label="Mute greeting audio" title="Mute greeting audio" aria-pressed="false">
+              <svg class="sound-icon sound-icon--on" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18 5.5a9 9 0 0 1 0 13"></path></svg>
+              <svg class="sound-icon sound-icon--off" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"></path><path d="m16 9 5 6m0-6-5 6"></path></svg>
+            </button>
             <span class="tech-label label-1" aria-hidden="true">function code() {}</span>
             <span class="tech-label label-2" aria-hidden="true">&lt;web-dev /&gt;</span>
             <span class="tech-label label-3" aria-hidden="true">CSIT · Nepal</span>
           </div>
+          <audio id="helloGreetingAudio" src="assets/audio/hello.mp3" preload="none"></audio>
           <p class="hero-name">Aayam Paudel</p>
           <p class="hero-role">Web Developer · B.Sc. CSIT Student</p>
           <aside class="hero-profile-card" aria-label="Professional profile">
@@ -225,6 +269,10 @@
           <div class="skill-group">
             <h3>Also in the kit</h3>
             <div class="tag-row"><span class="tag">Adobe Photoshop</span><span class="tag">Wondershare Filmora</span></div>
+          </div>
+          <div class="skill-group">
+            <h3>Currently learning</h3>
+            <div class="tag-row"><span class="tag">Artificial Intelligence</span><span class="tag">Machine Learning</span><span class="tag">Data Science</span></div>
           </div>
         </div>
       </div>
@@ -294,7 +342,7 @@
           <div class="stage-glow" aria-hidden="true"></div>
           <div class="laptop-window">
             <div class="window-bar"><i></i><i></i><i></i><span>web-dev.js</span></div>
-            <img src="assets/images/aayam-portrait-2.jpg" alt="Aayam Paudel working on a laptop" loading="lazy">
+            <img src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel working on a laptop" loading="lazy">
             <div class="window-code" aria-hidden="true"><span>const</span> aayam = <b>"web developer"</b>;</div>
           </div>
           <div class="stage-card stage-card--one"><span class="stage-icon">✦</span><span>Learning<br>by building</span></div>
@@ -330,6 +378,27 @@
           <a href="https://wa.me/9779742335474" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <button type="button" class="btn btn-ghost" id="copyEmailBtn" aria-label="Copy email address to clipboard">Copy Email</button>
         </div>
+        <form class="contact-form" id="contactForm" action="/api/contact" method="post">
+          <div class="contact-field">
+            <label for="contactName">Name <span>(optional)</span></label>
+            <input id="contactName" name="name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
+          </div>
+          <div class="contact-field">
+            <label for="contactEmail">Email address</label>
+            <input id="contactEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="contact-field">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" name="message" rows="5" minlength="10" maxlength="5000" required placeholder="What would you like to talk about?"></textarea>
+          </div>
+          <div class="contact-honeypot" aria-hidden="true">
+            <label for="contactWebsite">Leave this field empty</label>
+            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary contact-submit" id="contactSubmit">Send message</button>
+          <p class="contact-form-status" id="contactFormStatus" role="status" aria-live="polite"></p>
+          <p class="contact-form-note">To protect your inbox, you’ll receive a confirmation link before your message is sent.</p>
+        </form>
         <div class="contact-meta">
           <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer">Namaste Suman Communication · Gaindakot, Nawalparasi East, Nepal</a>
           <span aria-hidden="true">·</span>
@@ -384,8 +453,9 @@
   </footer>
 
   <script src="js/background.js" defer></script>
-  <script src="js/main.js" defer></script>
+  <script src="js/main.js?v=search-theme-fix" defer></script>
   <script src="js/views.js" defer></script>
-  <script src="js/projects.js" defer></script>
+  <script src="js/projects.js?v=site-search" defer></script>
+  <script src="js/contact.js" defer></script>
 </body>
 </html>
