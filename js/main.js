@@ -175,7 +175,7 @@ function getSearchSectionTitle(section, pageTitle) {
 }
 
 async function loadSiteSearchIndex() {
-  const pages = ['index.html', 'about.html', 'projects.html', 'playground.html'];
+  const pages = ['index.html', 'about.html', 'projects.html', 'playground.html', 'experience.html', 'namaste-suman.html'];
   const pageResults = await Promise.allSettled(pages.map(async (path) => {
     const pageUrl = new URL(path, window.location.href);
     const response = await fetch(pageUrl, { headers: { Accept: 'text/html' } });
@@ -427,6 +427,72 @@ function initSiteSearch() {
   });
 }
 
+/* ---------- Dismiss active popovers, menus, and dialogs on outside clicks ---------- */
+function initOutsideDismissal() {
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    if (!target) return;
+
+    document.querySelectorAll('.site-search-results:not([hidden])').forEach((results) => {
+      const form = results.closest('.site-search');
+      if (form?.contains(target)) return;
+      results.hidden = true;
+      form?.querySelector('input[type="search"]')?.setAttribute('aria-expanded', 'false');
+    });
+
+    const skillTooltip = document.querySelector('.skill-tooltip:not([hidden])');
+    if (skillTooltip
+      && !skillTooltip.contains(target)
+      && !target.closest('.skill-tag[data-skill]')) {
+      window.__closeSkillTooltip?.();
+    }
+
+    document.querySelectorAll('[aria-expanded="true"][aria-controls]').forEach((trigger) => {
+      const panel = document.getElementById(trigger.getAttribute('aria-controls'));
+      if (!panel || trigger.contains(target) || panel.contains(target)) return;
+
+      if (panel.id === 'mobileMenu' || panel.id === 'mobileNav') {
+        window.__closeMobileMenu?.();
+        return;
+      }
+
+      trigger.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+      panel.classList.remove('is-open', 'open');
+    });
+
+    document.querySelectorAll(
+      '.dropdown-menu:not([hidden]), .interactive-popup:not([hidden]), [data-dismissible-popup]:not([hidden]), [data-popup][data-open="true"]'
+    ).forEach((popup) => {
+      if (popup.contains(target)) return;
+      const trigger = [...document.querySelectorAll('[aria-controls], [data-popup-trigger]')]
+        .find((candidate) => candidate.getAttribute('aria-controls') === popup.id
+          || candidate.getAttribute('data-popup-trigger') === popup.id);
+      if (trigger?.contains(target)) return;
+
+      popup.hidden = true;
+      popup.dataset.open = 'false';
+      popup.classList.remove('is-open', 'open');
+      trigger?.setAttribute('aria-expanded', 'false');
+    });
+
+    document.querySelectorAll('.modal-overlay:not([hidden])').forEach((overlay) => {
+      const dialog = overlay.querySelector('[role="dialog"], .modal');
+      if (dialog?.contains(target)) return;
+      if (typeof window.__closeProjectModal === 'function') {
+        window.__closeProjectModal();
+      } else {
+        overlay.hidden = true;
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.querySelectorAll('dialog[open]').forEach((dialog) => {
+      if (!dialog.contains(target)) dialog.close();
+    });
+  });
+}
+
 function highlightSearchDestination() {
   if (new URLSearchParams(window.location.search).get('search') !== '1' || !window.location.hash) return;
   let targetId;
@@ -512,7 +578,7 @@ function initMain() {
 
   /* ---------- Mobile menu ---------- */
   const hamburger = document.getElementById('hamburger');
-  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenu = document.getElementById('mobileMenu') || document.getElementById('mobileNav');
 
   function closeMenu() {
     if (!hamburger || !mobileMenu) return;
@@ -562,6 +628,7 @@ function initMain() {
       if (window.innerWidth > 1024) closeMenu();
     });
   }
+  window.__closeMobileMenu = closeMenu;
 
   /* ---------- Initial scroll reveal ---------- */
   observeReveals();
@@ -569,6 +636,7 @@ function initMain() {
   initPortraitGreeting();
   initSiteSearch();
   highlightSearchDestination();
+  initOutsideDismissal();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
   function initTiltCards(root = document) {
@@ -902,72 +970,90 @@ function initMain() {
 
     const tooltip = document.createElement('div');
     tooltip.className = 'skill-tooltip';
+    tooltip.id = 'skill-proficiency-tooltip';
     tooltip.hidden = true;
     tooltip.setAttribute('role', 'tooltip');
     document.body.appendChild(tooltip);
 
+    let activeTag = null;
+    let lastPointerType = '';
+
     function hideTooltip() {
       tooltip.hidden = true;
+      activeTag?.setAttribute('aria-expanded', 'false');
+      activeTag?.removeAttribute('aria-describedby');
+      activeTag = null;
     }
 
     function showTooltip(tag) {
       const years = tag.dataset.years || '1';
       const level = tag.dataset.level || 'Familiar';
       const name = tag.dataset.skill || tag.textContent.trim();
-      tooltip.innerHTML = `<strong>${name}</strong><span>${years} yr${years === '1' ? '' : 's'} experience</span><span>Proficiency: ${level}</span>`;
+      const title = document.createElement('strong');
+      title.textContent = name;
+      const experience = document.createElement('span');
+      experience.textContent = `${years} yr${years === '1' ? '' : 's'} experience`;
+      const proficiency = document.createElement('span');
+      proficiency.textContent = `Proficiency: ${level}`;
+      tooltip.replaceChildren(title, experience, proficiency);
       tooltip.hidden = false;
 
       const rect = tag.getBoundingClientRect();
-      const tipWidth = tooltip.offsetWidth;
-      const left = Math.min(
-        Math.max(12, rect.left + rect.width / 2 - tipWidth / 2),
-        window.innerWidth - tipWidth - 12
-      );
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const left = Math.max(12, Math.min(
+        rect.left + rect.width / 2 - tooltipRect.width / 2,
+        window.innerWidth - tooltipRect.width - 12
+      ));
+      const above = rect.top - tooltipRect.height - 10;
+      const top = above >= 8 ? above : Math.min(window.innerHeight - tooltipRect.height - 8, rect.bottom + 10);
       tooltip.style.left = `${left}px`;
-      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+      tooltip.style.top = `${Math.max(8, top)}px`;
+      tag.setAttribute('aria-describedby', tooltip.id);
+      tag.setAttribute('aria-expanded', 'true');
+      activeTag = tag;
     }
 
-    let activeTag = null; // track which tag currently shows the tooltip
+    window.__closeSkillTooltip = hideTooltip;
 
     skillTags.forEach((tag) => {
       tag.setAttribute('tabindex', '0');
+      tag.setAttribute('role', 'button');
+      tag.setAttribute('aria-haspopup', 'true');
+      tag.setAttribute('aria-expanded', 'false');
 
       // Desktop hover: show on enter, hide on leave
       tag.addEventListener('pointerenter', (e) => {
-        if (e.pointerType !== 'touch') { showTooltip(tag); activeTag = tag; }
+        if (e.pointerType !== 'touch') showTooltip(tag);
       });
       tag.addEventListener('pointerleave', (e) => {
-        if (e.pointerType !== 'touch') { hideTooltip(); activeTag = null; }
+        if (e.pointerType !== 'touch' && document.activeElement !== tag) hideTooltip();
       });
 
       // Touch / click: toggle — tap badge to open, tap again (or anywhere else) to close
-      tag.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (activeTag === tag) { hideTooltip(); activeTag = null; }
-        else { showTooltip(tag); activeTag = tag; }
+      tag.addEventListener('pointerdown', (event) => {
+        lastPointerType = event.pointerType;
+      });
+      tag.addEventListener('click', (event) => {
+        if (event.detail > 0 && lastPointerType === 'touch' && activeTag === tag) hideTooltip();
+        else showTooltip(tag);
       });
 
-      tag.addEventListener('focus', () => { showTooltip(tag); activeTag = tag; });
-      tag.addEventListener('blur', () => { hideTooltip(); activeTag = null; });
-    });
-
-    // Close tooltip when clicking or tapping anywhere outside a skill badge or the tooltip itself
-    ['click', 'pointerdown'].forEach((evtType) => {
-      document.addEventListener(evtType, (event) => {
-        const target = event.target;
-        if (!(target instanceof Node)) return;
-        if (!tooltip.contains(target) && !skillTags.some((tag) => tag.contains(target))) {
+      tag.addEventListener('focus', () => showTooltip(tag));
+      tag.addEventListener('blur', () => {
+        if (activeTag === tag && !tag.matches(':hover')) hideTooltip();
+      });
+      tag.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          tag.click();
+        } else if (event.key === 'Escape') {
           hideTooltip();
-          activeTag = null;
         }
       });
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        hideTooltip();
-        activeTag = null;
-      }
+      if (event.key === 'Escape') hideTooltip();
     });
 
     window.addEventListener('scroll', hideTooltip, { passive: true });

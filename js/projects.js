@@ -409,6 +409,7 @@ function initFilters() {
 
 let lastFocusedElement = null;
 let activeModalTab = 'problem';
+let previousBodyOverflow = '';
 
 function buildArchitectureDiagram(project) {
   const layers = project.details.stack || project.tags;
@@ -529,6 +530,7 @@ function openProjectModal(projectId) {
   if (!project || !modal || !body) return;
 
   lastFocusedElement = document.activeElement;
+  previousBodyOverflow = document.body.style.overflow;
   const panels = buildModalTabPanels(project);
 
   body.innerHTML = `
@@ -576,11 +578,13 @@ function closeProjectModal() {
   const modal = document.getElementById('projectModal');
   if (!modal || modal.hidden) return;
   modal.hidden = true;
-  document.body.style.overflow = '';
+  document.body.style.overflow = previousBodyOverflow;
   if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
     lastFocusedElement.focus();
   }
 }
+
+window.__closeProjectModal = closeProjectModal;
 
 function trapModalFocus(e) {
   const modal = document.getElementById('projectModal');
