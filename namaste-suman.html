@@ -430,6 +430,157 @@
       }
     }
 
+  
+    /* ── International Visa Documentation Section ── */
+    .ns-visa-section {
+      padding: clamp(3rem, 7vw, 5.5rem) 0;
+      position: relative;
+    }
+    .ns-visa-banner-card {
+      position: relative;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      background: var(--bg-card);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 30px rgba(56, 189, 248, 0.12);
+      margin-bottom: 2.5rem;
+    }
+    .ns-visa-banner-img {
+      width: 100%;
+      height: auto;
+      max-height: 520px;
+      object-fit: cover;
+      display: block;
+    }
+    .ns-visa-stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: 1.25rem;
+      margin: 2.5rem 0;
+    }
+    .ns-visa-stat-item {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border-strong);
+      border-radius: 1rem;
+      padding: 1.6rem 1.25rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .ns-visa-stat-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.12);
+    }
+    .ns-visa-stat-num {
+      font-size: clamp(2.2rem, 4.5vw, 3rem);
+      font-weight: 800;
+      font-family: var(--font-mono, monospace);
+      color: var(--accent);
+      line-height: 1.1;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+    .ns-visa-stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .ns-visa-stat-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      line-height: 1.45;
+    }
+    .ns-visa-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .ns-visa-card {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 1rem;
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .ns-visa-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(56, 189, 248, 0.08);
+    }
+    .ns-visa-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono, monospace);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+    .ns-visa-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .ns-visa-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+    }
+    .ns-visa-checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem;
+      display: grid;
+      gap: 0.6rem;
+      flex: 1;
+    }
+    .ns-visa-checklist li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.45;
+    }
+    .ns-visa-checklist li svg {
+      width: 16px;
+      height: 16px;
+      color: var(--green);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .ns-visa-cta-bar {
+      margin-top: 2.5rem;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.12));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 1rem;
+      padding: clamp(1.5rem, 3.5vw, 2.25rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
   </style>
 
   <!-- JSON-LD: Local Business Schema -->
@@ -626,6 +777,148 @@
       </div>
     </section>
 
+    <!-- ── INTERNATIONAL VISA DOCUMENTATION ── -->
+    <section class="section ns-visa-section" aria-labelledby="visaSectionTitle" id="visa-documentation">
+      <div class="container">
+        <p class="eyebrow">GLOBAL MOBILITY &amp; EMBASSY SERVICES</p>
+        <h2 class="section-title" id="visaSectionTitle">International Visa Documentation</h2>
+        <p class="section-lede" style="max-width:68ch; margin-top:0.5rem; color:var(--text-muted);">
+          Comprehensive, precision-checked documentation assistance for students, professionals, and travelers across Nepal. From university admissions and financial sponsorship to employment attestations and tourist visa dossiers, we prepare your file with 100% adherence to embassy guidelines.
+        </p>
+
+        <!-- Featured Visa Banner Graphic -->
+        <div class="ns-visa-banner-card reveal-up" style="margin-top: 2rem;">
+          <img class="ns-visa-banner-img" src="assets/images/Documentation for visas.png" alt="International Visa Documentation for Student, Working and Visit Visas at Namaste Suman Communication" loading="lazy">
+        </div>
+
+        <!-- Trust Metrics with Animated Number Counters -->
+        <div class="ns-visa-stats-strip reveal-up">
+          <div class="ns-visa-stat-item">
+            <span class="ns-visa-stat-num" data-counter-target="40000" data-counter-suffix="+">40,000+</span>
+            <span class="ns-visa-stat-label">Documents Sent</span>
+            <p class="ns-visa-stat-desc">Over 40,000 visa files and official documentation dossiers processed and delivered.</p>
+          </div>
+
+          <div class="ns-visa-stat-item">
+            <span class="ns-visa-stat-num" data-counter-target="10" data-counter-suffix="+ Years">10+ Years</span>
+            <span class="ns-visa-stat-label">Trusted Experience</span>
+            <p class="ns-visa-stat-desc">A decade of proven expertise in civic, academic, and international embassy documentation.</p>
+          </div>
+
+          <div class="ns-visa-stat-item">
+            <span class="ns-visa-stat-num" data-counter-target="99" data-counter-suffix="%">99%</span>
+            <span class="ns-visa-stat-label">Accuracy Rate</span>
+            <p class="ns-visa-stat-desc">Meticulous verification of spellings, translations, formats, and required affidavits.</p>
+          </div>
+
+          <div class="ns-visa-stat-item">
+            <span class="ns-visa-stat-num" data-counter-target="30" data-counter-suffix="+">30+</span>
+            <span class="ns-visa-stat-label">Destinations</span>
+            <p class="ns-visa-stat-desc">Japan, Australia, USA, Canada, UK, Schengen Europe, UAE, and Gulf nations.</p>
+          </div>
+        </div>
+
+        <!-- Three Dedicated Visa Categories -->
+        <div class="ns-visa-cards-grid">
+          <!-- Student Visas -->
+          <div class="ns-visa-card reveal-up">
+            <span class="ns-visa-card-badge">🎓 Higher Education</span>
+            <h3>Student Visas (विद्यार्थी भिसा)</h3>
+            <p>End-to-end documentation packages tailored for university admissions, embassy interviews, and GTE/genuine student requirements.</p>
+            <ul class="ns-visa-checklist">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Statement of Purpose (SOP) drafting &amp; professional formatting</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Financial sponsorship, bank balance &amp; source of income documentation</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Relationship verification certificates &amp; property valuation filings</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Academic certificate translations, notary endorsements &amp; uploads</span>
+              </li>
+            </ul>
+            <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%20I%20need%20help%20with%20Student%20Visa%20Documentation" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" style="margin-top:auto;">
+              Inquire for Student Visa ↗
+            </a>
+          </div>
+
+          <!-- Working Visas -->
+          <div class="ns-visa-card reveal-up">
+            <span class="ns-visa-card-badge">💼 Employment &amp; Labor</span>
+            <h3>Working Visas (रोजगार भिसा)</h3>
+            <p>Accurate, compliant document sets for overseas employment permits, labor approvals, and international employer verifications.</p>
+            <ul class="ns-visa-checklist">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Employment contract &amp; job offer letter validation</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Police clearance report (charitra praman patra) application</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Skill verification certificates &amp; pre-departure labor documents</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Europass &amp; country-specific resume / CV standard formatting</span>
+              </li>
+            </ul>
+            <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%20I%20need%20help%20with%20Working%20Visa%20Documentation" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" style="margin-top:auto;">
+              Inquire for Working Visa ↗
+            </a>
+          </div>
+
+          <!-- Visit & Tourist Visas -->
+          <div class="ns-visa-card reveal-up">
+            <span class="ns-visa-card-badge">✈️ Travel &amp; Tourism</span>
+            <h3>Visit Visas (भ्रमण तथा पर्यटक भिसा)</h3>
+            <p>Hassle-free documentation for holiday travel, family visits, business conferences, and tourist visa applications worldwide.</p>
+            <ul class="ns-visa-checklist">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Detailed day-by-day travel itinerary &amp; cover letter drafting</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Formal invitation letters &amp; host sponsorship affidavits</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Proof of ties to home country (employment leave &amp; assets)</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Hotel reservation, flight booking &amp; travel insurance arrangement</span>
+              </li>
+            </ul>
+            <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%20I%20need%20help%20with%20Visit%20Visa%20Documentation" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm" style="margin-top:auto;">
+              Inquire for Visit Visa ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Visa Consultation Callout -->
+        <div class="ns-visa-cta-bar reveal-up">
+          <div>
+            <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.25rem;">Have questions about your Visa documents?</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:0;">Visit our Gaindakot office or send your document drafts via WhatsApp for an immediate pre-screening check.</p>
+          </div>
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="tel:+9779866078388" class="btn btn-primary btn-sm">📞 Call 9866078388</a>
+            <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%20I%20want%20to%20consult%20about%20visa%20documentation" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp btn-sm">💬 WhatsApp Us</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ── PASSPORT SIZE PHOTO GENERATOR SPOTLIGHT ── -->
     <section class="section" aria-labelledby="photoToolTitle">
       <div class="container">
@@ -736,6 +1029,10 @@
         <p class="section-lede" style="max-width:62ch; margin-top:0.4rem; color:var(--text-muted);">Take a tour of our Gaindakot center and explore custom banner, identity card, and graphic design projects crafted for local clients and businesses.</p>
         
         <div class="ns-gallery-grid">
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/Documentation for visas.png" alt="International Visa Documentation services for Student, Working and Visit visas" loading="lazy">
+            <span class="ns-gallery-caption">International Visa Documentation — 40,000+ Files Processed</span>
+          </div>
           <div class="ns-gallery-item reveal-up">
             <img src="assets/images/namaste suman1.jpg" alt="Namaste Suman Communication shop front entrance at Gaindakot Nagarpalika Chowk" loading="lazy">
             <span class="ns-gallery-caption">Shop Frontage — Nagarpalika Chowk</span>
@@ -874,5 +1171,48 @@
   </footer>
 
   <script src="js/main.js?v=site-refresh-2" defer></script>
+  <script>
+    // Smooth number counter for Visa statistics
+    function initVisaCounters() {
+      const counters = document.querySelectorAll('[data-counter-target]');
+      if (!counters.length) return;
+      if (!('IntersectionObserver' in window)) return;
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            obs.unobserve(el);
+            const target = parseInt(el.getAttribute('data-counter-target'), 10);
+            const prefix = el.getAttribute('data-counter-prefix') || '';
+            const suffix = el.getAttribute('data-counter-suffix') || '';
+            const duration = 1600;
+            const startTime = performance.now();
+            function update(now) {
+              const progress = Math.min((now - startTime) / duration, 1);
+              const ease = 1 - Math.pow(1 - progress, 3);
+              const current = Math.floor(ease * target);
+              el.textContent = `${prefix}${current.toLocaleString()}${suffix}`;
+              if (progress < 1) {
+                requestAnimationFrame(update);
+              } else {
+                el.textContent = `${prefix}${target.toLocaleString()}${suffix}`;
+              }
+            }
+            requestAnimationFrame(update);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      counters.forEach((c) => observer.observe(c));
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initVisaCounters);
+    } else {
+      initVisaCounters();
+    }
+  </script>
+
 </body>
 </html>
