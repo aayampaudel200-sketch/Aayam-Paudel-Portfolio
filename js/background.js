@@ -35,12 +35,12 @@
 
   function getParticleConfig() {
     if (width < 640) {
-      return { count: 150, mouseRadius: 110, pushForce: 1.35, glowBoost: 1.4 };
+      return { count: 250, mouseRadius: 110, pushForce: 1.35, glowBoost: 1.4 };
     }
     if (width < 1024) {
-      return { count: 170, mouseRadius: 140, pushForce: 1.55, glowBoost: 1.6 };
+      return { count: 280, mouseRadius: 140, pushForce: 1.55, glowBoost: 1.6 };
     }
-    return { count: 190, mouseRadius: 170, pushForce: 1.75, glowBoost: 1.85 };
+    return { count: 320, mouseRadius: 170, pushForce: 1.75, glowBoost: 1.85 };
   }
 
   function createParticle(index, colors) {
