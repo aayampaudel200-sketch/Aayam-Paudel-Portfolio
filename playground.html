@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=interactive-labs">
+  <link rel="stylesheet" href="css/style.css?v=site-refresh-2">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -101,6 +101,7 @@
           <button type="button" class="playground-tab active" role="tab" data-lab="sort" aria-selected="true">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
           <button type="button" class="playground-tab" role="tab" data-lab="game" aria-selected="false">Neon Tap Rush</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
         </div>
 
         <article class="lab-panel reveal-up is-visible" data-lab-panel="sort" id="lab-sort">
@@ -145,6 +146,7 @@
             <div class="lab-controls">
               <button type="button" class="btn btn-ghost" id="gameSound" aria-pressed="true">Sound: On</button>
               <button type="button" class="btn btn-primary" id="gameStart">Start game</button>
+              <button type="button" class="btn btn-ghost" id="gameQuit" disabled>Quit game</button>
             </div>
           </div>
           <div class="game-scoreboard" aria-live="polite">
@@ -157,6 +159,29 @@
             <p class="tap-rush-message" id="gameMessage">Press Start game, then catch the orb.</p>
           </div>
           <p class="lab-status" id="gameStatus" role="status">Designed for mouse, trackpad, and touch screens.</p>
+        </article>
+
+        <article class="lab-panel reveal-up" data-lab-panel="memory" id="lab-memory" hidden>
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">MINI GAME</p>
+              <h2 class="section-title">Memory Match</h2>
+              <p class="lab-lede">Reveal two symbols at a time and match every pair in as few moves as possible.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-primary" id="memoryReset">New game</button>
+              <button type="button" class="btn btn-ghost" id="memoryQuit">Quit game</button>
+            </div>
+          </div>
+          <div class="memory-game-layout">
+            <aside class="memory-scoreboard" aria-label="Memory Match score">
+              <div><span>Moves</span><strong id="memoryMoves">0</strong></div>
+              <div><span>Time</span><strong id="memoryTime">0:00</strong></div>
+              <div><span>Best</span><strong id="memoryBest">—</strong></div>
+            </aside>
+            <div class="memory-grid" id="memoryGrid" aria-label="Memory Match board"></div>
+          </div>
+          <p class="lab-status" id="memoryStatus" role="status">Find all 6 pairs. The timer starts on your first reveal.</p>
         </article>
       </div>
     </section>
@@ -195,7 +220,7 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=interactive-labs" defer></script>
-  <script src="js/playground.js" defer></script>
+  <script src="js/main.js?v=site-refresh-2" defer></script>
+  <script src="js/playground.js?v=memory-match-2" defer></script>
 </body>
 </html>

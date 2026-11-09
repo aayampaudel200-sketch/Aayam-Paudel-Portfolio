@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=namaste-suman-v1">
+  <link rel="stylesheet" href="css/style.css?v=site-refresh-2">
   <style>
     /* ── Namaste Suman Shop Page Styles ── */
     .ns-hero {
@@ -258,6 +258,178 @@
       .ns-info-grid, .ns-services-grid, .ns-team-cards { grid-template-columns: 1fr; }
       .ns-gallery-grid { grid-template-columns: 1fr; }
     }
+  
+    /* ── Showcase & Passport Spotlight Styles ── */
+    .ns-shop-showcase {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+    }
+    .ns-showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .ns-showcase-card {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .ns-showcase-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    }
+    .ns-showcase-media {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: var(--bg-elevated);
+    }
+    .ns-showcase-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .ns-showcase-card:hover .ns-showcase-media img {
+      transform: scale(1.04);
+    }
+    .ns-showcase-tag {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(8, 11, 18, 0.85);
+      border: 1px solid var(--surface-border-strong);
+      color: var(--accent);
+      backdrop-filter: blur(8px);
+    }
+    .ns-showcase-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .ns-showcase-content h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.35;
+    }
+    .ns-showcase-content p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      flex: 1;
+    }
+    .ns-showcase-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--surface-border);
+    }
+
+    /* ── Passport Photo Tool Spotlight ── */
+    .ns-passport-spotlight {
+      background: radial-gradient(ellipse at 90% 10%, rgba(56, 189, 248, 0.12), transparent 55%),
+                  var(--bg-card);
+      border: 1px solid var(--accent);
+      border-radius: 1.25rem;
+      padding: clamp(1.75rem, 4vw, 2.75rem);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.75rem;
+      align-items: center;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18), 0 0 24px rgba(56, 189, 248, 0.08);
+      margin: 2rem 0;
+    }
+    .ns-passport-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 1rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .ns-passport-requirements {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .ns-passport-requirements span {
+      font-size: 0.76rem;
+      font-family: var(--font-mono, monospace);
+      padding: 0.28rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--text-muted);
+    }
+
+    /* ── FAQ Section ── */
+    .ns-faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .ns-faq-card {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 0.85rem;
+      padding: 1.5rem;
+    }
+    .ns-faq-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+    .ns-faq-card h3::before {
+      content: 'Q:';
+      color: var(--accent);
+      font-family: var(--font-mono, monospace);
+      font-weight: 700;
+    }
+    .ns-faq-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    @media (max-width: 680px) {
+      .ns-passport-spotlight {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .ns-passport-icon {
+        width: 56px;
+        height: 56px;
+      }
+    }
+
   </style>
 
   <!-- JSON-LD: Local Business Schema -->
@@ -359,9 +531,13 @@
         <p class="ns-hero-sub">Your trusted local digital service center at the heart of Gaindakot — offering documentation, printing, photo services, online forms, and cyber assistance with clear, dependable support.</p>
         <div class="ns-hero-actions">
           <a href="tel:+9779866078388" class="btn btn-primary">📞 Call Now: 9866078388</a>
+          <a href="https://gemini.google.com/share/1288d4c28822?skid=cc881ac2-f48c-435f-8614-6e0c28d983bf" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" aria-label="Open Passport Photo Generator in Gemini">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:text-bottom; margin-right:4px;"><path d="M14.5 4 16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2z"/><circle cx="12" cy="13" r="3"/></svg>
+            Passport Photo Generator ↗
+          </a>
           <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">📍 View on Maps ↗</a>
+          <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Message Namaste Suman Communication on WhatsApp">💬 WhatsApp</a>
           <a href="mailto:namastesuman.com@gmail.com" class="btn btn-ghost">✉️ Email Us</a>
-          <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Message Namaste Suman Communication on WhatsApp">WhatsApp us</a>
         </div>
       </div>
     </section>
@@ -404,6 +580,77 @@
               Shop Manager<br>
               Operated by the Paudel family
             </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FEATURED SHOP SHOWCASE ── -->
+    <section class="section ns-shop-showcase" aria-labelledby="shopShowcaseTitle">
+      <div class="container">
+        <p class="eyebrow">OUR LOCATION &amp; STORE</p>
+        <h2 class="section-title" id="shopShowcaseTitle">Namaste Suman Communication — In Gaindakot</h2>
+        <p class="section-lede" style="max-width:65ch; margin-top: 0.5rem; color: var(--text-muted);">Centrally located at Gaindakot-5, Nagarpalika Chowk, our shop provides a welcoming atmosphere equipped with modern workstations, high-speed color laser printing, and attentive customer service.</p>
+        
+        <div class="ns-showcase-grid">
+          <div class="ns-showcase-card reveal-up">
+            <div class="ns-showcase-media">
+              <img src="assets/images/namaste suman1.jpg" alt="Namaste Suman Communication storefront and customer entrance at Gaindakot-5 Nagarpalika Chowk" loading="lazy">
+              <span class="ns-showcase-tag">Storefront Entrance</span>
+            </div>
+            <div class="ns-showcase-content">
+              <h3>Prime Nagarpalika Chowk Location</h3>
+              <p>Directly on the main commercial strip of Gaindakot-5, adjacent to the Gaindakot Municipality office. Walk in anytime during working hours for fast, friendly assistance with all government and digital requirements.</p>
+              <div class="ns-showcase-meta">
+                <span>📍 Nagarpalika Chowk, Gaindakot-5</span>
+                <span>🕒 Sun–Fri: 9:00 AM – 6:00 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ns-showcase-card reveal-up">
+            <div class="ns-showcase-media">
+              <img src="assets/images/namaste suman 2.jpg" alt="Inside Namaste Suman Communication service counter and computer workstations" loading="lazy">
+              <span class="ns-showcase-tag">Service Counter &amp; Desks</span>
+            </div>
+            <div class="ns-showcase-content">
+              <h3>Fast, Secure Digital Processing</h3>
+              <p>Dedicated computer terminals for online forms, citizenship documentation, visa appointments, and high-speed laser printing with rigorous data privacy and accuracy.</p>
+              <div class="ns-showcase-meta">
+                <span>⚡ Laser &amp; Photo Printing</span>
+                <span>🔒 Confidential Document Handling</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PASSPORT SIZE PHOTO GENERATOR SPOTLIGHT ── -->
+    <section class="section" aria-labelledby="photoToolTitle">
+      <div class="container">
+        <div class="ns-passport-spotlight reveal-up">
+          <div class="ns-passport-icon" aria-hidden="true">
+            <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4 16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2z"/><circle cx="12" cy="13" r="3"/><circle cx="18" cy="8" r="1" fill="currentColor"/></svg>
+          </div>
+          <div class="ns-passport-info">
+            <p class="eyebrow" style="color:var(--accent);">FREE ONLINE TOOL</p>
+            <h2 id="photoToolTitle" style="font-size: clamp(1.4rem, 3.2vw, 2rem); margin-bottom: 0.5rem;">Passport-Size Photo Generator</h2>
+            <p style="color: var(--text-muted); max-width: 65ch; line-height: 1.6; font-size: 0.95rem;">
+              Need an official photo for your Nepali Citizenship, e-Passport / MRP, National ID Card (Rastriya Parichayapatra), Lok Sewa Aayog, or Visa application? Use our Gemini AI-powered photo tool to crop and generate your standardized passport-style photo preview online, then bring it to Namaste Suman Communication for instant photographic printing!
+            </p>
+            <div class="ns-passport-requirements">
+              <span>✓ 35mm × 45mm Nepali e-Passport Standard</span>
+              <span>✓ Clean Light/White Background Format</span>
+              <span>✓ Suitable for Driving License, Lok Sewa &amp; Visas</span>
+              <span>✓ Instant Photo Printing Available In-Store</span>
+            </div>
+            <div style="margin-top: 1.25rem;">
+              <a href="https://gemini.google.com/share/1288d4c28822?skid=cc881ac2-f48c-435f-8614-6e0c28d983bf" target="_blank" rel="noopener noreferrer" class="btn btn-primary" aria-label="Launch Passport Photo Generator tool in Gemini (opens in new tab)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4 16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2z"/><circle cx="12" cy="13" r="3"/></svg>
+                Launch Passport Photo Generator <span aria-hidden="true">↗</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -481,24 +728,68 @@
       </div>
     </section>
 
-    <!-- ── PHOTO GALLERY ── -->
+    <!-- ── PHOTO GALLERY & RECENT WORK ── -->
     <section class="ns-gallery section" aria-labelledby="galleryTitle">
       <div class="container">
-        <p class="eyebrow">PHOTO GALLERY</p>
-        <h2 class="section-title" id="galleryTitle">A Glimpse of Our Work</h2>
+        <p class="eyebrow">PORTFOLIO &amp; STORE GALLERY</p>
+        <h2 class="section-title" id="galleryTitle">A Glimpse of Our Shop &amp; Creative Work</h2>
+        <p class="section-lede" style="max-width:62ch; margin-top:0.4rem; color:var(--text-muted);">Take a tour of our Gaindakot center and explore custom banner, identity card, and graphic design projects crafted for local clients and businesses.</p>
+        
         <div class="ns-gallery-grid">
-          <div class="ns-gallery-item">
-            <img src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel working at the service center" loading="lazy">
-            <span class="ns-gallery-caption">Work in progress at the center</span>
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/namaste suman1.jpg" alt="Namaste Suman Communication shop front entrance at Gaindakot Nagarpalika Chowk" loading="lazy">
+            <span class="ns-gallery-caption">Shop Frontage — Nagarpalika Chowk</span>
           </div>
-          <div class="ns-gallery-item">
-            <img src="assets/images/aayam-portrait-1.jpg" alt="Aayam Paudel, founder of Namaste Suman Communication" loading="lazy">
-            <span class="ns-gallery-caption">Aayam Paudel — Founder</span>
+
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/namaste suman 2.jpg" alt="Inside Namaste Suman digital service center with workstations and equipment" loading="lazy">
+            <span class="ns-gallery-caption">Digital Workstations &amp; Service Counter</span>
           </div>
-          <div class="ns-gallery-item" style="display:flex;align-items:center;justify-content:center;background:var(--bg-card);flex-direction:column;gap:1rem;padding:2rem;text-align:center;">
-            <span style="font-size:3rem;" aria-hidden="true">📸</span>
-            <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">More shop photos coming soon</p>
-            <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">View on Google Maps ↗</a>
+
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/banner design.jpg" alt="Commercial flex banner design created by Namaste Suman Communication" loading="lazy">
+            <span class="ns-gallery-caption">Custom Flex Banner Design</span>
+          </div>
+
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/card design.jpg" alt="Professional visiting and identity card design by Namaste Suman Communication" loading="lazy">
+            <span class="ns-gallery-caption">Visiting &amp; Identity Card Design</span>
+          </div>
+
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/some extrs designs.jpg" alt="Creative promotional graphics and branding design by Namaste Suman Communication" loading="lazy">
+            <span class="ns-gallery-caption">Promotional Graphics &amp; Layouts</span>
+          </div>
+
+          <div class="ns-gallery-item reveal-up">
+            <img src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel managing digital forms and operations at Namaste Suman Communication" loading="lazy">
+            <span class="ns-gallery-caption">Digital Assistance &amp; Form Processing</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FREQUENTLY ASKED QUESTIONS ── -->
+    <section class="section" aria-labelledby="faqTitle">
+      <div class="container">
+        <p class="eyebrow">HELP &amp; INFORMATION</p>
+        <h2 class="section-title" id="faqTitle">Frequently Asked Questions</h2>
+        <div class="ns-faq-grid">
+          <div class="ns-faq-card reveal-up">
+            <h3>Where is Namaste Suman Communication located?</h3>
+            <p>We are situated at Gaindakot-5, Nagarpalika Chowk, Nawalparasi East, Gandaki Province — right next to the Gaindakot Municipality office, easily reachable on foot or vehicle.</p>
+          </div>
+          <div class="ns-faq-card reveal-up">
+            <h3>Can I generate my passport photos online before visiting?</h3>
+            <p>Yes! Use our free online Passport-Size Photo Generator tool to preview and prepare your photo. Then visit our counter for instant printing on high-grade photo paper.</p>
+          </div>
+          <div class="ns-faq-card reveal-up">
+            <h3>Can I send my documents via WhatsApp or Email to print?</h3>
+            <p>Absolutely. You can send your documents or PDF files to WhatsApp (+977 9866078388) or email namastesuman.com@gmail.com, and we will print them ready for pickup.</p>
+          </div>
+          <div class="ns-faq-card reveal-up">
+            <h3>What official online forms do you help process?</h3>
+            <p>We handle citizenship recommendations, National ID (NID), e-Passport appointments, Lok Sewa Aayog, Nepal Police/Army forms, land registration documents, and utility payments.</p>
           </div>
         </div>
       </div>
@@ -582,6 +873,6 @@
     </div>
   </footer>
 
-  <script src="js/main.js?v=namaste-suman-v1" defer></script>
+  <script src="js/main.js?v=site-refresh-2" defer></script>
 </body>
 </html>
