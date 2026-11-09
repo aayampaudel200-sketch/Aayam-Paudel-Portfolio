@@ -91,7 +91,7 @@
       <div class="container">
         <p class="eyebrow reveal-up">LABS · EXPERIMENTS</p>
         <h1 class="page-title reveal-up">Playground.</h1>
-        <p class="page-lede reveal-up">A clean space for mini JS/CSS experiments, code snippets, and interactive algorithm demos. Click into a lab and try it live.</p>
+        <p class="page-lede reveal-up">A hands-on space for browser experiments, visual algorithms, and small games. Everything runs locally on your device—tap, type, and play.</p>
       </div>
     </section>
 
@@ -100,8 +100,7 @@
         <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
           <button type="button" class="playground-tab active" role="tab" data-lab="sort" aria-selected="true">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="palette" aria-selected="false">Palette Mixer</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="snippet" aria-selected="false">Snippet Lab</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="game" aria-selected="false">Neon Tap Rush</button>
         </div>
 
         <article class="lab-panel reveal-up is-visible" data-lab-panel="sort" id="lab-sort">
@@ -136,45 +135,28 @@
           <p class="typewriter-output" id="typeOutput" aria-live="polite"><span id="typeText"></span><span class="type-caret" aria-hidden="true">|</span></p>
         </article>
 
-        <article class="lab-panel reveal-up" data-lab-panel="palette" id="lab-palette" hidden>
+        <article class="lab-panel reveal-up" data-lab-panel="game" id="lab-game" hidden>
           <div class="lab-header">
             <div>
-              <p class="eyebrow">COLOR LAB</p>
-              <h2 class="section-title">Accent palette mixer</h2>
-              <p class="lab-lede">Blend two hues into a five-stop palette. Copy any swatch hex.</p>
+              <p class="eyebrow">MINI GAME</p>
+              <h2 class="section-title">Neon Tap Rush</h2>
+              <p class="lab-lede">You have 20 seconds. Tap or click the moving energy orb as quickly as you can. A fresh best score is saved on this device.</p>
             </div>
             <div class="lab-controls">
-              <button type="button" class="btn btn-ghost" id="paletteRandom">Randomize</button>
+              <button type="button" class="btn btn-ghost" id="gameSound" aria-pressed="true">Sound: On</button>
+              <button type="button" class="btn btn-primary" id="gameStart">Start game</button>
             </div>
           </div>
-          <div class="palette-controls">
-            <label class="lab-field-label" for="colorA">From <input id="colorA" type="color" value="#38bdf8"></label>
-            <label class="lab-field-label" for="colorB">To <input id="colorB" type="color" value="#818cf8"></label>
+          <div class="game-scoreboard" aria-live="polite">
+            <div><span>Time</span><strong id="gameTime">20.0s</strong></div>
+            <div><span>Score</span><strong id="gameScore">0</strong></div>
+            <div><span>Best</span><strong id="gameBest">0</strong></div>
           </div>
-          <div class="palette-swatches" id="paletteSwatches" aria-label="Generated palette"></div>
-        </article>
-
-        <article class="lab-panel reveal-up" data-lab-panel="snippet" id="lab-snippet" hidden>
-          <div class="lab-header">
-            <div>
-              <p class="eyebrow">SNIPPET</p>
-              <h2 class="section-title">Debounce utility</h2>
-              <p class="lab-lede">A compact debounce helper used for search and resize handlers. Type below to see delayed updates.</p>
-            </div>
-            <div class="lab-controls">
-              <button type="button" class="btn btn-ghost" id="snippetCopy">Copy snippet</button>
-            </div>
+          <div class="tap-rush-stage" id="tapRushStage" aria-label="Neon Tap Rush game area" tabindex="0">
+            <button type="button" class="tap-rush-orb" id="tapRushOrb" aria-label="Tap the energy orb" hidden></button>
+            <p class="tap-rush-message" id="gameMessage">Press Start game, then catch the orb.</p>
           </div>
-          <pre class="snippet-code" id="snippetCode"><code>function debounce(fn, wait = 200) {
-  let timer = null;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), wait);
-  };
-}</code></pre>
-          <label class="lab-field-label" for="debounceInput">Try it — text updates 300ms after you stop typing</label>
-          <input id="debounceInput" class="lab-input" type="text" placeholder="Start typing…">
-          <p class="lab-status" id="debounceStatus" role="status">Waiting for input…</p>
+          <p class="lab-status" id="gameStatus" role="status">Designed for mouse, trackpad, and touch screens.</p>
         </article>
       </div>
     </section>

@@ -1,6 +1,6 @@
 /**
  * Interactive labs for playground.html: sorting visualizer, typewriter,
- * palette mixer, and debounce snippet demo.
+ * and Neon Tap Rush, a touch-friendly reaction game.
  */
 (() => {
   function initLabTabs() {
@@ -144,122 +144,118 @@
     restart();
   }
 
-  function hexToRgb(hex) {
-    const value = hex.replace('#', '');
-    const full = value.length === 3
-      ? value.split('').map((ch) => ch + ch).join('')
-      : value;
-    const num = Number.parseInt(full, 16);
-    return {
-      r: (num >> 16) & 255,
-      g: (num >> 8) & 255,
-      b: num & 255,
-    };
-  }
+  function initTapRushGame() {
+    const stage = document.getElementById('tapRushStage');
+    const orb = document.getElementById('tapRushOrb');
+    const startBtn = document.getElementById('gameStart');
+    const soundBtn = document.getElementById('gameSound');
+    const timeEl = document.getElementById('gameTime');
+    const scoreEl = document.getElementById('gameScore');
+    const bestEl = document.getElementById('gameBest');
+    const message = document.getElementById('gameMessage');
+    const status = document.getElementById('gameStatus');
+    if (!stage || !orb || !startBtn || !soundBtn || !timeEl || !scoreEl || !bestEl || !message || !status) return;
 
-  function rgbToHex(r, g, b) {
-    return `#${[r, g, b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-  }
+    const duration = 20000;
+    let score = 0;
+    let best = Number.parseInt(localStorage.getItem('tap-rush-best') || '0', 10) || 0;
+    let active = false;
+    let soundOn = true;
+    let startedAt = 0;
+    let timerId = null;
+    let audioContext = null;
+    bestEl.textContent = String(best);
 
-  function mixColors(a, b, t) {
-    return {
-      r: Math.round(a.r + (b.r - a.r) * t),
-      g: Math.round(a.g + (b.g - a.g) * t),
-      b: Math.round(a.b + (b.b - a.b) * t),
-    };
-  }
-
-  function initPaletteLab() {
-    const colorA = document.getElementById('colorA');
-    const colorB = document.getElementById('colorB');
-    const swatches = document.getElementById('paletteSwatches');
-    const randomBtn = document.getElementById('paletteRandom');
-    if (!colorA || !colorB || !swatches || !randomBtn) return;
-
-    function render() {
-      const from = hexToRgb(colorA.value);
-      const to = hexToRgb(colorB.value);
-      swatches.replaceChildren();
-
-      for (let i = 0; i < 5; i++) {
-        const mixed = mixColors(from, to, i / 4);
-        const hex = rgbToHex(mixed.r, mixed.g, mixed.b);
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'palette-swatch';
-        button.style.background = hex;
-        button.title = `Copy ${hex}`;
-        button.innerHTML = `<span>${hex}</span>`;
-        button.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(hex);
-            if (typeof window.showToast === 'function') window.showToast(`Copied ${hex}`);
-            else button.querySelector('span').textContent = 'Copied';
-          } catch (_) {
-            button.querySelector('span').textContent = hex;
-          }
-        });
-        swatches.appendChild(button);
-      }
+    function playTone(frequency, length = 0.06) {
+      if (!soundOn || !window.AudioContext && !window.webkitAudioContext) return;
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      audioContext ||= new Audio();
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.frequency.value = frequency;
+      oscillator.type = 'sine';
+      gain.gain.setValueAtTime(0.045, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + length);
+      oscillator.connect(gain).connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + length);
     }
 
-    function randomHex() {
-      return `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0')}`;
+    function placeOrb() {
+      const rect = stage.getBoundingClientRect();
+      const diameter = Math.min(64, Math.max(48, rect.width * 0.16));
+      const x = 12 + Math.random() * Math.max(1, rect.width - diameter - 24);
+      const y = 12 + Math.random() * Math.max(1, rect.height - diameter - 24);
+      orb.style.width = `${diameter}px`;
+      orb.style.height = `${diameter}px`;
+      orb.style.transform = `translate(${x}px, ${y}px)`;
     }
 
-    colorA.addEventListener('input', render);
-    colorB.addEventListener('input', render);
-    randomBtn.addEventListener('click', () => {
-      colorA.value = randomHex();
-      colorB.value = randomHex();
-      render();
-    });
-    render();
-  }
-
-  function initSnippetLab() {
-    const input = document.getElementById('debounceInput');
-    const status = document.getElementById('debounceStatus');
-    const copyBtn = document.getElementById('snippetCopy');
-    const code = document.getElementById('snippetCode');
-    if (!input || !status || !copyBtn || !code) return;
-
-    function debounce(fn, wait = 200) {
-      let timer = null;
-      return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), wait);
-      };
+    function finishGame() {
+      active = false;
+      window.clearInterval(timerId);
+      orb.hidden = true;
+      startBtn.disabled = false;
+      startBtn.textContent = 'Play again';
+      timeEl.textContent = '0.0s';
+      const newBest = score > best;
+      best = Math.max(best, score);
+      localStorage.setItem('tap-rush-best', String(best));
+      bestEl.textContent = String(best);
+      message.textContent = newBest ? `New best: ${score}!` : `Round complete: ${score}`;
+      status.textContent = newBest ? 'New high score saved on this device.' : 'Nice run. Tap Play again for another round.';
+      playTone(newBest ? 880 : 440, 0.15);
     }
 
-    const update = debounce((value) => {
-      status.textContent = value
-        ? `Debounced value: “${value}”`
-        : 'Waiting for input…';
-    }, 300);
+    function updateClock() {
+      const remaining = Math.max(0, duration - (performance.now() - startedAt));
+      timeEl.textContent = `${(remaining / 1000).toFixed(1)}s`;
+      if (remaining <= 0) finishGame();
+    }
 
-    input.addEventListener('input', () => {
-      status.textContent = 'Typing…';
-      update(input.value.trim());
+    function startGame() {
+      score = 0;
+      active = true;
+      scoreEl.textContent = '0';
+      startedAt = performance.now();
+      orb.hidden = false;
+      message.textContent = '';
+      status.textContent = 'Go! Catch the orb before the timer reaches zero.';
+      startBtn.disabled = true;
+      startBtn.textContent = 'Playing…';
+      placeOrb();
+      updateClock();
+      timerId = window.setInterval(updateClock, 70);
+      playTone(520);
+    }
+
+    orb.addEventListener('pointerdown', (event) => {
+      if (!active) return;
+      event.preventDefault();
+      score += 1;
+      scoreEl.textContent = String(score);
+      orb.classList.remove('is-hit');
+      void orb.offsetWidth;
+      orb.classList.add('is-hit');
+      placeOrb();
+      playTone(400 + Math.min(score * 18, 500));
     });
 
-    copyBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(code.textContent);
-        if (typeof window.showToast === 'function') window.showToast('Snippet copied');
-        else status.textContent = 'Snippet copied to clipboard.';
-      } catch (_) {
-        status.textContent = 'Unable to copy. Select the code manually.';
-      }
+    startBtn.addEventListener('click', startGame);
+    soundBtn.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundBtn.textContent = `Sound: ${soundOn ? 'On' : 'Off'}`;
+      soundBtn.setAttribute('aria-pressed', String(soundOn));
+      if (soundOn) playTone(520);
     });
+    window.addEventListener('resize', () => { if (active) placeOrb(); }, { passive: true });
   }
 
   function initPlayground() {
     initLabTabs();
     initSortLab();
     initTypewriterLab();
-    initPaletteLab();
-    initSnippetLab();
+    initTapRushGame();
   }
 
   if (document.readyState === 'loading') {

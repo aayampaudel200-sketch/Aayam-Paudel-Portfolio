@@ -906,8 +906,11 @@ function initMain() {
     tooltip.setAttribute('role', 'tooltip');
     document.body.appendChild(tooltip);
 
+    let activeTag = null;
+
     function hideTooltip() {
       tooltip.hidden = true;
+      activeTag = null;
     }
 
     function showTooltip(tag) {
@@ -916,6 +919,7 @@ function initMain() {
       const name = tag.dataset.skill || tag.textContent.trim();
       tooltip.innerHTML = `<strong>${name}</strong><span>${years} yr${years === '1' ? '' : 's'} experience</span><span>Proficiency: ${level}</span>`;
       tooltip.hidden = false;
+      activeTag = tag;
 
       const rect = tag.getBoundingClientRect();
       const tipWidth = tooltip.offsetWidth;
@@ -933,6 +937,17 @@ function initMain() {
       tag.addEventListener('pointerleave', hideTooltip);
       tag.addEventListener('focus', () => showTooltip(tag));
       tag.addEventListener('blur', hideTooltip);
+      tag.addEventListener('click', (event) => {
+        event.stopPropagation();
+        if (activeTag === tag && !tooltip.hidden) hideTooltip();
+        else showTooltip(tag);
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (!tooltip.contains(target) && !skillTags.some((tag) => tag.contains(target))) hideTooltip();
     });
 
     window.addEventListener('scroll', hideTooltip, { passive: true });
@@ -955,12 +970,56 @@ function initMain() {
     });
   }
 
+  /* ---------- Landing page typewriter ---------- */
+  function initLandingTypewriter() {
+    const output = document.getElementById('heroTypewriter');
+    if (!output) return;
+    if (reducedMotion) {
+      output.textContent = 'useful web experiences.';
+      return;
+    }
+
+    const phrases = [
+      'useful web experiences.',
+      'clean interfaces for real people.',
+      'ideas from Nepal to the web.',
+      'small details that feel alive.',
+    ];
+    let phraseIndex = 0;
+    let characterIndex = 0;
+    let deleting = false;
+    let timer = null;
+
+    function tick() {
+      const phrase = phrases[phraseIndex];
+      characterIndex += deleting ? -1 : 1;
+      output.textContent = phrase.slice(0, Math.max(0, characterIndex));
+
+      if (!deleting && characterIndex === phrase.length) {
+        deleting = true;
+        timer = window.setTimeout(tick, 1500);
+        return;
+      }
+      if (deleting && characterIndex === 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        timer = window.setTimeout(tick, 280);
+        return;
+      }
+      timer = window.setTimeout(tick, deleting ? 28 : 52);
+    }
+
+    tick();
+    window.addEventListener('pagehide', () => window.clearTimeout(timer), { once: true });
+  }
+
   // Initialize new interactive enhancements
   initMagneticButtons();
   initGitHubWidget();
   initSystemStatusBadge();
   initHeroTerminal();
   initSkillTags();
+  initLandingTypewriter();
 }
 
 if (document.readyState === 'loading') {
