@@ -947,6 +947,13 @@ ul { list-style: none; }
 .business-address { color: var(--text-muted); font-size: 0.85rem; line-height: 1.55; }.business-address address { margin-top: 0.35rem; font-style: normal; }
 .business-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.9rem; }
 
+.business-contact-info { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.75rem; }
+.business-contact-info .business-detail-label { margin-bottom: 0.15rem; }
+.business-contact-link { color: var(--accent); text-decoration: none; font-size: 0.875rem; transition: opacity 0.2s; }
+.business-contact-link:hover { opacity: 0.8; text-decoration: underline; }
+.business-manager { margin-top: 0.6rem; font-size: 0.85rem; color: var(--text-muted); }
+.business-manager strong { color: var(--text); }
+
 /* ============================================================
    PROJECT CARDS
    ============================================================ */

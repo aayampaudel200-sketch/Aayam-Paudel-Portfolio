@@ -927,18 +927,47 @@ function initMain() {
       tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
     }
 
+    let activeTag = null; // track which tag currently shows the tooltip
+
     skillTags.forEach((tag) => {
       tag.setAttribute('tabindex', '0');
-      tag.addEventListener('pointerenter', () => showTooltip(tag));
-      tag.addEventListener('pointerleave', hideTooltip);
-      tag.addEventListener('focus', () => showTooltip(tag));
-      tag.addEventListener('blur', hideTooltip);
+
+      // Desktop hover: show on enter, hide on leave
+      tag.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'touch') { showTooltip(tag); activeTag = tag; }
+      });
+      tag.addEventListener('pointerleave', (e) => {
+        if (e.pointerType !== 'touch') { hideTooltip(); activeTag = null; }
+      });
+
+      // Touch / click: toggle — tap badge to open, tap again (or anywhere else) to close
+      tag.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (activeTag === tag) { hideTooltip(); activeTag = null; }
+        else { showTooltip(tag); activeTag = tag; }
+      });
+
+      tag.addEventListener('focus', () => { showTooltip(tag); activeTag = tag; });
+      tag.addEventListener('blur', () => { hideTooltip(); activeTag = null; });
     });
 
-    document.addEventListener('click', (event) => {
-      const target = event.target;
-      if (!(target instanceof Node)) return;
-      if (!tooltip.contains(target) && !skillTags.some((tag) => tag.contains(target))) hideTooltip();
+    // Close tooltip when clicking or tapping anywhere outside a skill badge or the tooltip itself
+    ['click', 'pointerdown'].forEach((evtType) => {
+      document.addEventListener(evtType, (event) => {
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+        if (!tooltip.contains(target) && !skillTags.some((tag) => tag.contains(target))) {
+          hideTooltip();
+          activeTag = null;
+        }
+      });
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        hideTooltip();
+        activeTag = null;
+      }
     });
 
     window.addEventListener('scroll', hideTooltip, { passive: true });

@@ -35,6 +35,8 @@ const PROJECTS = [
       stack: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
       contribution:
         'Designed and built the front-end experience, structured the listing and browsing flow, and deployed the live application.',
+      learning:
+        'Learned how product browsing, clear calls to action, and honest prototype framing can support an early marketplace idea.',
     },
   },
   {
@@ -69,6 +71,8 @@ const PROJECTS = [
       stack: ['HTML', 'CSS', 'JavaScript', 'Civic Tech'],
       contribution:
         'Contributed to the prototype concept, interface design, and front-end implementation within the hackathon timeframe.',
+      learning:
+        'Learned how to turn a public-service workflow into a focused interface under a short hackathon deadline.',
     },
   },
   {
@@ -104,6 +108,58 @@ const PROJECTS = [
       stack: ['HTML', 'CSS', 'JavaScript', 'Vercel Functions', 'Resend'],
       contribution:
         'Designed and built the portfolio, project browser, accessibility features, crawler-friendly metadata, and contact workflow.',
+      learning:
+        'Learned how a multi-page static site can combine progressive enhancement, responsive design, and a small serverless endpoint.',
+    },
+  },
+  {
+    id: 'python-portfolio-audit',
+    title: 'Python Portfolio Audit Utility',
+    category: 'experiments',
+    categoryLabel: 'Python / Developer Tooling',
+    status: 'Learning Project',
+    statusKey: 'prototype',
+    description: 'A standard-library command-line utility that checks crawler rules, sitemap URLs, and local page consistency for this portfolio.',
+    tags: ['Python', 'unittest', 'XML', 'SEO'],
+    image: '',
+    imageAlt: '',
+    demo: '',
+    github: 'https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio',
+    githubOwner: 'aayampaudel200-sketch',
+    githubRepo: 'Aayam-Paudel-Portfolio',
+    details: {
+      overview: 'A small Python utility used to keep the site’s robots policy and sitemap aligned with the actual files in the repository.',
+      problem: 'Search metadata can drift as pages change, leaving broken sitemap entries or crawler rules that are difficult to spot manually.',
+      architecture: 'A Python standard-library command-line tool parses robots.txt and XML sitemap data, verifies local pages, and is covered by unittest cases.',
+      features: ['Crawler policy validation', 'Sitemap host and path checks', 'Local page existence checks', 'Standard-library unit tests'],
+      stack: ['Python', 'unittest', 'xml.etree.ElementTree'],
+      contribution: 'Built and maintain the utility as part of the portfolio’s quality checks.',
+      learning: 'Practiced writing focused command-line checks and testing edge cases without adding external dependencies.',
+    },
+  },
+  {
+    id: 'playground-experiments',
+    title: 'Playground Experiments',
+    category: 'experiments',
+    categoryLabel: 'JavaScript / Interactive Experiments',
+    status: 'Ongoing',
+    statusKey: 'prototype',
+    description: 'A browser-based lab for a sorting visualizer, editable typewriter effect, and Neon Tap Rush reaction game.',
+    tags: ['JavaScript', 'CSS', 'Web Audio', 'Interaction Design'],
+    image: '',
+    imageAlt: '',
+    demo: 'playground.html',
+    github: 'https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio',
+    githubOwner: 'aayampaudel200-sketch',
+    githubRepo: 'Aayam-Paudel-Portfolio',
+    details: {
+      overview: 'A space to test small browser interactions without presenting them as client work or production applications.',
+      problem: 'Learning interactions is easier when ideas can be built, tested, and refined in small, focused experiments.',
+      architecture: 'A static HTML page with modular vanilla JavaScript, local score storage for the game, and responsive controls for touch and pointer devices.',
+      features: ['Bubble-sort animation', 'Editable looping typewriter', 'Touch-friendly reaction game', 'Optional Web Audio feedback'],
+      stack: ['HTML', 'CSS', 'JavaScript', 'Web Audio API'],
+      contribution: 'Designed and implemented the experiments as part of an ongoing learning space.',
+      learning: 'Practiced animation timing, accessible controls, local browser storage, and touch-friendly interaction design.',
     },
   },
 ];
@@ -415,6 +471,7 @@ function buildModalTabPanels(project) {
         <ul class="modal-feature-list">
           ${features.map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>Feature details coming soon.</li>'}
         </ul>
+        ${d.learning ? `<h4 class="modal-subhead">What I Learned</h4><p>${escapeHtml(d.learning)}</p>` : ''}
       </div>
     `,
     links: `

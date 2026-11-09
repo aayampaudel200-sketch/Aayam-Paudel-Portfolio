@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Namaste Suman Communication – Digital Service Center, Gaindakot Nepal</title>
+  <meta name="description" content="Namaste Suman Communication is a trusted local digital service center at Gaindakot-5, Nagarpalika Chowk, Nawalparasi East, Nepal. Documentation, printing, photo services, online forms & more.">
+  <meta property="og:title" content="Namaste Suman Communication – Gaindakot, Nepal">
+  <meta property="og:description" content="Your trusted local digital service center for documentation, printing, photo services, online forms, and cyber assistance in Gaindakot, Nawalparasi East.">
+  <meta property="og:site_name" content="Aayam Paudel Portfolio">
+  <meta property="og:url" content="https://aayampaudel.com.np/namaste-suman.html">
+  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Namaste Suman Communication digital service center">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Namaste Suman Communication – Gaindakot, Nepal">
+  <meta name="twitter:description" content="Your trusted local digital service center for documentation, printing, photo services, online forms, and cyber assistance in Gaindakot, Nawalparasi East.">
+  <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg">
+  <link rel="canonical" href="https://aayampaudel.com.np/namaste-suman.html">
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=namaste-suman-v1">
+  <style>
+    /* ── Namaste Suman Shop Page Styles ── */
+    .ns-hero {
+      padding: clamp(5rem, 12vw, 9rem) 0 clamp(3rem, 7vw, 5rem);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .ns-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, var(--accent-glow, rgba(99,102,241,0.12)) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .ns-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .ns-hero-title {
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .ns-hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      color: var(--text-muted);
+      max-width: 55ch;
+      margin: 0 auto 2rem;
+      line-height: 1.6;
+    }
+    .ns-hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    /* ── Info Grid ── */
+    .ns-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+    .ns-info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ns-info-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), 0 4px 24px -4px rgba(99,102,241,0.15);
+    }
+    .ns-info-card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .ns-info-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .ns-info-card p, .ns-info-card address {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-style: normal;
+    }
+    .ns-info-card a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .ns-info-card a:hover { text-decoration: underline; }
+
+    /* ── Services Grid ── */
+    .ns-services {
+      padding: clamp(3rem, 7vw, 5rem) 0;
+    }
+    .ns-services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .ns-service-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .ns-service-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .ns-service-icon {
+      font-size: 1.75rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .ns-service-item h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .ns-service-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+    /* ── Photo Gallery ── */
+    .ns-gallery {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+    }
+    .ns-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .ns-gallery-item {
+      position: relative;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .ns-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .ns-gallery-item:hover img { transform: scale(1.04); }
+    .ns-gallery-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0.6rem 0.9rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* ── Map CTA ── */
+    .ns-map-cta {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      margin: 3rem 0;
+    }
+    .ns-map-cta h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: 0.75rem; }
+    .ns-map-cta p { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 50ch; margin-left: auto; margin-right: auto; }
+    .ns-map-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+
+    /* ── Team Section ── */
+    .ns-team {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+    }
+    .ns-team-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .ns-team-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      text-align: center;
+    }
+    .ns-team-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+      margin: 0 auto 1rem;
+      display: block;
+      background: var(--surface-raised);
+    }
+    .ns-team-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+    .ns-team-role { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .ns-team-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Back button ── */
+    .ns-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+      margin-bottom: 1.5rem;
+    }
+    .ns-back-link:hover { color: var(--text); }
+
+    @media (max-width: 480px) {
+      .ns-info-grid, .ns-services-grid, .ns-team-cards { grid-template-columns: 1fr; }
+      .ns-gallery-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <!-- JSON-LD: Local Business Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Namaste Suman Communication",
+    "description": "Local digital service center offering documentation, printing, photo services, online forms, and cyber assistance in Gaindakot, Nawalparasi East, Nepal.",
+    "url": "https://aayampaudel.com.np/namaste-suman.html",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Gaindakot-5, Nagarpalika Chowk",
+      "addressLocality": "Gaindakot",
+      "addressRegion": "Gandaki Province",
+      "addressCountry": "NP"
+    },
+    "telephone": "+9779866078388",
+    "email": "namastesuman.com@gmail.com",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "27.5519",
+      "longitude": "84.0105"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    ],
+    "employee": {
+      "@type": "Person",
+      "name": "Anju Gyawali",
+      "jobTitle": "Manager"
+    }
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel – Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="playground.html" class="nav-link">Playground</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
+      <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let's Talk</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" hidden>
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="experience.html" class="nav-link">Experience</a>
+    <a href="playground.html" class="nav-link">Playground</a>
+    <a href="namaste-suman.html" class="nav-link active">Shop</a>
+    <a href="index.html#contact" class="nav-link">Contact</a>
+  </nav>
+
+  <main id="main">
+
+    <!-- ── HERO ── -->
+    <section class="ns-hero">
+      <div class="container">
+        <a class="ns-back-link" href="index.html#namaste-suman">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          Back to portfolio
+        </a>
+        <span class="ns-badge">📍 Gaindakot, Nawalparasi East</span>
+        <h1 class="ns-hero-title">Namaste Suman<br><span class="gradient-text">Communication</span></h1>
+        <p class="ns-hero-sub">Your trusted local digital service center at the heart of Gaindakot — offering documentation, printing, photo services, online forms, and cyber assistance with clear, dependable support.</p>
+        <div class="ns-hero-actions">
+          <a href="tel:+9779866078388" class="btn btn-primary">📞 Call Now: 9866078388</a>
+          <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">📍 View on Maps ↗</a>
+          <a href="mailto:namastesuman.com@gmail.com" class="btn btn-ghost">✉️ Email Us</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── QUICK INFO CARDS ── -->
+    <section class="section" aria-label="Shop information">
+      <div class="container">
+        <div class="ns-info-grid">
+          <div class="ns-info-card">
+            <span class="ns-info-card-icon" aria-hidden="true">📍</span>
+            <h3>Location</h3>
+            <address>
+              Gaindakot-5, Nagarpalika Chowk<br>
+              Nawalparasi East, Gandaki Province<br>
+              Nepal
+            </address>
+          </div>
+          <div class="ns-info-card">
+            <span class="ns-info-card-icon" aria-hidden="true">📞</span>
+            <h3>Contact</h3>
+            <p>
+              <a href="tel:+9779866078388">9866078388</a><br>
+              <a href="mailto:namastesuman.com@gmail.com">namastesuman.com@gmail.com</a>
+            </p>
+          </div>
+          <div class="ns-info-card">
+            <span class="ns-info-card-icon" aria-hidden="true">🕘</span>
+            <h3>Opening Hours</h3>
+            <p>
+              Sunday – Friday<br>
+              9:00 AM – 6:00 PM<br>
+              <em>Closed on Saturdays &amp; Public Holidays</em>
+            </p>
+          </div>
+          <div class="ns-info-card">
+            <span class="ns-info-card-icon" aria-hidden="true">👩‍💼</span>
+            <h3>Management</h3>
+            <p>
+              <strong>Anju Gyawali</strong><br>
+              Shop Manager<br>
+              Operated by the Paudel family
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SERVICES ── -->
+    <section class="ns-services section" aria-labelledby="servicesTitle">
+      <div class="container">
+        <p class="eyebrow">WHAT WE OFFER</p>
+        <h2 class="section-title" id="servicesTitle">Our Services</h2>
+        <p class="section-lede" style="max-width:60ch;">From official government forms to everyday printing needs — we handle it all with accuracy and care so you don't have to worry.</p>
+        <div class="ns-services-grid">
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">📄</span>
+            <div>
+              <h3>Documentation</h3>
+              <p>Citizenship applications, land registration documents, government forms, affidavits, and official letter typing.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">🖨️</span>
+            <div>
+              <h3>Printing &amp; Photocopy</h3>
+              <p>Black &amp; white and color printing, photocopying, and document scanning at affordable rates.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">📸</span>
+            <div>
+              <h3>Photo Services</h3>
+              <p>Passport-size photos, formal portraits, ID photos, and digital photo printing to specification.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">🎨</span>
+            <div>
+              <h3>Graphic Design</h3>
+              <p>Business cards, banners, posters, flex printing layouts, and basic logo design for local businesses.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">🌐</span>
+            <div>
+              <h3>Online Forms &amp; Applications</h3>
+              <p>Scholarship applications, tax registration, eSewa/Khalti setup, job applications, and digital government portals.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">💻</span>
+            <div>
+              <h3>Cyber Assistance</h3>
+              <p>Email account setup, PDF editing, file conversion, basic computer help, and internet browsing support.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">✍️</span>
+            <div>
+              <h3>Typing Services</h3>
+              <p>Nepali &amp; English typing for letters, applications, CVs, project reports, and academic documents.</p>
+            </div>
+          </div>
+          <div class="ns-service-item reveal-up">
+            <span class="ns-service-icon" aria-hidden="true">🔒</span>
+            <div>
+              <h3>Lamination &amp; Binding</h3>
+              <p>Document lamination, spiral binding, and report covers for official and personal use.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PHOTO GALLERY ── -->
+    <section class="ns-gallery section" aria-labelledby="galleryTitle">
+      <div class="container">
+        <p class="eyebrow">PHOTO GALLERY</p>
+        <h2 class="section-title" id="galleryTitle">A Glimpse of Our Work</h2>
+        <div class="ns-gallery-grid">
+          <div class="ns-gallery-item">
+            <img src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel working at the service center" loading="lazy">
+            <span class="ns-gallery-caption">Work in progress at the center</span>
+          </div>
+          <div class="ns-gallery-item">
+            <img src="assets/images/aayam-portrait-1.jpg" alt="Aayam Paudel, founder of Namaste Suman Communication" loading="lazy">
+            <span class="ns-gallery-caption">Aayam Paudel — Founder</span>
+          </div>
+          <div class="ns-gallery-item" style="display:flex;align-items:center;justify-content:center;background:var(--surface);flex-direction:column;gap:1rem;padding:2rem;text-align:center;">
+            <span style="font-size:3rem;" aria-hidden="true">📸</span>
+            <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">More shop photos coming soon</p>
+            <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">View on Google Maps ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TEAM ── -->
+    <section class="ns-team section" aria-labelledby="teamTitle">
+      <div class="container">
+        <p class="eyebrow">THE TEAM</p>
+        <h2 class="section-title" id="teamTitle">Who We Are</h2>
+        <div class="ns-team-cards">
+          <div class="ns-team-card reveal-up">
+            <img class="ns-team-avatar" src="assets/images/aayam-portrait-1.jpg" alt="Aayam Paudel — Founder" loading="lazy">
+            <p class="ns-team-name">Aayam Paudel</p>
+            <p class="ns-team-role">Founder &amp; Developer</p>
+            <p class="ns-team-desc">B.Sc. CSIT student and full-stack developer who established Namaste Suman Communication to serve the local Gaindakot community with dependable digital services.</p>
+            <div style="margin-top:1rem;">
+              <a href="index.html" class="btn btn-ghost btn-sm">View Portfolio ↗</a>
+            </div>
+          </div>
+          <div class="ns-team-card reveal-up">
+            <div class="ns-team-avatar" aria-label="Anju Gyawali" style="display:flex;align-items:center;justify-content:center;font-size:2rem;border-radius:50%;border:2px solid var(--accent);">👩</div>
+            <p class="ns-team-name">Anju Gyawali</p>
+            <p class="ns-team-role">Manager</p>
+            <p class="ns-team-desc">Anju manages day-to-day operations at Namaste Suman Communication, ensuring every customer receives timely, accurate, and friendly service.</p>
+            <div style="margin-top:1rem;">
+              <a href="tel:+9779866078388" class="btn btn-ghost btn-sm">📞 Contact</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MAP CTA ── -->
+    <div class="container">
+      <div class="ns-map-cta reveal-up">
+        <span style="font-size:2.5rem;display:block;margin-bottom:0.75rem;" aria-hidden="true">📍</span>
+        <h2>Find Us on the Map</h2>
+        <p>We're located at Gaindakot-5, Nagarpalika Chowk — right at the heart of Gaindakot municipality. Walk in anytime during business hours or call ahead.</p>
+        <div class="ns-map-actions">
+          <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open in Google Maps ↗</a>
+          <a href="tel:+9779866078388" class="btn btn-ghost">📞 9866078388</a>
+          <a href="mailto:namastesuman.com@gmail.com" class="btn btn-ghost">✉️ Email Us</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-name">Aayam Paudel</p>
+        <p class="footer-location">Gaindakot, Nawalparasi East, Gandaki Province, Nepal</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="playground.html">Playground</a>
+        <a href="namaste-suman.html">Shop</a>
+        <a href="mailto:aayampaudel200@gmail.com">Email</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        <a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
+        <a href="https://www.instagram.com/aayam.paudel" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+        <a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">X</a>
+        <a href="https://www.facebook.com/aayam.paudel07" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div class="footer-meta-left">
+        <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+        <span class="footer-status-badge status--operational" id="systemStatusBadge" title="Site services and API endpoints are fully operational">
+          <span class="status-pulse-dot" aria-hidden="true"></span>
+          <span class="status-text">All Systems Operational</span>
+        </span>
+      </div>
+      <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=namaste-suman-v1" defer></script>
+</body>
+</html>
