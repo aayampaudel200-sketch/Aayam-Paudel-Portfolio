@@ -29,72 +29,232 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=site-refresh-2">
   <style>
-    /* ── Namaste Suman Shop Page Styles ── */
-    .ns-hero {
-      padding: clamp(5rem, 12vw, 9rem) 0 clamp(3rem, 7vw, 5rem);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+    /* ── Namaste Suman Hub Premium Styles ── */
+    :root {
+      --ns-glow: rgba(56, 189, 248, 0.28);
     }
-    .ns-hero::before {
-      content: '';
+
+    /* ── Top Hero with Documentation Background ── */
+    .ns-hero {
+      position: relative;
+      padding: clamp(6rem, 13vw, 9.5rem) 0 clamp(3.5rem, 8vw, 5.5rem);
+      text-align: center;
+      overflow: hidden;
+      background: var(--bg);
+      isolation: isolate;
+    }
+    .ns-hero-bg-wrapper {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 70% 60% at 50% 0%, var(--accent-glow, rgba(99,102,241,0.12)) 0%, transparent 70%);
+      z-index: -2;
+      overflow: hidden;
       pointer-events: none;
+    }
+    .ns-hero-bg {
+      position: absolute;
+      inset: -20px;
+      background: url('assets/images/Documentation for visas.png') center 22% / cover no-repeat;
+      filter: saturate(1.2) brightness(0.35) contrast(1.1);
+      transform: translate3d(var(--mouse-shift-x, 0px), var(--mouse-shift-y, 0px), 0) scale(1.05);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    :root[data-theme="light"] .ns-hero-bg {
+      filter: saturate(1.1) brightness(0.88) contrast(1.08);
+      opacity: 0.22;
+    }
+    .ns-hero-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 32%, rgba(8, 11, 18, 0.65), rgba(8, 11, 18, 0.95) 85%),
+        linear-gradient(to bottom, rgba(8, 11, 18, 0.35) 0%, var(--bg) 98%);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    :root[data-theme="light"] .ns-hero-overlay {
+      background:
+        radial-gradient(ellipse 85% 70% at 50% 32%, rgba(244, 247, 251, 0.78), rgba(244, 247, 251, 0.96) 85%),
+        linear-gradient(to bottom, rgba(244, 247, 251, 0.4) 0%, var(--bg) 98%);
+    }
+    .ns-hero-container {
+      position: relative;
+      z-index: 2;
+      max-width: 920px;
+      margin-inline: auto;
+    }
+
+    /* ── Top Badges & Live Status ── */
+    .ns-hero-top-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
     }
     .ns-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--surface-border);
+      gap: 0.45rem;
+      background: rgba(14, 19, 29, 0.75);
+      border: 1px solid var(--surface-border-strong);
       border-radius: 999px;
-      padding: 0.35rem 1rem;
-      font-size: 0.75rem;
+      padding: 0.38rem 1rem;
+      font-size: 0.74rem;
       font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 1.5rem;
+      backdrop-filter: blur(8px);
     }
+    :root[data-theme="light"] .ns-badge {
+      background: rgba(255, 255, 255, 0.85);
+    }
+    .ns-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.38rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.32);
+      color: #4ade80;
+      font-size: 0.74rem;
+      font-family: var(--font-mono, monospace);
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+    }
+    .ns-live-pill.is-closed {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+    .ns-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      animation: statusPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .ns-live-pill.is-closed .ns-live-dot {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+      animation: none;
+    }
+
     .ns-hero-title {
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.1;
-      margin-bottom: 1rem;
+      font-size: clamp(2.3rem, 6.2vw, 4rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.15rem;
     }
     .ns-hero-sub {
-      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-size: clamp(1.02rem, 2.5vw, 1.22rem);
       color: var(--text-muted);
-      max-width: 55ch;
-      margin: 0 auto 2rem;
-      line-height: 1.6;
+      max-width: 62ch;
+      margin: 0 auto 1.6rem;
+      line-height: 1.65;
     }
+
+    /* ── Hero Category Highlights (Pills) ── */
+    .ns-hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .ns-pill {
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      color: var(--text);
+      backdrop-filter: blur(6px);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .ns-pill:hover {
+      background: rgba(56, 189, 248, 0.16);
+      border-color: var(--accent);
+    }
+    :root[data-theme="light"] .ns-pill {
+      background: rgba(14, 165, 233, 0.08);
+      border-color: rgba(14, 165, 233, 0.25);
+    }
+
     .ns-hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 0.75rem;
       justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Scroll Down Indicator ── */
+    .ns-scroll-cta-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+    .ns-scroll-indicator {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.65rem 1.4rem;
+      border-radius: 999px;
+      background: rgba(14, 19, 29, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-family: var(--font-mono, monospace);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      transition: transform 0.25s, border-color 0.25s, background 0.25s;
+    }
+    :root[data-theme="light"] .ns-scroll-indicator {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(14, 165, 233, 0.35);
+    }
+    .ns-scroll-indicator:hover {
+      transform: translateY(3px);
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.15);
+    }
+    .ns-bounce-arrow {
+      animation: arrowBounce 1.6s ease-in-out infinite;
+    }
+    @keyframes arrowBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
     }
 
     /* ── Info Grid ── */
     .ns-info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-      gap: 1.5rem;
-      margin: 3rem 0;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 1.25rem;
+      margin: 2.5rem 0;
     }
     .ns-info-card {
       background: var(--bg-card);
       border: 1px solid var(--surface-border);
       border-radius: 1rem;
-      padding: 1.75rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      padding: 1.6rem;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
     .ns-info-card:hover {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent), 0 4px 24px -4px rgba(99,102,241,0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(56, 189, 248, 0.12);
     }
     .ns-info-card-icon {
       font-size: 2rem;
@@ -107,7 +267,7 @@
       margin-bottom: 0.4rem;
     }
     .ns-info-card p, .ns-info-card address {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
       line-height: 1.6;
       font-style: normal;
@@ -118,150 +278,202 @@
     }
     .ns-info-card a:hover { text-decoration: underline; }
 
-    /* ── Services Grid ── */
-    .ns-services {
-      padding: clamp(3rem, 7vw, 5rem) 0;
-    }
-    .ns-services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
-      gap: 1.25rem;
-      margin-top: 2.5rem;
-    }
-    .ns-service-item {
-      background: var(--bg-card);
-      border: 1px solid var(--surface-border);
-      border-radius: 0.75rem;
-      padding: 1.5rem 1.25rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .ns-service-item:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-    }
-    .ns-service-icon {
-      font-size: 1.75rem;
-      flex-shrink: 0;
-      line-height: 1;
-    }
-    .ns-service-item h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
-    .ns-service-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
-    .ns-tool-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      margin-top: 0.8rem;
-      color: var(--accent);
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .ns-tool-link:hover { text-decoration: underline; }
-    .ns-tool-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
-    .ns-tool-note { margin-top: 0.35rem !important; color: var(--text-dim) !important; font-size: 0.76rem !important; }
-
-    /* ── Photo Gallery ── */
-    .ns-gallery {
-      padding: clamp(2rem, 5vw, 4rem) 0;
-    }
-    .ns-gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .ns-gallery-item {
+    /* ── International Visa Documentation Section ── */
+    .ns-visa-section {
+      padding: clamp(3rem, 7vw, 5.5rem) 0;
       position: relative;
-      border-radius: 0.75rem;
+    }
+    .ns-visa-banner-card {
+      position: relative;
+      border-radius: 1.25rem;
       overflow: hidden;
-      aspect-ratio: 4/3;
+      border: 1px solid rgba(56, 189, 248, 0.35);
       background: var(--bg-card);
-      border: 1px solid var(--surface-border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 30px rgba(56, 189, 248, 0.12);
+      margin-bottom: 2.5rem;
     }
-    .ns-gallery-item img {
+    .ns-visa-banner-img {
       width: 100%;
-      height: 100%;
+      height: auto;
+      max-height: 520px;
       object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-    .ns-gallery-item:hover img { transform: scale(1.04); }
-    .ns-gallery-caption {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 0.6rem 0.9rem;
-      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    /* ── Map CTA ── */
-    .ns-map-cta {
-      background: var(--bg-card);
-      border: 1px solid var(--surface-border);
-      border-radius: 1rem;
-      padding: clamp(2rem, 5vw, 3rem);
-      text-align: center;
-      margin: 3rem 0;
-    }
-    .ns-map-cta h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: 0.75rem; }
-    .ns-map-cta p { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 50ch; margin-left: auto; margin-right: auto; }
-    .ns-map-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
-
-    /* ── Team Section ── */
-    .ns-team {
-      padding: clamp(2rem, 5vw, 4rem) 0;
-    }
-    .ns-team-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .ns-team-card {
-      background: var(--bg-card);
-      border: 1px solid var(--surface-border);
-      border-radius: 1rem;
-      padding: 1.75rem;
-      text-align: center;
-    }
-    .ns-team-avatar {
-      width: 72px; height: 72px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent);
-      margin: 0 auto 1rem;
       display: block;
-      background: var(--bg-elevated);
     }
-    .ns-team-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
-    .ns-team-role { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
-    .ns-team-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
-    /* ── Back button ── */
-    .ns-back-link {
+    /* ── Trust Metrics with Animated Number Counters ── */
+    .ns-visa-stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+      gap: 1.25rem;
+      margin: 2.5rem 0;
+    }
+    .ns-visa-stat-item {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border-strong);
+      border-radius: 1rem;
+      padding: 1.6rem 1.25rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+    .ns-visa-stat-item:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.14);
+    }
+    .ns-visa-stat-num {
+      font-size: clamp(2.2rem, 4.5vw, 3rem);
+      font-weight: 800;
+      font-family: var(--font-mono, monospace);
+      color: var(--accent);
+      line-height: 1.1;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+    .ns-visa-stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .ns-visa-stat-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+      line-height: 1.45;
+    }
+
+    /* ── Visa Filter Tabs ── */
+    .ns-visa-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .ns-visa-filter-btn {
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--surface-border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .ns-visa-filter-btn:hover {
+      border-color: var(--surface-border-strong);
+      color: var(--text);
+    }
+    .ns-visa-filter-btn.active {
+      background: var(--gradient-accent);
+      color: #04101c;
+      border-color: transparent;
+      font-weight: 600;
+    }
+
+    /* ── Visa Cards Grid ── */
+    .ns-visa-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .ns-visa-card {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 1rem;
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+    .ns-visa-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(56, 189, 248, 0.08);
+    }
+    .ns-visa-card.is-dimmed {
+      opacity: 0.35;
+      transform: scale(0.98);
+    }
+    .ns-visa-card.is-highlighted {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent), 0 12px 36px rgba(56, 189, 248, 0.2);
+    }
+    .ns-visa-card-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono, monospace);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      width: fit-content;
+      margin-bottom: 1rem;
+    }
+    .ns-visa-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .ns-visa-card p {
+      font-size: 0.9rem;
       color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.875rem;
-      transition: color 0.2s;
-      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
     }
-    .ns-back-link:hover { color: var(--text); }
+    .ns-visa-checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem;
+      display: grid;
+      gap: 0.6rem;
+      flex: 1;
+    }
+    .ns-visa-checklist li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      line-height: 1.45;
+    }
+    .ns-visa-checklist li svg {
+      width: 16px;
+      height: 16px;
+      color: var(--green);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .ns-visa-cta-bar {
+      margin-top: 2.5rem;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.12));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 1rem;
+      padding: clamp(1.5rem, 3.5vw, 2.25rem);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
 
-    @media (max-width: 480px) {
-      .ns-info-grid, .ns-services-grid, .ns-team-cards { grid-template-columns: 1fr; }
-      .ns-gallery-grid { grid-template-columns: 1fr; }
-    }
-  
-    /* ── Showcase & Passport Spotlight Styles ── */
+    /* ── Store Showcase ── */
     .ns-shop-showcase {
-      padding: clamp(2rem, 5vw, 4rem) 0;
+      padding: clamp(2.5rem, 6vw, 4.5rem) 0;
     }
     .ns-showcase-grid {
       display: grid;
@@ -384,6 +596,116 @@
       color: var(--text-muted);
     }
 
+    /* ── Services Grid ── */
+    .ns-services {
+      padding: clamp(3rem, 7vw, 5rem) 0;
+    }
+    .ns-services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .ns-service-item {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .ns-service-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .ns-service-icon {
+      font-size: 1.75rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .ns-service-item h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .ns-service-item p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+    .ns-tool-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-top: 0.8rem;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .ns-tool-link:hover { text-decoration: underline; }
+    .ns-tool-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+    .ns-tool-note { margin-top: 0.35rem !important; color: var(--text-dim) !important; font-size: 0.76rem !important; }
+
+    /* ── Photo Gallery ── */
+    .ns-gallery {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+    }
+    .ns-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .ns-gallery-item {
+      position: relative;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+    }
+    .ns-gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .ns-gallery-item:hover img { transform: scale(1.04); }
+    .ns-gallery-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0.6rem 0.9rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+      color: #fff;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* ── Team Section ── */
+    .ns-team {
+      padding: clamp(2rem, 5vw, 4rem) 0;
+    }
+    .ns-team-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .ns-team-card {
+      background: var(--bg-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      text-align: center;
+    }
+    .ns-team-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent);
+      margin: 0 auto 1rem;
+      display: block;
+      background: var(--bg-elevated);
+    }
+    .ns-team-name { font-weight: 600; font-size: 1rem; margin-bottom: 0.2rem; }
+    .ns-team-role { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .ns-team-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
     /* ── FAQ Section ── */
     .ns-faq-grid {
       display: grid;
@@ -419,168 +741,44 @@
       margin: 0;
     }
 
-    @media (max-width: 680px) {
-      .ns-passport-spotlight {
-        grid-template-columns: 1fr;
-        gap: 1.25rem;
-      }
-      .ns-passport-icon {
-        width: 56px;
-        height: 56px;
-      }
-    }
-
-  
-    /* ── International Visa Documentation Section ── */
-    .ns-visa-section {
-      padding: clamp(3rem, 7vw, 5.5rem) 0;
-      position: relative;
-    }
-    .ns-visa-banner-card {
-      position: relative;
-      border-radius: 1.25rem;
-      overflow: hidden;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      background: var(--bg-card);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 30px rgba(56, 189, 248, 0.12);
-      margin-bottom: 2.5rem;
-    }
-    .ns-visa-banner-img {
-      width: 100%;
-      height: auto;
-      max-height: 520px;
-      object-fit: cover;
-      display: block;
-    }
-    .ns-visa-stats-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-      gap: 1.25rem;
-      margin: 2.5rem 0;
-    }
-    .ns-visa-stat-item {
-      background: var(--bg-card);
-      border: 1px solid var(--surface-border-strong);
-      border-radius: 1rem;
-      padding: 1.6rem 1.25rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
-    }
-    .ns-visa-stat-item:hover {
-      transform: translateY(-3px);
-      border-color: var(--accent);
-      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.12);
-    }
-    .ns-visa-stat-num {
-      font-size: clamp(2.2rem, 4.5vw, 3rem);
-      font-weight: 800;
-      font-family: var(--font-mono, monospace);
-      color: var(--accent);
-      line-height: 1.1;
-      margin-bottom: 0.4rem;
-      display: block;
-    }
-    .ns-visa-stat-label {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text);
-      font-weight: 600;
-    }
-    .ns-visa-stat-desc {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 0.35rem;
-      line-height: 1.45;
-    }
-    .ns-visa-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .ns-visa-card {
+    /* ── Map CTA ── */
+    .ns-map-cta {
       background: var(--bg-card);
       border: 1px solid var(--surface-border);
       border-radius: 1rem;
-      padding: 2rem 1.75rem;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      padding: clamp(2rem, 5vw, 3rem);
+      text-align: center;
+      margin: 3rem 0;
     }
-    .ns-visa-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--accent);
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(56, 189, 248, 0.08);
-    }
-    .ns-visa-card-badge {
+    .ns-map-cta h2 { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: 0.75rem; }
+    .ns-map-cta p { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 50ch; margin-left: auto; margin-right: auto; }
+    .ns-map-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+
+    /* ── Back button ── */
+    .ns-back-link {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-family: var(--font-mono, monospace);
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(56, 189, 248, 0.1);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      width: fit-content;
-      margin-bottom: 1rem;
-    }
-    .ns-visa-card h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: var(--text);
-    }
-    .ns-visa-card p {
-      font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 1.25rem;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+      margin-bottom: 1.5rem;
     }
-    .ns-visa-checklist {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 1.5rem;
-      display: grid;
-      gap: 0.6rem;
-      flex: 1;
-    }
-    .ns-visa-checklist li {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: flex-start;
-      gap: 0.55rem;
-      line-height: 1.45;
-    }
-    .ns-visa-checklist li svg {
-      width: 16px;
-      height: 16px;
-      color: var(--green);
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .ns-visa-cta-bar {
-      margin-top: 2.5rem;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.12));
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 1rem;
-      padding: clamp(1.5rem, 3.5vw, 2.25rem);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-    }
+    .ns-back-link:hover { color: var(--text); }
 
+    /* ── Mobile Polish ── */
+    @media (max-width: 680px) {
+      .ns-hero { padding-top: calc(var(--header-h) + 2rem); }
+      .ns-hero-actions { flex-direction: column; align-items: stretch; }
+      .ns-hero-actions .btn { width: 100%; min-height: 44px; text-align: center; }
+      .ns-passport-spotlight { grid-template-columns: 1fr; gap: 1.25rem; }
+      .ns-passport-icon { width: 56px; height: 56px; }
+      .ns-info-grid, .ns-services-grid, .ns-team-cards, .ns-showcase-grid { grid-template-columns: 1fr; }
+      .ns-gallery-grid { grid-template-columns: 1fr; }
+      .ns-visa-cta-bar { flex-direction: column; align-items: stretch; text-align: center; }
+      .ns-visa-cta-bar .btn { width: 100%; }
+    }
   </style>
 
   <!-- JSON-LD: Local Business Schema -->
@@ -670,30 +868,66 @@
 
   <main id="main">
 
-    <!-- ── HERO ── -->
-    <section class="ns-hero">
-      <div class="container">
+    <!-- ── HERO WITH DOCUMENTATION BACKGROUND ── -->
+    <section class="ns-hero" id="topHero">
+      <div class="ns-hero-bg-wrapper" aria-hidden="true">
+        <div class="ns-hero-bg" id="heroBg"></div>
+        <div class="ns-hero-overlay"></div>
+      </div>
+      <div class="container ns-hero-container">
         <a class="ns-back-link" href="index.html#namaste-suman">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
           Back to portfolio
         </a>
-        <span class="ns-badge">📍 Gaindakot, Nawalparasi East</span>
-        <h1 class="ns-hero-title">Namaste Suman<br><span class="gradient-text">Communication</span></h1>
-        <p class="ns-hero-sub">Your trusted local digital service center at the heart of Gaindakot — offering documentation, printing, photo services, online forms, and cyber assistance with clear, dependable support.</p>
+
+        <!-- Top Badges & Live Status -->
+        <div class="ns-hero-top-badges">
+          <span class="ns-badge">📍 GAINDAKOT-5, NAGARPALIKA CHOWK · 10+ YRS EXPERIENCE</span>
+          <span class="ns-live-pill is-open" id="nsLivePill" title="Namaste Suman Communication Business Status">
+            <span class="ns-live-dot" aria-hidden="true"></span>
+            <span id="nsLiveStatusText">Open Today: 9:00 AM – 6:00 PM</span>
+          </span>
+        </div>
+
+        <h1 class="ns-hero-title">
+          Namaste Suman<br>
+          <span class="gradient-text">Communication &amp; Visa Hub</span>
+        </h1>
+        <p class="ns-hero-sub">
+          Your trusted local center for <strong>International Visa Documentation</strong> (Student, Working &amp; Visit), Government Civic Portals, and Professional Photo &amp; Print Services in Gaindakot, Nawalpur.
+        </p>
+
+        <!-- Quick Category Highlights (Pills) -->
+        <div class="ns-hero-pills" aria-label="Key highlights">
+          <span class="ns-pill">🎓 Student Visas</span>
+          <span class="ns-pill">💼 Working Visas</span>
+          <span class="ns-pill">✈️ Visit &amp; Tourist Visas</span>
+          <span class="ns-pill">📜 40,000+ Files Processed</span>
+          <span class="ns-pill">📸 Instant Passport Photos</span>
+        </div>
+
+        <!-- Hero CTAs -->
         <div class="ns-hero-actions">
           <a href="tel:+9779866078388" class="btn btn-primary">📞 Call Now: 9866078388</a>
+          <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%20I%20need%20visa%20and%20document%20assistance" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" aria-label="Message Namaste Suman on WhatsApp">💬 WhatsApp Us</a>
           <a href="https://gemini.google.com/share/1288d4c28822?skid=cc881ac2-f48c-435f-8614-6e0c28d983bf" target="_blank" rel="noopener noreferrer" class="btn btn-ghost" aria-label="Open Passport Photo Generator in Gemini">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:text-bottom; margin-right:4px;"><path d="M14.5 4 16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2z"/><circle cx="12" cy="13" r="3"/></svg>
-            Passport Photo Generator ↗
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4 16 6h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3l1.5-2z"/><circle cx="12" cy="13" r="3"/></svg>
+            Passport Photo Tool ↗
           </a>
           <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">📍 View on Maps ↗</a>
-          <a href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="Message Namaste Suman Communication on WhatsApp">💬 WhatsApp</a>
-          <a href="mailto:namastesuman.com@gmail.com" class="btn btn-ghost">✉️ Email Us</a>
+        </div>
+
+        <!-- Scroll Down Callout -->
+        <div class="ns-scroll-cta-wrap">
+          <a href="#visa-documentation" class="ns-scroll-indicator" id="scrollDownBtn" aria-label="Scroll down to explore visa services">
+            <span>Scroll Down To Explore</span>
+            <svg class="ns-bounce-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- ── QUICK INFO CARDS ── -->
+    <!-- ── QUICK INFO CARDS ── --><!-- ── QUICK INFO CARDS ── -->
     <section class="section" aria-label="Shop information">
       <div class="container">
         <div class="ns-info-grid">
@@ -818,10 +1052,18 @@
           </div>
         </div>
 
+        <!-- Interactive Visa Filter Bar -->
+        <div class="ns-visa-filter-bar reveal-up" role="tablist" aria-label="Filter visa types">
+          <button type="button" class="ns-visa-filter-btn active" data-visa-filter="all">All Visa Types</button>
+          <button type="button" class="ns-visa-filter-btn" data-visa-filter="student">🎓 Student Visas</button>
+          <button type="button" class="ns-visa-filter-btn" data-visa-filter="working">💼 Working Visas</button>
+          <button type="button" class="ns-visa-filter-btn" data-visa-filter="visit">✈️ Visit Visas</button>
+        </div>
+
         <!-- Three Dedicated Visa Categories -->
         <div class="ns-visa-cards-grid">
           <!-- Student Visas -->
-          <div class="ns-visa-card reveal-up">
+          <div class="ns-visa-card reveal-up" data-visa-type="student">
             <span class="ns-visa-card-badge">🎓 Higher Education</span>
             <h3>Student Visas (विद्यार्थी भिसा)</h3>
             <p>End-to-end documentation packages tailored for university admissions, embassy interviews, and GTE/genuine student requirements.</p>
@@ -849,7 +1091,7 @@
           </div>
 
           <!-- Working Visas -->
-          <div class="ns-visa-card reveal-up">
+          <div class="ns-visa-card reveal-up" data-visa-type="working">
             <span class="ns-visa-card-badge">💼 Employment &amp; Labor</span>
             <h3>Working Visas (रोजगार भिसा)</h3>
             <p>Accurate, compliant document sets for overseas employment permits, labor approvals, and international employer verifications.</p>
@@ -877,7 +1119,7 @@
           </div>
 
           <!-- Visit & Tourist Visas -->
-          <div class="ns-visa-card reveal-up">
+          <div class="ns-visa-card reveal-up" data-visa-type="visit">
             <span class="ns-visa-card-badge">✈️ Travel &amp; Tourism</span>
             <h3>Visit Visas (भ्रमण तथा पर्यटक भिसा)</h3>
             <p>Hassle-free documentation for holiday travel, family visits, business conferences, and tourist visa applications worldwide.</p>
@@ -919,7 +1161,7 @@
       </div>
     </section>
 
-    <!-- ── PASSPORT SIZE PHOTO GENERATOR SPOTLIGHT ── -->
+    <!-- ── PASSPORT SIZE PHOTO GENERATOR SPOTLIGHT ── --><!-- ── PASSPORT SIZE PHOTO GENERATOR SPOTLIGHT ── -->
     <section class="section" aria-labelledby="photoToolTitle">
       <div class="container">
         <div class="ns-passport-spotlight reveal-up">
@@ -1207,10 +1449,123 @@
       counters.forEach((c) => observer.observe(c));
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initVisaCounters);
-    } else {
+    // Hero Background Parallax Effect
+    function initHeroParallax() {
+      const bg = document.getElementById('heroBg');
+      const hero = document.getElementById('topHero');
+      if (!bg || !hero) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        if (y < hero.offsetHeight + 80) {
+          bg.style.transform = `scale(1.05) translateY(${y * 0.28}px)`;
+        }
+      }, { passive: true });
+
+      if (window.matchMedia('(pointer: fine)').matches) {
+        hero.addEventListener('pointermove', (e) => {
+          const rect = hero.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          bg.style.setProperty('--mouse-shift-x', `${x * 16}px`);
+          bg.style.setProperty('--mouse-shift-y', `${y * 16}px`);
+        }, { passive: true });
+      }
+    }
+
+    // Live Business Status Calculator for Nepal Time
+    function updateLiveStatus() {
+      const pill = document.getElementById('nsLivePill');
+      const text = document.getElementById('nsLiveStatusText');
+      if (!pill || !text) return;
+
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const npt = new Date(utc + (3600000 * 5.75));
+      const day = npt.getDay(); // 0 is Sun, 6 is Sat
+      const hour = npt.getHours() + (npt.getMinutes() / 60);
+
+      const isOpen = (day >= 0 && day <= 5) && (hour >= 9 && hour < 18);
+
+      if (isOpen) {
+        pill.classList.remove('is-closed');
+        pill.classList.add('is-open');
+        text.textContent = 'Open Today until 6:00 PM';
+        pill.title = 'Namaste Suman Communication is currently open';
+      } else {
+        pill.classList.remove('is-open');
+        pill.classList.add('is-closed');
+        const opensWhen = (day === 5 && hour >= 18) || day === 6 ? 'Opens Sunday at 9:00 AM' : 'Opens Tomorrow at 9:00 AM';
+        text.textContent = opensWhen;
+        pill.title = 'Namaste Suman Communication is currently closed';
+      }
+    }
+
+    // Visa Category Filter Tabs
+    function initVisaFilter() {
+      const filterBtns = document.querySelectorAll('[data-visa-filter]');
+      const cards = document.querySelectorAll('.ns-visa-card[data-visa-type]');
+      if (!filterBtns.length || !cards.length) return;
+
+      filterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const filter = btn.getAttribute('data-visa-filter');
+          filterBtns.forEach((b) => b.classList.toggle('active', b === btn));
+          cards.forEach((card) => {
+            const cardType = card.getAttribute('data-visa-type');
+            const match = filter === 'all' || cardType === filter;
+            card.classList.toggle('is-highlighted', match && filter !== 'all');
+            card.classList.toggle('is-dimmed', !match);
+          });
+        });
+      });
+    }
+
+    // Scroll Down Button Smooth Scroll
+    function initScrollDown() {
+      const btn = document.getElementById('scrollDownBtn');
+      if (!btn) return;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById('visa-documentation');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    // 3D Tilt for Visa and Showcase Cards
+    function initCardTilt() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (!window.matchMedia('(pointer: fine)').matches) return;
+      const cards = document.querySelectorAll('.ns-visa-card, .ns-showcase-card, .ns-info-card');
+      cards.forEach((card) => {
+        card.addEventListener('pointermove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = (e.clientX - rect.left) / rect.width - 0.5;
+          const y = (e.clientY - rect.top) / rect.height - 0.5;
+          card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateY(-3px)`;
+        });
+        card.addEventListener('pointerleave', () => {
+          card.style.transform = '';
+        });
+      });
+    }
+
+    function initPage() {
       initVisaCounters();
+      initHeroParallax();
+      updateLiveStatus();
+      initVisaFilter();
+      initScrollDown();
+      initCardTilt();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initPage);
+    } else {
+      initPage();
     }
   </script>
 
