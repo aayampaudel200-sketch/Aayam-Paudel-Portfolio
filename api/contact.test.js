@@ -1,17 +1,12 @@
 const assert = require('node:assert/strict');
-const { after, before, test } = require('node:test');
+const { after, before, beforeEach, test } = require('node:test');
 const contactHandler = require('./contact');
 
 const originalEnv = { ...process.env };
 const originalFetch = global.fetch;
-let requestNumber = 0;
 
 before(() => {
-  process.env.RESEND_API_KEY = 'test_api_key';
-  process.env.RESEND_FROM_EMAIL = 'Portfolio <contact@example.com>';
-  process.env.CONTACT_TOKEN_SECRET = 'test-only-contact-token-secret-value';
-  process.env.CONTACT_ALLOWED_ORIGINS = 'https://www.aayampaudel.com.np';
-  process.env.CONTACT_SITE_URL = 'https://www.aayampaudel.com.np';
+  process.env.RESEND_API_KEY = 'test_resend_api_key_123';
 });
 
 after(() => {
@@ -20,6 +15,10 @@ after(() => {
   }
   Object.assign(process.env, originalEnv);
   global.fetch = originalFetch;
+});
+
+beforeEach(() => {
+  process.env.RESEND_API_KEY = 'test_resend_api_key_123';
 });
 
 function createResponse() {
@@ -46,151 +45,159 @@ function createResponse() {
   };
 }
 
-function createRequest({ method = 'POST', url = '/api/contact', body, ip } = {}) {
-  requestNumber += 1;
+function createRequest({ method = 'POST', url = '/api/contact', body } = {}) {
   return {
     method,
     url,
     body,
     headers: {
-      origin: 'https://www.aayampaudel.com.np',
-      'x-vercel-forwarded-for': ip || `192.0.2.${requestNumber}`,
+      'content-type': 'application/json',
     },
   };
 }
 
-test('rejects invalid addresses before calling the email provider', async () => {
-  let fetchCalled = false;
-  global.fetch = async () => {
-    fetchCalled = true;
-    return Response.json({ id: 'unused' });
-  };
-
+test('rejects non-POST methods with 405 Method Not Allowed', async () => {
+  const req = createRequest({ method: 'GET' });
   const res = createResponse();
-  await contactHandler(createRequest({
-    body: {
-      email: 'not-an-email',
-      message: 'A message that is long enough.',
-    },
-  }), res);
 
-  assert.equal(res.statusCode, 400);
-  assert.equal(fetchCalled, false);
-});
-
-test('rejects honeypot submissions without sending email', async () => {
-  let fetchCalled = false;
-  global.fetch = async () => {
-    fetchCalled = true;
-    return Response.json({ id: 'unused' });
-  };
-
-  const res = createResponse();
-  await contactHandler(createRequest({
-    body: {
-      email: 'visitor@example.com',
-      message: 'A message that is long enough.',
-      website: 'bot-filled-value',
-    },
-  }), res);
-
-  assert.equal(res.statusCode, 400);
-  assert.equal(fetchCalled, false);
-});
-
-test('requires a same-origin request', async () => {
-  const req = createRequest({
-    body: { email: 'visitor@example.com', message: 'A message that is long enough.' },
-  });
-  req.headers.origin = 'https://attacker.example';
-
-  const res = createResponse();
   await contactHandler(req, res);
 
-  assert.equal(res.statusCode, 403);
+  assert.equal(res.statusCode, 405);
+  assert.equal(res.headers['Allow'], 'POST');
+  assert.equal(res.body.success, false);
+  assert.equal(res.body.error, 'Method Not Allowed');
 });
 
-test('reports missing provider configuration instead of pretending to send', async () => {
-  const apiKey = process.env.RESEND_API_KEY;
+test('returns 500 when RESEND_API_KEY is missing', async () => {
   delete process.env.RESEND_API_KEY;
 
-  const res = createResponse();
-  await contactHandler(createRequest({
+  const req = createRequest({
+    method: 'POST',
     body: {
-      email: 'visitor@example.com',
-      message: 'A message that is long enough.',
+      name: 'John Doe',
+      email: 'john@example.com',
+      subject: 'Hello',
+      message: 'This is a test message.',
     },
-  }), res);
+  });
+  const res = createResponse();
 
-  process.env.RESEND_API_KEY = apiKey;
-  assert.equal(res.statusCode, 503);
-  assert.match(res.body.error, /not configured/);
+  await contactHandler(req, res);
+
+  assert.equal(res.statusCode, 500);
+  assert.deepEqual(res.body, {
+    success: false,
+    error: 'Server configuration error: RESEND_API_KEY missing',
+  });
 });
 
-test('confirms sender ownership before sending to the portfolio inbox', async () => {
-  const providerRequests = [];
-  global.fetch = async (_url, options) => {
-    providerRequests.push({
-      headers: options.headers,
-      body: JSON.parse(options.body),
+test('validates non-empty fields (name, email, subject, message)', async () => {
+  const testCases = [
+    { name: '', email: 'john@example.com', subject: 'Inquiry', message: 'Hello!' },
+    { name: 'John', email: '', subject: 'Inquiry', message: 'Hello!' },
+    { name: 'John', email: 'john@example.com', subject: '', message: 'Hello!' },
+    { name: 'John', email: 'john@example.com', subject: 'Inquiry', message: '' },
+    { name: '   ', email: 'john@example.com', subject: 'Inquiry', message: 'Hello!' },
+  ];
+
+  for (const body of testCases) {
+    const req = createRequest({ method: 'POST', body });
+    const res = createResponse();
+
+    await contactHandler(req, res);
+
+    assert.equal(res.statusCode, 400, `Expected 400 for payload: ${JSON.stringify(body)}`);
+    assert.equal(res.body.success, false);
+  }
+});
+
+test('validates email format', async () => {
+  const req = createRequest({
+    method: 'POST',
+    body: {
+      name: 'John',
+      email: 'not-an-email',
+      subject: 'Inquiry',
+      message: 'Hello world!',
+    },
+  });
+  const res = createResponse();
+
+  await contactHandler(req, res);
+
+  assert.equal(res.statusCode, 400);
+  assert.equal(res.body.success, false);
+  assert.match(res.body.error, /invalid email/i);
+});
+
+test('sends email successfully to Resend and returns 200', async () => {
+  let capturedUrl = '';
+  let capturedOptions = null;
+
+  global.fetch = async (url, options) => {
+    capturedUrl = url;
+    capturedOptions = options;
+    return new Response(JSON.stringify({ id: 'resend_email_id_123' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
     });
-    return Response.json({ id: `email-${providerRequests.length}` });
   };
 
-  const submitResponse = createResponse();
-  await contactHandler(createRequest({
+  const req = createRequest({
+    method: 'POST',
     body: {
-      name: 'Site Visitor',
-      email: 'visitor@example.com',
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      subject: 'Website Redesign',
       message: 'I would like to discuss a project with you.',
     },
-  }), submitResponse);
-
-  assert.equal(submitResponse.statusCode, 200);
-  assert.equal(submitResponse.body.status, 'verification_sent');
-  assert.equal(providerRequests.length, 1);
-  assert.deepEqual(providerRequests[0].body.to, ['visitor@example.com']);
-
-  const confirmationUrl = providerRequests[0].body.text.match(/https:\/\/www\.aayampaudel\.com\.np\/api\/contact\?token=(\S+)/);
-  assert.ok(confirmationUrl);
-  const token = confirmationUrl[1];
-
-  const confirmationResponse = createResponse();
-  await contactHandler(createRequest({
-    method: 'GET',
-    url: `/api/contact?token=${encodeURIComponent(token)}`,
-  }), confirmationResponse);
-  assert.equal(confirmationResponse.statusCode, 200);
-  assert.match(confirmationResponse.body, /Confirm and send message/);
-
-  const sendRequest = createRequest({
-    method: 'POST',
-    body: `token=${encodeURIComponent(token)}`,
   });
-  sendRequest.headers['content-type'] = 'application/x-www-form-urlencoded';
-  const sendResponse = createResponse();
-  await contactHandler(sendRequest, sendResponse);
+  const res = createResponse();
 
-  assert.equal(sendResponse.statusCode, 200);
-  assert.match(sendResponse.body, /accepted for delivery/);
-  assert.equal(providerRequests.length, 2);
-  assert.deepEqual(providerRequests[1].body.to, ['aayampaudel200@gmail.com']);
-  assert.equal(providerRequests[1].body.reply_to, 'visitor@example.com');
-  assert.match(providerRequests[1].body.text, /I would like to discuss a project with you\./);
+  await contactHandler(req, res);
+
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(res.body, { success: true });
+
+  assert.equal(capturedUrl, 'https://api.resend.com/emails');
+  assert.equal(capturedOptions.method, 'POST');
+  assert.equal(capturedOptions.headers['Authorization'], 'Bearer test_resend_api_key_123');
+
+  const parsedBody = JSON.parse(capturedOptions.body);
+  assert.equal(parsedBody.from, 'Portfolio Contact Form <onboarding@resend.dev>');
+  assert.deepEqual(parsedBody.to, ['aayampaudel200@gmail.com']);
+  assert.equal(parsedBody.reply_to, 'jane@example.com');
+  assert.equal(parsedBody.subject, '[Portfolio Contact] Website Redesign from Jane Smith');
+  assert.match(parsedBody.html, /Jane Smith/);
+  assert.match(parsedBody.html, /jane@example\.com/);
+  assert.match(parsedBody.html, /I would like to discuss a project with you\./);
 });
 
-test('does not disclose provider errors', async () => {
-  global.fetch = async () => new Response('private provider details', { status: 500 });
+test('handles Resend API failure gracefully with 500 error', async () => {
+  global.fetch = async () => {
+    return new Response(
+      JSON.stringify({ message: 'Domain verification required or daily limit reached' }),
+      {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  };
 
-  const res = createResponse();
-  await contactHandler(createRequest({
+  const req = createRequest({
+    method: 'POST',
     body: {
-      email: 'visitor@example.com',
-      message: 'A message that is long enough.',
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      subject: 'Inquiry',
+      message: 'Hello there!',
     },
-  }), res);
+  });
+  const res = createResponse();
 
-  assert.equal(res.statusCode, 502);
-  assert.equal(res.body.error, 'The confirmation email could not be sent. Please try again later.');
-  assert.doesNotMatch(JSON.stringify(res.body), /private provider details/);
+  await contactHandler(req, res);
+
+  assert.equal(res.statusCode, 500);
+  assert.equal(res.body.success, false);
+  assert.match(res.body.error, /Resend error/);
 });

@@ -1,48 +1,87 @@
 (() => {
-  const form = document.getElementById('contactForm');
-  const status = document.getElementById('contactFormStatus');
-  const submitButton = document.getElementById('contactSubmit');
+  const form =
+    document.getElementById('contactForm') ||
+    document.getElementById('contact-form') ||
+    document.querySelector('.contact-form');
 
-  if (!form || !status || !submitButton) return;
+  if (!form) return;
+
+  const status =
+    document.getElementById('contactFormStatus') ||
+    form.querySelector('.contact-form-status');
+
+  const submitButton =
+    document.getElementById('contactSubmit') ||
+    form.querySelector('button[type="submit"]');
 
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+
     if (!form.reportValidity()) return;
 
     const formData = new FormData(form);
-    const payload = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      message: formData.get('message'),
-      website: formData.get('website'),
-    };
+    const name = (formData.get('name') || '').trim();
+    const email = (formData.get('email') || '').trim();
+    const subject = (formData.get('subject') || '').trim();
+    const message = (formData.get('message') || '').trim();
 
-    submitButton.disabled = true;
-    status.dataset.state = '';
-    status.textContent = 'Sending a confirmation link…';
+    if (!name || !email || !subject || !message) {
+      if (status) {
+        status.dataset.state = 'error';
+        status.textContent = 'Please fill out all fields before submitting.';
+      }
+      return;
+    }
+
+    const originalButtonText = submitButton ? submitButton.textContent : 'Send message';
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending message…';
+    }
+
+    if (status) {
+      status.dataset.state = '';
+      status.textContent = 'Sending your message…';
+    }
 
     try {
-      const response = await fetch(form.action, {
+      const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ name, email, subject, message }),
       });
-      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || 'The message could not be sent.');
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result || !result.success) {
+        const errorMsg =
+          result && result.error ? result.error : 'Failed to send message. Please try again.';
+        throw new Error(errorMsg);
       }
 
-      status.dataset.state = 'success';
-      status.textContent = 'Check your email and open the confirmation link to send your message.';
+      if (status) {
+        status.dataset.state = 'success';
+        status.textContent = 'Thank you! Your message has been sent successfully.';
+      }
+
+      form.reset();
     } catch (error) {
-      status.dataset.state = 'error';
-      status.textContent = error instanceof Error
-        ? error.message
-        : 'The message could not be sent. Please try again later.';
+      if (status) {
+        status.dataset.state = 'error';
+        status.textContent =
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong while sending your message. Please try again later.';
+      }
     } finally {
-      submitButton.disabled = false;
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
     }
   });
 })();

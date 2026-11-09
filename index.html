@@ -380,12 +380,16 @@
         </div>
         <form class="contact-form" id="contactForm" action="/api/contact" method="post">
           <div class="contact-field">
-            <label for="contactName">Name <span>(optional)</span></label>
-            <input id="contactName" name="name" type="text" maxlength="100" autocomplete="name" placeholder="Your name">
+            <label for="contactName">Name</label>
+            <input id="contactName" name="name" type="text" maxlength="100" autocomplete="name" required placeholder="Your name">
           </div>
           <div class="contact-field">
             <label for="contactEmail">Email address</label>
             <input id="contactEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com">
+          </div>
+          <div class="contact-field">
+            <label for="contactSubject">Subject</label>
+            <input id="contactSubject" name="subject" type="text" maxlength="200" required placeholder="What is this regarding?">
           </div>
           <div class="contact-field">
             <label for="contactMessage">Message</label>
@@ -397,7 +401,6 @@
           </div>
           <button type="submit" class="btn btn-primary contact-submit" id="contactSubmit">Send message</button>
           <p class="contact-form-status" id="contactFormStatus" role="status" aria-live="polite"></p>
-          <p class="contact-form-note">To protect your inbox, you’ll receive a confirmation link before your message is sent.</p>
         </form>
         <div class="contact-meta">
           <a href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer">Namaste Suman Communication · Gaindakot, Nawalparasi East, Nepal</a>
