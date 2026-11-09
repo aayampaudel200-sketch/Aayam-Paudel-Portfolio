@@ -35,7 +35,7 @@
   </url>
   <url>
     <loc>https://www.aayampaudel.com.np/projects.html</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
@@ -46,5 +46,11 @@
       <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
       <image:title>Municipal citizenship recommendation portal prototype by Aayam Paudel</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://www.aayampaudel.com.np/playground.html</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

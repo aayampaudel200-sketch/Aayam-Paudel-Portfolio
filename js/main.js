@@ -69,6 +69,8 @@ function showToast(message) {
   }, 2600);
 }
 
+window.showToast = showToast;
+
 /* ---------- Persistent light/dark theme ---------- */
 function initThemeToggle() {
   const toggles = document.querySelectorAll('.theme-toggle');
@@ -173,7 +175,7 @@ function getSearchSectionTitle(section, pageTitle) {
 }
 
 async function loadSiteSearchIndex() {
-  const pages = ['index.html', 'about.html', 'projects.html'];
+  const pages = ['index.html', 'about.html', 'projects.html', 'playground.html'];
   const pageResults = await Promise.allSettled(pages.map(async (path) => {
     const pageUrl = new URL(path, window.location.href);
     const response = await fetch(pageUrl, { headers: { Accept: 'text/html' } });
@@ -569,8 +571,12 @@ function initMain() {
   highlightSearchDestination();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
-  if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
-    document.querySelectorAll('[data-tilt]').forEach((card) => {
+  function initTiltCards(root = document) {
+    if (reducedMotion || !window.matchMedia('(pointer: fine)').matches) return;
+
+    root.querySelectorAll('[data-tilt]').forEach((card) => {
+      if (card.dataset.tiltBound === '1') return;
+      card.dataset.tiltBound = '1';
       const maxTilt = Number(card.dataset.tiltMax || 6);
       let frame = null;
 
@@ -593,6 +599,9 @@ function initMain() {
       });
     });
   }
+
+  window.__initTiltCards = initTiltCards;
+  initTiltCards();
 
   /* ---------- Configurable social links ---------- */
   const LINKEDIN_URL = ''; // e.g. 'https://www.linkedin.com/in/aayampaudel'
@@ -803,10 +812,155 @@ function initMain() {
     }, { once: true });
   });
 
+  /* ---------- Interactive hero terminal ---------- */
+  function initHeroTerminal() {
+    const terminal = document.getElementById('heroTerminal');
+    if (!terminal) return;
+
+    const output = terminal.querySelector('.terminal-output');
+    const form = terminal.querySelector('.terminal-form');
+    const input = terminal.querySelector('.terminal-input');
+    if (!output || !form || !input) return;
+
+    const aboutText = [
+      'Aayam Paudel — B.Sc. CSIT student & full-stack web developer from Nepal.',
+      'I write HTML, CSS, JavaScript, PHP, Python, and SQL.',
+      'Currently building practical web apps and shipping them on Vercel.',
+    ];
+
+    const projectLines = [
+      'haat-bazzar/          Live marketplace concept',
+      'municipal-portal/     Civic tech hackathon prototype',
+      'aayam-portfolio/      This interactive portfolio site',
+      '',
+      'Tip: open projects.html for full details.',
+    ];
+
+    function appendLine(text, className = '') {
+      const line = document.createElement('p');
+      if (className) line.className = className;
+      line.textContent = text;
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function appendBlock(lines, className = '') {
+      lines.forEach((line) => appendLine(line, className));
+    }
+
+    function runCommand(raw) {
+      const command = raw.trim().toLowerCase();
+      appendLine(`guest@aayam:~$ ${raw}`, 'terminal-cmd');
+
+      if (!command) return;
+
+      if (command === 'help') {
+        appendBlock([
+          'Available commands:',
+          '  cat about.txt     — short bio',
+          '  list projects     — featured projects',
+          '  clear             — clear the terminal',
+          '  help              — show this list',
+        ], 'terminal-ok');
+        return;
+      }
+
+      if (command === 'cat about.txt' || command === 'cat about') {
+        appendBlock(aboutText, 'terminal-ok');
+        return;
+      }
+
+      if (command === 'list projects' || command === 'ls projects' || command === 'ls') {
+        appendBlock(projectLines, 'terminal-ok');
+        return;
+      }
+
+      if (command === 'clear' || command === 'cls') {
+        output.replaceChildren();
+        appendLine('Terminal cleared. Type help to begin.', 'terminal-muted');
+        return;
+      }
+
+      appendLine(`Command not found: ${raw}. Type help for available commands.`, 'terminal-error');
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = input.value;
+      input.value = '';
+      runCommand(value);
+    });
+
+    terminal.addEventListener('click', () => input.focus());
+  }
+
+  /* ---------- Tech stack filtering + proficiency tooltips ---------- */
+  function initSkillTags() {
+    const filterBar = document.getElementById('skillFilterBar');
+    const skillTags = [...document.querySelectorAll('.skill-tag[data-skill]')];
+    if (!skillTags.length) return;
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'skill-tooltip';
+    tooltip.hidden = true;
+    tooltip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tooltip);
+
+    function hideTooltip() {
+      tooltip.hidden = true;
+    }
+
+    function showTooltip(tag) {
+      const years = tag.dataset.years || '1';
+      const level = tag.dataset.level || 'Familiar';
+      const name = tag.dataset.skill || tag.textContent.trim();
+      tooltip.innerHTML = `<strong>${name}</strong><span>${years} yr${years === '1' ? '' : 's'} experience</span><span>Proficiency: ${level}</span>`;
+      tooltip.hidden = false;
+
+      const rect = tag.getBoundingClientRect();
+      const tipWidth = tooltip.offsetWidth;
+      const left = Math.min(
+        Math.max(12, rect.left + rect.width / 2 - tipWidth / 2),
+        window.innerWidth - tipWidth - 12
+      );
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${rect.top + window.scrollY - tooltip.offsetHeight - 10}px`;
+    }
+
+    skillTags.forEach((tag) => {
+      tag.setAttribute('tabindex', '0');
+      tag.addEventListener('pointerenter', () => showTooltip(tag));
+      tag.addEventListener('pointerleave', hideTooltip);
+      tag.addEventListener('focus', () => showTooltip(tag));
+      tag.addEventListener('blur', hideTooltip);
+    });
+
+    window.addEventListener('scroll', hideTooltip, { passive: true });
+
+    if (!filterBar) return;
+
+    const buttons = [...filterBar.querySelectorAll('[data-skill-filter]')];
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.skillFilter;
+        buttons.forEach((btn) => btn.classList.toggle('active', btn === button));
+
+        skillTags.forEach((tag) => {
+          const category = tag.dataset.category || 'all';
+          const match = filter === 'all' || category === filter || category.split(' ').includes(filter);
+          tag.classList.toggle('is-dimmed', !match);
+          tag.classList.toggle('is-highlighted', match && filter !== 'all');
+        });
+      });
+    });
+  }
+
   // Initialize new interactive enhancements
   initMagneticButtons();
   initGitHubWidget();
   initSystemStatusBadge();
+  initHeroTerminal();
+  initSkillTags();
 }
 
 if (document.readyState === 'loading') {

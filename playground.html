@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playground / Labs — Aayam Paudel</title>
+  <meta name="description" content="Interactive mini experiments, CSS/JS labs, and algorithm demos by Aayam Paudel.">
+  <meta property="og:title" content="Playground / Labs — Aayam Paudel">
+  <meta property="og:description" content="Interactive mini experiments, CSS/JS labs, and algorithm demos by Aayam Paudel.">
+  <meta property="og:site_name" content="Aayam Paudel Portfolio">
+  <meta property="og:url" content="https://aayampaudel.com.np/playground.html">
+  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Aayam Paudel developer playground labs">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Playground / Labs — Aayam Paudel">
+  <meta name="twitter:description" content="Interactive mini experiments, CSS/JS labs, and algorithm demos by Aayam Paudel.">
+  <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <link rel="canonical" href="https://aayampaudel.com.np/playground.html">
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=interactive-labs">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="header-inner">
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <nav class="desktop-nav" aria-label="Primary">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="playground.html" class="nav-link active">Playground</a>
+        <a href="index.html#contact" class="nav-link">Contact</a>
+      </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
+      <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
+      <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path></svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <form class="site-search site-search--mobile" role="search">
+        <label class="visually-hidden" for="siteSearchMobile">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchMobile" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchMobileResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          </button>
+        </div>
+        <div class="site-search-results" id="siteSearchMobileResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
+      <a href="index.html" class="mobile-link">Home</a>
+      <a href="about.html" class="mobile-link">About</a>
+      <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="playground.html" class="mobile-link active">Playground</a>
+      <a href="index.html#contact" class="mobile-link">Contact</a>
+      <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-intro section">
+      <div class="container">
+        <p class="eyebrow reveal-up">LABS · EXPERIMENTS</p>
+        <h1 class="page-title reveal-up">Playground.</h1>
+        <p class="page-lede reveal-up">A clean space for mini JS/CSS experiments, code snippets, and interactive algorithm demos. Click into a lab and try it live.</p>
+      </div>
+    </section>
+
+    <section class="section playground-section">
+      <div class="container">
+        <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
+          <button type="button" class="playground-tab active" role="tab" data-lab="sort" aria-selected="true">Sorting Visualizer</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="palette" aria-selected="false">Palette Mixer</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="snippet" aria-selected="false">Snippet Lab</button>
+        </div>
+
+        <article class="lab-panel reveal-up is-visible" data-lab-panel="sort" id="lab-sort">
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">ALGORITHM</p>
+              <h2 class="section-title">Bubble sort visualizer</h2>
+              <p class="lab-lede">Watch comparisons and swaps unfold. Shuffle to reset, then run the sort.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-ghost" id="sortShuffle">Shuffle</button>
+              <button type="button" class="btn btn-primary" id="sortRun">Run sort</button>
+            </div>
+          </div>
+          <div class="sort-stage" id="sortStage" aria-label="Sorting bars"></div>
+          <p class="lab-status" id="sortStatus" role="status">Ready. Click Run sort to begin.</p>
+        </article>
+
+        <article class="lab-panel reveal-up" data-lab-panel="typewriter" id="lab-typewriter" hidden>
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">CSS / JS</p>
+              <h2 class="section-title">Typewriter effect</h2>
+              <p class="lab-lede">A looping typewriter with caret blink. Edit the phrase and replay.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-primary" id="typeReplay">Replay</button>
+            </div>
+          </div>
+          <label class="lab-field-label" for="typeInput">Phrase</label>
+          <input id="typeInput" class="lab-input" type="text" maxlength="80" value="I write code. I ship websites.">
+          <p class="typewriter-output" id="typeOutput" aria-live="polite"><span id="typeText"></span><span class="type-caret" aria-hidden="true">|</span></p>
+        </article>
+
+        <article class="lab-panel reveal-up" data-lab-panel="palette" id="lab-palette" hidden>
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">COLOR LAB</p>
+              <h2 class="section-title">Accent palette mixer</h2>
+              <p class="lab-lede">Blend two hues into a five-stop palette. Copy any swatch hex.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-ghost" id="paletteRandom">Randomize</button>
+            </div>
+          </div>
+          <div class="palette-controls">
+            <label class="lab-field-label" for="colorA">From <input id="colorA" type="color" value="#38bdf8"></label>
+            <label class="lab-field-label" for="colorB">To <input id="colorB" type="color" value="#818cf8"></label>
+          </div>
+          <div class="palette-swatches" id="paletteSwatches" aria-label="Generated palette"></div>
+        </article>
+
+        <article class="lab-panel reveal-up" data-lab-panel="snippet" id="lab-snippet" hidden>
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">SNIPPET</p>
+              <h2 class="section-title">Debounce utility</h2>
+              <p class="lab-lede">A compact debounce helper used for search and resize handlers. Type below to see delayed updates.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-ghost" id="snippetCopy">Copy snippet</button>
+            </div>
+          </div>
+          <pre class="snippet-code" id="snippetCode"><code>function debounce(fn, wait = 200) {
+  let timer = null;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), wait);
+  };
+}</code></pre>
+          <label class="lab-field-label" for="debounceInput">Try it — text updates 300ms after you stop typing</label>
+          <input id="debounceInput" class="lab-input" type="text" placeholder="Start typing…">
+          <p class="lab-status" id="debounceStatus" role="status">Waiting for input…</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-name">Aayam Paudel</p>
+        <p class="footer-location">Gaindakot, Nawalparasi East, Gandaki Province, Nepal</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="playground.html">Playground</a>
+        <a href="mailto:aayampaudel200@gmail.com">Email</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        <a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
+        <a href="https://www.instagram.com/aayam.paudel" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+        <a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">X</a>
+        <a href="https://www.facebook.com/aayam.paudel07" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div class="footer-meta-left">
+        <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+        <span class="footer-status-badge status--operational" id="systemStatusBadge" title="Site services and API endpoints are fully operational">
+          <span class="status-pulse-dot" aria-hidden="true"></span>
+          <span class="status-text">All Systems Operational</span>
+        </span>
+      </div>
+      <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js?v=interactive-labs" defer></script>
+  <script src="js/playground.js" defer></script>
+</body>
+</html>

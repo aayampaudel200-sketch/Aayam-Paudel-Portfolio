@@ -63,7 +63,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=search-theme-fix">
+  <link rel="stylesheet" href="css/style.css?v=interactive-labs">
   <!-- Cloudflare Web Analytics (Optional: uncomment and add your token if using Cloudflare Web Analytics) -->
   <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CLOUDFLARE_BEACON_TOKEN"}'></script> -->
 </head>
@@ -81,6 +81,7 @@
         <a href="index.html" class="nav-link active">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="projects.html" class="nav-link">Projects</a>
+        <a href="playground.html" class="nav-link">Playground</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
       <form class="site-search site-search--desktop" role="search">
@@ -118,6 +119,7 @@
       <a href="index.html" class="mobile-link active">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="playground.html" class="mobile-link">Playground</a>
       <a href="#contact" class="mobile-link">Contact</a>
       <a href="#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
@@ -138,14 +140,14 @@
             I’m Aayam Paudel — a B.Sc. CSIT student and web developer from Nepal. First and foremost I code: HTML, CSS, JavaScript, PHP, Python, and SQL. I turn ideas into working web applications.
           </p>
           <div class="hero-skills reveal-up" aria-label="Core skills">
-            <span class="tag">HTML</span>
-            <span class="tag">CSS</span>
-            <span class="tag">JavaScript</span>
-            <span class="tag">PHP</span>
-            <span class="tag">Python</span>
-            <span class="tag">SQL</span>
-            <span class="tag">Git</span>
-            <span class="tag">GitHub</span>
+            <span class="tag skill-tag" data-skill="HTML" data-category="web" data-years="3" data-level="Advanced">HTML</span>
+            <span class="tag skill-tag" data-skill="CSS" data-category="web" data-years="3" data-level="Advanced">CSS</span>
+            <span class="tag skill-tag" data-skill="JavaScript" data-category="web programming" data-years="2" data-level="Intermediate">JavaScript</span>
+            <span class="tag skill-tag" data-skill="PHP" data-category="web programming" data-years="2" data-level="Intermediate">PHP</span>
+            <span class="tag skill-tag" data-skill="Python" data-category="programming" data-years="2" data-level="Intermediate">Python</span>
+            <span class="tag skill-tag" data-skill="SQL" data-category="tools" data-years="2" data-level="Intermediate">SQL</span>
+            <span class="tag skill-tag" data-skill="Git" data-category="tools" data-years="2" data-level="Intermediate">Git</span>
+            <span class="tag skill-tag" data-skill="GitHub" data-category="tools" data-years="2" data-level="Intermediate">GitHub</span>
           </div>
           <div class="hero-actions reveal-up">
             <a href="projects.html" class="btn btn-primary">See my code <span class="btn-arrow">→</span></a>
@@ -193,7 +195,7 @@
               </div>
             </div>
           </div>
-          <div class="portrait-frame portrait-frame--greeting" id="sayHelloButton" role="button" tabindex="0" aria-label="Hover over or click to hear Aayam say hello" title="Hover over or click to hear Aayam say hello">
+          <div class="portrait-frame portrait-frame--greeting" id="sayHelloButton" role="button" tabindex="0" data-tilt data-tilt-max="8" aria-label="Hover over or click to hear Aayam say hello" title="Hover over or click to hear Aayam say hello">
             <div class="portrait-orbit" aria-hidden="true"></div>
             <div class="portrait-orbit orbit-2" aria-hidden="true"></div>
             <div class="portrait-glow" aria-hidden="true"></div>
@@ -215,11 +217,29 @@
           <audio id="helloGreetingAudio" src="assets/audio/hello.mp3" preload="none"></audio>
           <p class="hero-name">Aayam Paudel</p>
           <p class="hero-role">Web Developer · B.Sc. CSIT Student</p>
-          <aside class="hero-profile-card" aria-label="Professional profile">
+          <aside class="hero-profile-card" data-tilt data-tilt-max="7" aria-label="Professional profile">
             <span class="profile-card-label">PROFESSIONAL PROFILE</span>
             <strong>Building clean, practical web experiences with a learner’s mindset and a focus on real needs.</strong>
             <span class="profile-card-stack">JavaScript · PHP · <b>Python</b> · SQL</span>
           </aside>
+
+          <div class="hero-terminal reveal-up" id="heroTerminal" aria-label="Interactive developer terminal">
+            <div class="terminal-chrome">
+              <span class="terminal-dot" aria-hidden="true"></span>
+              <span class="terminal-dot" aria-hidden="true"></span>
+              <span class="terminal-dot" aria-hidden="true"></span>
+              <span class="terminal-title">aayam@portfolio — bash</span>
+            </div>
+            <div class="terminal-output" aria-live="polite">
+              <p class="terminal-muted">Welcome to Aayam’s portfolio shell.</p>
+              <p class="terminal-ok">Type <code>help</code>, <code>cat about.txt</code>, <code>list projects</code>, or <code>clear</code>.</p>
+            </div>
+            <form class="terminal-form" autocomplete="off">
+              <label class="visually-hidden" for="terminalInput">Terminal command</label>
+              <span class="terminal-prompt" aria-hidden="true">guest@aayam:~$</span>
+              <input id="terminalInput" class="terminal-input" type="text" maxlength="80" spellcheck="false" placeholder="try: cat about.txt">
+            </form>
+          </div>
         </div>
       </div>
     </section>
@@ -259,26 +279,61 @@
           </div>
           <a href="about.html#skills" class="text-link">Full skill breakdown <span aria-hidden="true">→</span></a>
         </div>
+        <div class="skill-filter-bar reveal-up" id="skillFilterBar" role="group" aria-label="Filter skills by category">
+          <button type="button" class="skill-filter-btn active" data-skill-filter="all">All</button>
+          <button type="button" class="skill-filter-btn" data-skill-filter="programming">Programming</button>
+          <button type="button" class="skill-filter-btn" data-skill-filter="web">Web</button>
+          <button type="button" class="skill-filter-btn" data-skill-filter="tools">Tools</button>
+          <button type="button" class="skill-filter-btn" data-skill-filter="creative">Creative</button>
+          <button type="button" class="skill-filter-btn" data-skill-filter="learning">Learning</button>
+        </div>
         <div class="skills-grid reveal-up">
           <div class="skill-group">
             <h3>Programming</h3>
-            <div class="tag-row"><span class="tag">C</span><span class="tag">C++</span><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">PHP</span></div>
+            <div class="tag-row">
+              <span class="tag skill-tag" data-skill="C" data-category="programming" data-years="2" data-level="Intermediate">C</span>
+              <span class="tag skill-tag" data-skill="C++" data-category="programming" data-years="2" data-level="Intermediate">C++</span>
+              <span class="tag skill-tag" data-skill="Python" data-category="programming" data-years="2" data-level="Intermediate">Python</span>
+              <span class="tag skill-tag" data-skill="JavaScript" data-category="programming web" data-years="2" data-level="Intermediate">JavaScript</span>
+              <span class="tag skill-tag" data-skill="PHP" data-category="programming web" data-years="2" data-level="Intermediate">PHP</span>
+            </div>
           </div>
           <div class="skill-group">
             <h3>Web development</h3>
-            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">API Integration</span><span class="tag">Backend Development</span></div>
+            <div class="tag-row">
+              <span class="tag skill-tag" data-skill="HTML" data-category="web" data-years="3" data-level="Advanced">HTML</span>
+              <span class="tag skill-tag" data-skill="CSS" data-category="web" data-years="3" data-level="Advanced">CSS</span>
+              <span class="tag skill-tag" data-skill="JavaScript" data-category="web programming" data-years="2" data-level="Intermediate">JavaScript</span>
+              <span class="tag skill-tag" data-skill="API Integration" data-category="web" data-years="1" data-level="Intermediate">API Integration</span>
+              <span class="tag skill-tag" data-skill="Backend Development" data-category="web" data-years="1" data-level="Intermediate">Backend Development</span>
+            </div>
           </div>
           <div class="skill-group">
             <h3>Database &amp; tools</h3>
-            <div class="tag-row"><span class="tag">SQL</span><span class="tag">phpMyAdmin</span><span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span><span class="tag">XAMPP</span><span class="tag">Vercel</span></div>
+            <div class="tag-row">
+              <span class="tag skill-tag" data-skill="SQL" data-category="tools" data-years="2" data-level="Intermediate">SQL</span>
+              <span class="tag skill-tag" data-skill="phpMyAdmin" data-category="tools" data-years="1" data-level="Familiar">phpMyAdmin</span>
+              <span class="tag skill-tag" data-skill="Git" data-category="tools" data-years="2" data-level="Intermediate">Git</span>
+              <span class="tag skill-tag" data-skill="GitHub" data-category="tools" data-years="2" data-level="Intermediate">GitHub</span>
+              <span class="tag skill-tag" data-skill="VS Code" data-category="tools" data-years="3" data-level="Advanced">VS Code</span>
+              <span class="tag skill-tag" data-skill="XAMPP" data-category="tools" data-years="1" data-level="Familiar">XAMPP</span>
+              <span class="tag skill-tag" data-skill="Vercel" data-category="tools" data-years="1" data-level="Intermediate">Vercel</span>
+            </div>
           </div>
           <div class="skill-group">
             <h3>Also in the kit</h3>
-            <div class="tag-row"><span class="tag">Adobe Photoshop</span><span class="tag">Wondershare Filmora</span></div>
+            <div class="tag-row">
+              <span class="tag skill-tag" data-skill="Adobe Photoshop" data-category="creative" data-years="2" data-level="Intermediate">Adobe Photoshop</span>
+              <span class="tag skill-tag" data-skill="Wondershare Filmora" data-category="creative" data-years="1" data-level="Familiar">Wondershare Filmora</span>
+            </div>
           </div>
           <div class="skill-group">
             <h3>Currently learning</h3>
-            <div class="tag-row"><span class="tag">Artificial Intelligence</span><span class="tag">Machine Learning</span><span class="tag">Data Science</span></div>
+            <div class="tag-row">
+              <span class="tag skill-tag" data-skill="Artificial Intelligence" data-category="learning" data-years="1" data-level="Learning">Artificial Intelligence</span>
+              <span class="tag skill-tag" data-skill="Machine Learning" data-category="learning" data-years="1" data-level="Learning">Machine Learning</span>
+              <span class="tag skill-tag" data-skill="Data Science" data-category="learning" data-years="1" data-level="Learning">Data Science</span>
+            </div>
           </div>
         </div>
       </div>
@@ -488,6 +543,7 @@
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
+        <a href="playground.html">Playground</a>
         <a href="mailto:aayampaudel200@gmail.com">Email</a>
       </nav>
       <div class="footer-social">
@@ -514,10 +570,10 @@
     </div>
   </footer>
 
-  <script src="js/background.js" defer></script>
-  <script src="js/main.js?v=search-theme-fix" defer></script>
+  <script src="js/background.js?v=starfield" defer></script>
+  <script src="js/main.js?v=interactive-labs" defer></script>
   <script src="js/views.js" defer></script>
-  <script src="js/projects.js?v=site-search" defer></script>
+  <script src="js/projects.js?v=modal-tabs" defer></script>
   <script src="js/contact.js" defer></script>
 </body>
 </html>
