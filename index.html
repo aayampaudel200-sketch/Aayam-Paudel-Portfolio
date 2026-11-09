@@ -63,9 +63,61 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=site-refresh-2">
+  <link rel="stylesheet" href="css/style.css?v=20261109-v3">
   <!-- Cloudflare Web Analytics (Optional: uncomment and add your token if using Cloudflare Web Analytics) -->
   <!-- <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "YOUR_CLOUDFLARE_BEACON_TOKEN"}'></script> -->
+  <style id="ns-critical-styles">
+    /* Bulletproof mobile-first styles for Namaste Suman Box */
+    .ns-box-card { display: flex; flex-direction: column; gap: 1.35rem; padding: clamp(1.2rem, 3.5vw, 2.25rem); width: 100%; box-sizing: border-box; }
+    .ns-top-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem; width: 100%; }
+    .ns-badges-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .ns-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem; border-radius: 999px; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .ns-pill--gold { background: rgba(245, 158, 11, 0.12); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .ns-pill--blue { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+    .ns-pill--green { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .ns-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
+    .ns-header-block h2 { font-size: clamp(1.4rem, 3vw, 2.1rem); line-height: 1.2; letter-spacing: -0.025em; margin-bottom: 0.65rem; }
+    .ns-lead { color: var(--text-muted); font-size: 0.93rem; line-height: 1.6; max-width: 75ch; }
+    
+    .ns-doc-priority-card { width: 100%; box-sizing: border-box; padding: 1.25rem 1.35rem; background: radial-gradient(ellipse at 90% 0%, rgba(56, 189, 248, 0.12), transparent 70%), rgba(15, 23, 42, 0.55); border: 1px solid rgba(56, 189, 248, 0.32); border-radius: var(--radius-md); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22); }
+    .ns-doc-priority-head { display: flex; align-items: flex-start; gap: 0.85rem; margin-bottom: 1rem; }
+    .ns-doc-icon-badge { font-size: 1.75rem; line-height: 1; flex-shrink: 0; }
+    .ns-doc-priority-title { font-size: 1.08rem; font-weight: 700; color: var(--text); margin: 0; line-height: 1.3; }
+    .ns-doc-priority-desc { font-size: 0.82rem; color: var(--accent); margin-top: 0.25rem; font-family: var(--font-mono); }
+    .ns-doc-checklist-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.65rem; }
+    @media (max-width: 900px) { .ns-doc-checklist-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 580px) { .ns-doc-checklist-grid { grid-template-columns: 1fr; } }
+    .ns-doc-check-item { display: flex; align-items: flex-start; gap: 0.65rem; padding: 0.65rem 0.8rem; border-radius: var(--radius-sm); background: rgba(10, 15, 25, 0.6); border: 1px solid rgba(148, 163, 184, 0.14); box-sizing: border-box; }
+    .ns-check-mark { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); color: #10b981; font-weight: 700; font-size: 0.72rem; flex-shrink: 0; margin-top: 1px; }
+    .ns-check-text strong { display: block; font-size: 0.86rem; color: var(--text); line-height: 1.25; }
+    .ns-check-text small { display: block; font-size: 0.73rem; color: var(--text-muted); margin-top: 0.15rem; }
+
+    .ns-pillars-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.85rem; width: 100%; box-sizing: border-box; }
+    @media (max-width: 820px) { .ns-pillars-grid { grid-template-columns: 1fr; } }
+    .ns-pillar-card { padding: 1.15rem; border-radius: var(--radius-md); background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(148, 163, 184, 0.15); display: flex; flex-direction: column; gap: 0.4rem; box-sizing: border-box; }
+    .ns-pillar-icon { font-size: 1.45rem; line-height: 1; }
+    .ns-pillar-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 0; }
+    .ns-pillar-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; flex-grow: 1; }
+    .ns-pillar-tag { display: inline-block; align-self: flex-start; margin-top: 0.35rem; padding: 0.2rem 0.55rem; font-size: 0.68rem; font-family: var(--font-mono); color: var(--accent); background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 4px; }
+
+    .ns-bottom-section { display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.15rem; align-items: stretch; width: 100%; margin-top: 0.25rem; box-sizing: border-box; }
+    @media (max-width: 820px) { .ns-bottom-section { grid-template-columns: 1fr; } }
+    .ns-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; padding: 1.15rem; border-radius: var(--radius-md); background: rgba(8, 11, 18, 0.48); border: 1px solid rgba(148, 163, 184, 0.15); box-sizing: border-box; }
+    @media (max-width: 520px) { .ns-meta-grid { grid-template-columns: 1fr; } }
+    .ns-meta-label { display: block; font-size: 0.64rem; font-family: var(--font-mono); letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.25rem; font-weight: 600; }
+    .ns-meta-val { font-size: 0.84rem; color: var(--text-muted); line-height: 1.45; }
+    .ns-contact-lines { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.2rem; }
+    .ns-contact-link { color: var(--accent); text-decoration: none; font-size: 0.84rem; word-break: break-all; }
+
+    .ns-actions-wrapper { display: flex; flex-direction: column; gap: 0.65rem; justify-content: center; width: 100%; box-sizing: border-box; }
+    .ns-btn-main { width: 100% !important; min-height: 48px; padding: 0.75rem 1.15rem; font-size: 0.92rem; font-weight: 600; text-align: center; justify-content: center; display: inline-flex; align-items: center; gap: 0.5rem; border-radius: var(--radius-sm); white-space: normal; line-height: 1.35; box-sizing: border-box; }
+    .ns-btn-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; width: 100%; box-sizing: border-box; }
+    @media (max-width: 380px) { .ns-btn-row { grid-template-columns: 1fr; } }
+    .ns-btn-flex { width: 100% !important; min-height: 46px; padding: 0.7rem 0.65rem; font-size: 0.84rem; font-weight: 500; text-align: center; justify-content: center; display: inline-flex; align-items: center; gap: 0.4rem; white-space: normal; line-height: 1.3; border-radius: var(--radius-sm); box-sizing: border-box; }
+    .btn-call { background: rgba(14, 165, 233, 0.16); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.35); }
+    .btn-call:hover { background: rgba(14, 165, 233, 0.28); border-color: var(--accent); }
+  </style>
+
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -364,41 +416,173 @@
       </div>
     </section>
 
-    <section class="business-highlight" id="namaste-suman" aria-labelledby="businessTitle">
+        <section class="business-highlight" id="namaste-suman" aria-labelledby="businessTitle">
       <div class="container">
-        <div class="business-highlight-card reveal-up" data-tilt data-tilt-max="3">
-          <div class="business-highlight-copy">
-            <p class="eyebrow">DIGITAL SERVICE &amp; VISA CENTER · GAINDAKOT</p>
+        <div class="business-highlight-card ns-box-card reveal-up" data-tilt data-tilt-max="2">
+          
+          <!-- Top Trust & Status Badges -->
+          <div class="ns-top-bar">
+            <div class="ns-badges-wrap">
+              <span class="ns-pill ns-pill--gold">★ 10+ Years Experience</span>
+              <span class="ns-pill ns-pill--blue">📂 40,000+ Files Processed</span>
+              <span class="ns-pill ns-pill--green" id="nsIndexStatusPill">
+                <span class="ns-live-dot"></span> <span id="nsIndexStatusText">Sun – Fri: 7:30 AM – 8:00 PM</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Main Header & Mission -->
+          <div class="ns-header-block">
+            <p class="eyebrow">DIGITAL SERVICE &amp; VISA DOCUMENTATION HUB · GAINDAKOT-5</p>
             <h2 id="businessTitle">Namaste Suman Communication</h2>
-            <p>Alongside my software development work, I operate a premier local digital service center and visa documentation hub in Gaindakot. We help clients prepare error-free civic documentation, international visa packages, and high-quality digital services with dependable care.</p>
-            <div class="business-services" aria-label="Services">
-              <span>International Visas</span>
-              <span>Documentation</span>
-              <span>Passport Photos</span>
-              <span>Printing &amp; Photocopy</span>
-              <span>Online Forms</span>
-              <span>Graphic Design</span>
-            </div>
-            <p style="margin-top:0.75rem; color:var(--text-muted); font-size:0.86rem;"><strong style="color:var(--accent);">40,000+ files processed:</strong> Student, working, and visit visa dossiers, official civic forms, and instant passport-size photos.</p>
+            <p class="ns-lead">
+              Alongside my software development work, I operate Gaindakot&rsquo;s premier digital service center and visa documentation hub at Nagarpalika Chowk. We provide affordable, dependable, and 100% compliant documentation, legal advocacy, property valuation, and cyber solutions.
+            </p>
           </div>
-          <div class="business-details">
-            <div class="business-address">
-              <span class="business-detail-label">OFFICE LOCATION</span>
-              <address>Gaindakot-5, Nagarpalika Chowk<br>Nawalparasi East, Nepal</address>
-              <div class="business-contact-info">
-                <span class="business-detail-label">DIRECT CONTACT</span>
-                <a href="tel:+9779866078388" class="business-contact-link">📞 9866078388</a>
-                <a href="mailto:namastesuman.com@gmail.com" class="business-contact-link">✉️ namastesuman.com@gmail.com</a>
+
+          <!-- PRIORITY #1: Complete A to Z Documentation (At Top!) -->
+          <div class="ns-doc-priority-card">
+            <div class="ns-doc-priority-head">
+              <div class="ns-doc-icon-badge" aria-hidden="true">📑</div>
+              <div class="ns-doc-priority-titles">
+                <h3 class="ns-doc-priority-title">Complete A to Z Documentation for Visas &amp; Civic Needs</h3>
+                <p class="ns-doc-priority-desc">Error-free file preparation complying with embassy, ward, and government requirements</p>
               </div>
-              <p class="business-manager">Managed by <strong>Anju Gyawali</strong> · 10+ Yrs Experience</p>
             </div>
-            <div class="business-actions">
-              <a class="btn btn-primary" href="namaste-suman.html">Explore Shop &amp; Visas →</a>
-              <a class="btn btn-whatsapp" href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication" target="_blank" rel="noopener noreferrer" aria-label="Message Namaste Suman on WhatsApp">💬 WhatsApp Us</a>
-              <a class="btn btn-ghost" href="https://gemini.google.com/share/1288d4c28822?skid=cc881ac2-f48c-435f-8614-6e0c28d983bf" target="_blank" rel="noopener noreferrer" aria-label="Open Passport Photo Generator in Gemini">📸 Passport Photo Tool ↗</a>
-              <a class="btn btn-ghost" href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer">📍 View on Maps ↗</a>
+
+            <div class="ns-doc-checklist-grid">
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Annual Income Certificate</strong>
+                  <small>Official ward &amp; municipality valuation</small>
+                </div>
+              </div>
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Tax Clearance (कर चुक्ता)</strong>
+                  <small>IRD &amp; civic tax clearance verification</small>
+                </div>
+              </div>
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Relation Verification (नाता प्रमाणित)</strong>
+                  <small>Certified family relationship documentation</small>
+                </div>
+              </div>
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Birth &amp; Marriage Verification</strong>
+                  <small>Civic certificates &amp; certified translations</small>
+                </div>
+              </div>
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Bank Balance &amp; Statements</strong>
+                  <small>Financial sponsorship &amp; audit dossiers</small>
+                </div>
+              </div>
+              <div class="ns-doc-check-item">
+                <span class="ns-check-mark">✓</span>
+                <div class="ns-check-text">
+                  <strong>Student, Work &amp; Visit Visas</strong>
+                  <small>Japan, Europe, Australia, USA, UK, Gulf</small>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- 3 Value Pillars: Property Valuation, Legal / Advocate, Cyber Services -->
+          <div class="ns-pillars-grid">
+            <!-- Pillar 1: Property Valuation -->
+            <div class="ns-pillar-card">
+              <div class="ns-pillar-icon" aria-hidden="true">📐</div>
+              <h4 class="ns-pillar-title">Affordable Property Valuation</h4>
+              <p class="ns-pillar-desc">
+                Certified property valuation reports prepared affordably with the best licensed engineers. Essential for embassy visa financial sponsorship &amp; bank evaluation.
+              </p>
+              <span class="ns-pillar-tag">Licensed Engineers</span>
+            </div>
+
+            <!-- Pillar 2: Legal Help & Advocate Consultation -->
+            <div class="ns-pillar-card">
+              <div class="ns-pillar-icon" aria-hidden="true">⚖️</div>
+              <h4 class="ns-pillar-title">Legal Advice &amp; Advocate Hire</h4>
+              <p class="ns-pillar-desc">
+                Consult us for any legal question or civic documentation issue. We hire experienced Advocates on behalf of clients for court deeds, affidavits, attestation &amp; notary.
+              </p>
+              <span class="ns-pillar-tag">Advocates for Clients</span>
+            </div>
+
+            <!-- Pillar 3: Complete Cyber Services -->
+            <div class="ns-pillar-card">
+              <div class="ns-pillar-icon" aria-hidden="true">💻</div>
+              <h4 class="ns-pillar-title">Complete Cyber Services</h4>
+              <p class="ns-pillar-desc">
+                Fast online application forms (Loksewa, Driving License, NID, Passport pre-enrollment), instant photo generator, color printing, photocopy &amp; typing.
+              </p>
+              <span class="ns-pillar-tag">Fast &amp; Affordable</span>
+            </div>
+          </div>
+
+          <!-- Bottom Office Info & Action Buttons -->
+          <div class="ns-bottom-section">
+            <div class="ns-meta-grid">
+              <div class="ns-meta-item">
+                <span class="ns-meta-label">OFFICE LOCATION</span>
+                <address class="ns-meta-val">Gaindakot-5, Nagarpalika Chowk<br>Nawalparasi East, Nepal</address>
+              </div>
+              <div class="ns-meta-item">
+                <span class="ns-meta-label">OPENING HOURS</span>
+                <span class="ns-meta-val">Sun – Fri: 7:30 AM – 8:00 PM<br><small style="color:var(--text-muted);">Saturday: Closed / On-call</small></span>
+              </div>
+              <div class="ns-meta-item">
+                <span class="ns-meta-label">MANAGEMENT</span>
+                <span class="ns-meta-val">Managed by <strong>Anju Gyawali</strong><br><strong>10+ Years of Experience</strong></span>
+              </div>
+              <div class="ns-meta-item">
+                <span class="ns-meta-label">DIRECT CONTACT</span>
+                <div class="ns-contact-lines">
+                  <a href="tel:+9779866078388" class="ns-contact-link">📞 +977 9866078388</a>
+                  <a href="mailto:namastesuman.com@gmail.com" class="ns-contact-link">✉️ namastesuman.com@gmail.com</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile-Optimized Action Buttons (Never Squishing) -->
+            <div class="ns-actions-wrapper">
+              <!-- Primary CTA (Full Width) -->
+              <a class="btn btn-primary ns-btn-main" href="namaste-suman.html">
+                <span>Explore Full Shop &amp; Visa Hub</span>
+                <span aria-hidden="true">→</span>
+              </a>
+
+              <!-- Contact Row: WhatsApp + Call -->
+              <div class="ns-btn-row">
+                <a class="btn btn-whatsapp ns-btn-flex" href="https://wa.me/9779866078388?text=Hello%20Namaste%20Suman%20Communication%2C%20I%20need%20inquiry%20regarding%20documentation" target="_blank" rel="noopener noreferrer">
+                  <span>💬 WhatsApp Us</span>
+                </a>
+                <a class="btn btn-call ns-btn-flex" href="tel:+9779866078388">
+                  <span>📞 Call 9866078388</span>
+                </a>
+              </div>
+
+              <!-- Tools Row: Passport Photo Tool + Location -->
+              <div class="ns-btn-row">
+                <a class="btn btn-ghost ns-btn-flex" href="https://gemini.google.com/share/1288d4c28822?skid=cc881ac2-f48c-435f-8614-6e0c28d983bf" target="_blank" rel="noopener noreferrer" aria-label="Open Passport Photo Generator in Gemini">
+                  <span>📸 Passport Photo Tool ↗</span>
+                </a>
+                <a class="btn btn-ghost ns-btn-flex" href="https://share.google/4nHGaaqK8tHW2rSyP" target="_blank" rel="noopener noreferrer" aria-label="Open Office Location in Google Maps">
+                  <span>📍 View on Maps ↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

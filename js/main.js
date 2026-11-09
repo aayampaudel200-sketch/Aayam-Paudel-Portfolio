@@ -1060,7 +1060,40 @@ function initMain() {
   initHeroTerminal();
   initSkillTags();
   initLandingTypewriter();
+  initIndexShopStatus();
 }
+
+/* ---------- Namaste Suman Live Shop Status (Index page) ---------- */
+function initIndexShopStatus() {
+  const textEl = document.getElementById('nsIndexStatusText');
+  const pillEl = document.getElementById('nsIndexStatusPill');
+  if (!textEl || !pillEl) return;
+
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const npt = new Date(utc + (3600000 * 5.75));
+  const day = npt.getDay(); // 0 is Sun, 6 is Sat
+  const hour = npt.getHours() + (npt.getMinutes() / 60);
+
+  const isOpen = (day >= 0 && day <= 5) && (hour >= 7.5 && hour < 20);
+
+  if (isOpen) {
+    pillEl.className = 'ns-pill ns-pill--green';
+    textEl.textContent = 'Open Now · Closes at 8:00 PM';
+    pillEl.title = 'Namaste Suman Communication is currently open (7:30 AM - 8:00 PM)';
+  } else {
+    pillEl.className = 'ns-pill ns-pill--gold';
+    if (day === 6) {
+      textEl.textContent = 'Closed · Opens Sun at 7:30 AM';
+    } else if (hour >= 20) {
+      textEl.textContent = (day === 5) ? 'Closed · Opens Sun at 7:30 AM' : 'Closed · Opens Tomorrow at 7:30 AM';
+    } else {
+      textEl.textContent = 'Closed · Opens Today at 7:30 AM';
+    }
+    pillEl.title = 'Namaste Suman Communication is currently closed';
+  }
+}
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initMain);

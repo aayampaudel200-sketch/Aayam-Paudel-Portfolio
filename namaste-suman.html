@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=site-refresh-2">
+  <link rel="stylesheet" href="css/style.css?v=20261109-v3">
   <style>
     /* ── Namaste Suman Hub Premium Styles ── */
     :root {
@@ -807,8 +807,8 @@
       {
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"],
-        "opens": "09:00",
-        "closes": "18:00"
+        "opens": "07:30",
+        "closes": "20:00"
       }
     ],
     "employee": {
@@ -885,7 +885,7 @@
           <span class="ns-badge">📍 GAINDAKOT-5, NAGARPALIKA CHOWK · 10+ YRS EXPERIENCE</span>
           <span class="ns-live-pill is-open" id="nsLivePill" title="Namaste Suman Communication Business Status">
             <span class="ns-live-dot" aria-hidden="true"></span>
-            <span id="nsLiveStatusText">Open Today: 9:00 AM – 6:00 PM</span>
+            <span id="nsLiveStatusText">Open Today: 7:30 AM – 8:00 PM</span>
           </span>
         </div>
 
@@ -953,7 +953,7 @@
             <h3>Opening Hours</h3>
             <p>
               Sunday – Friday<br>
-              9:00 AM – 6:00 PM<br>
+              7:30 AM – 8:00 PM<br>
               <em>Closed on Saturdays &amp; Public Holidays</em>
             </p>
           </div>
@@ -988,7 +988,7 @@
               <p>Directly on the main commercial strip of Gaindakot-5, adjacent to the Gaindakot Municipality office. Walk in anytime during working hours for fast, friendly assistance with all government and digital requirements.</p>
               <div class="ns-showcase-meta">
                 <span>📍 Nagarpalika Chowk, Gaindakot-5</span>
-                <span>🕒 Sun–Fri: 9:00 AM – 6:00 PM</span>
+                <span>🕒 Sun–Fri: 7:30 AM – 8:00 PM</span>
               </div>
             </div>
           </div>
@@ -1486,18 +1486,23 @@
       const day = npt.getDay(); // 0 is Sun, 6 is Sat
       const hour = npt.getHours() + (npt.getMinutes() / 60);
 
-      const isOpen = (day >= 0 && day <= 5) && (hour >= 9 && hour < 18);
+      const isOpen = (day >= 0 && day <= 5) && (hour >= 7.5 && hour < 20);
 
       if (isOpen) {
         pill.classList.remove('is-closed');
         pill.classList.add('is-open');
-        text.textContent = 'Open Today until 6:00 PM';
-        pill.title = 'Namaste Suman Communication is currently open';
+        text.textContent = 'Open Today until 8:00 PM';
+        pill.title = 'Namaste Suman Communication is open (7:30 AM - 8:00 PM)';
       } else {
         pill.classList.remove('is-open');
         pill.classList.add('is-closed');
-        const opensWhen = (day === 5 && hour >= 18) || day === 6 ? 'Opens Sunday at 9:00 AM' : 'Opens Tomorrow at 9:00 AM';
-        text.textContent = opensWhen;
+        if (day === 6) {
+          text.textContent = 'Opens Sunday at 7:30 AM';
+        } else if (hour >= 20) {
+          text.textContent = (day === 5) ? 'Opens Sunday at 7:30 AM' : 'Opens Tomorrow at 7:30 AM';
+        } else {
+          text.textContent = 'Opens Today at 7:30 AM';
+        }
         pill.title = 'Namaste Suman Communication is currently closed';
       }
     }
