@@ -29,11 +29,28 @@
   ],
   "headers": [
     {
+      "source": "/api/contact",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "POST, OPTIONS"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY=' 'sha256-OOKUcuXncH9CcDFcbZuJLf4VzDBcFHZHa28fEJrzqAo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data:; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY=' 'sha256-OOKUcuXncH9CcDFcbZuJLf4VzDBcFHZHa28fEJrzqAo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://avatars.githubusercontent.com; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com https://api.github.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",

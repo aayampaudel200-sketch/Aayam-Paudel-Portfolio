@@ -4,10 +4,24 @@
  * and email clipboard helper.
  */
 
-/* ---------- Scroll reveal with IntersectionObserver ---------- */
+/* ---------- Scroll reveal with IntersectionObserver & Dynamic Staggering ---------- */
 let revealObserver = null;
 
 function observeReveals() {
+  // Automatically apply staggered delay indexes to grid items and card collections
+  const staggeredContainers = document.querySelectorAll(
+    '.strip-grid, .project-grid, .project-grid--full, .skills-grid, .academic-grid, .experience-grid, .build-principles, .focus-stats, .business-services, .tag-row, .github-stats-grid'
+  );
+  staggeredContainers.forEach((container) => {
+    const children = Array.from(container.children).filter((el) => el.nodeType === 1);
+    children.forEach((child, idx) => {
+      if (!child.style.getPropertyValue('--stagger-index')) {
+        child.style.setProperty('--stagger-index', idx);
+      }
+      child.classList.add('reveal-up');
+    });
+  });
+
   const items = document.querySelectorAll('.reveal-up:not(.is-visible)');
   if (!items.length) return;
 
@@ -26,7 +40,7 @@ function observeReveals() {
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
     );
   }
 
@@ -643,6 +657,137 @@ function initMain() {
     });
   }
 
+  /* ---------- Magnetic Button Hover Effect (Desktop Fine Pointer Only) ---------- */
+  function initMagneticButtons() {
+    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!isFinePointer || reducedMotion) return;
+
+    const magneticTargets = document.querySelectorAll(
+      '.btn-primary, .header-cta, .contact-submit, #copyEmailBtn, .mobile-cta'
+    );
+
+    magneticTargets.forEach((btn) => {
+      let frame = null;
+
+      btn.addEventListener('pointermove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          btn.style.transform = `translate3d(${x * 0.22}px, ${y * 0.22}px, 0)`;
+          btn.style.transition = 'transform 0.12s ease-out';
+        });
+      });
+
+      btn.addEventListener('pointerleave', () => {
+        cancelAnimationFrame(frame);
+        btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        btn.style.transform = 'translate3d(0, 0, 0)';
+        setTimeout(() => {
+          btn.style.transition = '';
+          btn.style.transform = '';
+        }, 400);
+      });
+    });
+  }
+
+  /* ---------- Live GitHub API Widget ---------- */
+  async function initGitHubWidget() {
+    const widgets = document.querySelectorAll('.github-card-widget');
+    if (!widgets.length) return;
+
+    widgets.forEach(async (widget) => {
+      const username = widget.dataset.user || 'aayampaudel200-sketch';
+      const cacheKey = `gh_user_${username}`;
+      const cacheTimeKey = `gh_time_${username}`;
+      const CACHE_DURATION_MS = 15 * 60 * 1000; // 15 mins cache
+
+      let userData = null;
+      try {
+        const cachedTime = localStorage.getItem(cacheTimeKey);
+        const cachedJson = localStorage.getItem(cacheKey);
+        if (cachedJson && cachedTime && Date.now() - Number(cachedTime) < CACHE_DURATION_MS) {
+          userData = JSON.parse(cachedJson);
+        }
+      } catch {}
+
+      if (!userData) {
+        try {
+          const res = await fetch(`https://api.github.com/users/${username}`, {
+            headers: { Accept: 'application/vnd.github.v3+json' },
+          });
+          if (res.ok) {
+            userData = await res.json();
+            try {
+              localStorage.setItem(cacheKey, JSON.stringify(userData));
+              localStorage.setItem(cacheTimeKey, String(Date.now()));
+            } catch {}
+          }
+        } catch (e) {
+          console.warn('Unable to reach GitHub API:', e);
+        }
+      }
+
+      if (userData) {
+        const reposEl = widget.querySelector('.github-repos-count');
+        const followersEl = widget.querySelector('.github-followers-count');
+        const locationEl = widget.querySelector('.github-location');
+        const avatarEl = widget.querySelector('.github-avatar');
+        const syncStatusEl = widget.querySelector('.github-sync-status');
+        const joinDateEl = widget.querySelector('.github-join-date');
+
+        if (reposEl && userData.public_repos !== undefined) {
+          reposEl.textContent = userData.public_repos;
+        }
+        if (followersEl && userData.followers !== undefined) {
+          followersEl.textContent = userData.followers;
+        }
+        if (locationEl && userData.location) {
+          locationEl.textContent = userData.location;
+        }
+        if (avatarEl && userData.avatar_url) {
+          avatarEl.src = userData.avatar_url;
+        }
+        if (syncStatusEl) {
+          syncStatusEl.textContent = 'Live GitHub Verified';
+        }
+        if (joinDateEl && userData.created_at) {
+          const year = new Date(userData.created_at).getFullYear();
+          joinDateEl.textContent = `Active since ${year}`;
+        }
+      }
+    });
+  }
+
+  /* ---------- Dynamic System Operational Status Badge ---------- */
+  function initSystemStatusBadge() {
+    const badges = document.querySelectorAll('.footer-status-badge');
+    if (!badges.length) return;
+
+    function updateStatus(isOnline) {
+      badges.forEach((badge) => {
+        const text = badge.querySelector('.status-text') || badge.querySelector('.status-indicator-text');
+        if (isOnline) {
+          badge.classList.remove('status--offline');
+          badge.classList.add('status--operational');
+          if (text) text.textContent = 'All Systems Operational';
+          badge.title = 'Site services and API endpoints are fully operational';
+        } else {
+          badge.classList.remove('status--operational');
+          badge.classList.add('status--offline');
+          if (text) text.textContent = 'Offline Mode Active';
+          badge.title = 'Network connection offline';
+        }
+      });
+    }
+
+    window.addEventListener('online', () => updateStatus(true));
+    window.addEventListener('offline', () => updateStatus(false));
+    updateStatus(navigator.onLine !== false);
+  }
+
   /* ---------- Fallback for inline images that fail ---------- */
   document.querySelectorAll('.portrait-img').forEach((img) => {
     img.addEventListener('error', () => {
@@ -657,6 +802,11 @@ function initMain() {
       if (fb) { img.src = fb; }
     }, { once: true });
   });
+
+  // Initialize new interactive enhancements
+  initMagneticButtons();
+  initGitHubWidget();
+  initSystemStatusBadge();
 }
 
 if (document.readyState === 'loading') {

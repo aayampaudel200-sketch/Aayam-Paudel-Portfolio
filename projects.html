@@ -8,19 +8,18 @@
   <meta property="og:title" content="Projects — Aayam Paudel">
   <meta property="og:description" content="Practical ideas, technical experiments, and digital products focused on real problems.">
   <meta property="og:site_name" content="Aayam Paudel Portfolio">
-  <meta property="og:url" content="https://www.aayampaudel.com.np/projects.html">
-  <meta property="og:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <meta property="og:url" content="https://aayampaudel.com.np/projects.html">
+  <meta property="og:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Aayam Paudel, full-stack web developer from Gaindakot, Nepal">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Projects — Aayam Paudel">
   <meta name="twitter:description" content="Practical ideas, technical experiments, and digital products focused on real problems.">
-  <meta name="twitter:image" content="https://www.aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
-  <link rel="canonical" href="https://www.aayampaudel.com.np/projects.html">
+  <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
+  <link rel="canonical" href="https://aayampaudel.com.np/projects.html">
   <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -108,6 +107,55 @@
       </div>
     </section>
 
+    <!-- LIVE GITHUB REPOSITORIES & SYNC -->
+    <section class="section github-showcase-section" id="github-activity">
+      <div class="container">
+        <div class="github-card-widget reveal-up" id="githubCardWidget" data-user="aayampaudel200-sketch">
+          <div class="github-card-inner">
+            <div class="github-card-header">
+              <div class="github-user-info">
+                <div class="github-avatar-wrapper">
+                  <img class="github-avatar" src="https://avatars.githubusercontent.com/u/252325038?v=4" alt="Aayam Paudel GitHub Profile" width="52" height="52" loading="lazy">
+                  <span class="github-status-dot" aria-hidden="true"></span>
+                </div>
+                <div>
+                  <div class="github-name-row">
+                    <h3 class="github-name">Aayam Paudel</h3>
+                    <span class="github-badge">GitHub Verified</span>
+                  </div>
+                  <p class="github-handle">@aayampaudel200-sketch</p>
+                </div>
+              </div>
+              <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" class="btn btn-ghost github-link-btn" aria-label="Visit Aayam Paudel on GitHub">
+                View GitHub <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            <div class="github-stats-grid">
+              <div class="github-stat">
+                <span class="github-stat-num github-repos-count">2</span>
+                <span class="github-stat-label">Public Repos</span>
+              </div>
+              <div class="github-stat">
+                <span class="github-stat-num github-followers-count">0</span>
+                <span class="github-stat-label">Followers</span>
+              </div>
+              <div class="github-stat">
+                <span class="github-stat-num github-location">Nepal</span>
+                <span class="github-stat-label">Location</span>
+              </div>
+            </div>
+            <div class="github-card-footer">
+              <span class="github-pulse-indicator">
+                <span class="live-dot-sm" aria-hidden="true"></span>
+                <span class="github-sync-status">Live GitHub Sync</span>
+              </span>
+              <span class="github-join-date">Active Contributor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- PROJECT MODAL -->
     <div class="modal-overlay" id="projectModal" hidden>
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
@@ -140,7 +188,13 @@
       </div>
     </div>
     <div class="container footer-bottom">
-      <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+      <div class="footer-meta-left">
+        <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+        <span class="footer-status-badge status--operational" id="systemStatusBadge" title="Site services and API endpoints are fully operational">
+          <span class="status-pulse-dot" aria-hidden="true"></span>
+          <span class="status-text">All Systems Operational</span>
+        </span>
+      </div>
       <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
     </div>
   </footer>

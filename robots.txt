@@ -34,7 +34,6 @@ User-agent: Amazonbot
 Allow: /
 
 # 3. EXPLICITLY ALLOW AI SEARCH & MODEL CRAWLERS
-
 User-agent: ChatGPT-User
 Allow: /
 
@@ -53,6 +52,9 @@ Allow: /
 User-agent: Claude-User
 Allow: /
 
+User-agent: Claude-Web
+Allow: /
+
 User-agent: Perplexity-User
 Allow: /
 
@@ -62,5 +64,6 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-# 4. SITEMAP LOCATION
+# 4. SITEMAP LOCATIONS
+Sitemap: https://aayampaudel.com.np/sitemap.xml
 Sitemap: https://www.aayampaudel.com.np/sitemap.xml
