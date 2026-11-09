@@ -906,11 +906,8 @@ function initMain() {
     tooltip.setAttribute('role', 'tooltip');
     document.body.appendChild(tooltip);
 
-    let activeTag = null;
-
     function hideTooltip() {
       tooltip.hidden = true;
-      activeTag = null;
     }
 
     function showTooltip(tag) {
@@ -919,7 +916,6 @@ function initMain() {
       const name = tag.dataset.skill || tag.textContent.trim();
       tooltip.innerHTML = `<strong>${name}</strong><span>${years} yr${years === '1' ? '' : 's'} experience</span><span>Proficiency: ${level}</span>`;
       tooltip.hidden = false;
-      activeTag = tag;
 
       const rect = tag.getBoundingClientRect();
       const tipWidth = tooltip.offsetWidth;
@@ -937,11 +933,6 @@ function initMain() {
       tag.addEventListener('pointerleave', hideTooltip);
       tag.addEventListener('focus', () => showTooltip(tag));
       tag.addEventListener('blur', hideTooltip);
-      tag.addEventListener('click', (event) => {
-        event.stopPropagation();
-        if (activeTag === tag && !tooltip.hidden) hideTooltip();
-        else showTooltip(tag);
-      });
     });
 
     document.addEventListener('click', (event) => {
