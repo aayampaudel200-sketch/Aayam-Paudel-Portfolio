@@ -173,7 +173,7 @@ function getSearchSectionTitle(section, pageTitle) {
 }
 
 async function loadSiteSearchIndex() {
-  const pages = ['index.html', 'about.html', 'projects.html'];
+  const pages = ['index.html', 'about.html', 'projects.html', 'experience.html', 'playground.html'];
   const pageResults = await Promise.allSettled(pages.map(async (path) => {
     const pageUrl = new URL(path, window.location.href);
     const response = await fetch(pageUrl, { headers: { Accept: 'text/html' } });
@@ -444,6 +444,88 @@ function highlightSearchDestination() {
   }));
 }
 
+/* ---------- Rotating hero typewriter ---------- */
+function initHeroTypewriter() {
+  const target = document.getElementById('heroTypewriter');
+  if (!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const phrases = ['B.Sc. CSIT Student', 'Full-Stack Developer', 'Tech Entrepreneur'];
+  const typeDelay = 85;
+  const eraseDelay = 42;
+  const pauseDelay = 1500;
+  let phraseIndex = 0;
+  let characterIndex = phrases[0].length;
+  let deleting = true;
+
+  function step() {
+    const phrase = phrases[phraseIndex];
+    characterIndex += deleting ? -1 : 1;
+    target.textContent = phrase.slice(0, characterIndex);
+
+    if (deleting && characterIndex === 0) {
+      deleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      window.setTimeout(step, 320);
+      return;
+    }
+
+    if (!deleting && characterIndex === phrases[phraseIndex].length) {
+      deleting = true;
+      window.setTimeout(step, pauseDelay);
+      return;
+    }
+
+    window.setTimeout(step, deleting ? eraseDelay : typeDelay);
+  }
+
+  window.setTimeout(step, pauseDelay);
+}
+
+/* ---------- Dismissible skill badge tooltips ---------- */
+function initSkillTooltips() {
+  const badges = document.querySelectorAll('.skill-badge[data-skill-tooltip]');
+  if (!badges.length) return;
+
+  function closeTooltip(badge) {
+    badge.querySelector('.skill-tooltip')?.remove();
+    badge.removeAttribute('aria-describedby');
+    badge.setAttribute('aria-expanded', 'false');
+    badge.classList.remove('is-tooltip-open');
+  }
+
+  function closeAllTooltips() {
+    badges.forEach(closeTooltip);
+  }
+
+  badges.forEach((badge, index) => {
+    badge.addEventListener('click', () => {
+      const wasOpen = badge.getAttribute('aria-expanded') === 'true';
+      closeAllTooltips();
+      if (wasOpen) return;
+
+      const tooltip = document.createElement('span');
+      tooltip.className = 'skill-tooltip';
+      tooltip.id = `skill-tooltip-${index}`;
+      tooltip.setAttribute('role', 'tooltip');
+      tooltip.textContent = badge.dataset.skillTooltip;
+      badge.appendChild(tooltip);
+      badge.setAttribute('aria-describedby', tooltip.id);
+      badge.setAttribute('aria-expanded', 'true');
+      badge.classList.add('is-tooltip-open');
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest('.skill-badge, .skill-tooltip')) {
+      closeAllTooltips();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeAllTooltips();
+  });
+}
+
 /* ---------- Main Initialisation ---------- */
 function initMain() {
   /* ---------- Current year ---------- */
@@ -567,30 +649,39 @@ function initMain() {
   initPortraitGreeting();
   initSiteSearch();
   highlightSearchDestination();
+  initHeroTypewriter();
+  initSkillTooltips();
 
   /* ---------- Subtle 3D pointer tilt for selected visual cards ---------- */
   if (!reducedMotion && window.matchMedia('(pointer: fine)').matches) {
-    document.querySelectorAll('[data-tilt]').forEach((card) => {
-      const maxTilt = Number(card.dataset.tiltMax || 6);
-      let frame = null;
+    const tiltFrames = new WeakMap();
+    const tiltSelector = '[data-tilt], .project-card, .hero-profile-card';
 
-      card.addEventListener('pointermove', (event) => {
-        const bounds = card.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width;
-        const y = (event.clientY - bounds.top) / bounds.height;
-        const rotateY = (x - 0.5) * maxTilt * 2;
-        const rotateX = (0.5 - y) * maxTilt * 2;
+    document.addEventListener('pointermove', (event) => {
+      if (!(event.target instanceof Element)) return;
+      const card = event.target.closest(tiltSelector);
+      if (!card) return;
 
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => {
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
-        });
-      });
+      const bounds = card.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+      const maxTilt = Number(card.dataset.tiltMax || (card.matches('.project-card') ? 5 : 6));
+      const x = (event.clientX - bounds.left) / bounds.width;
+      const y = (event.clientY - bounds.top) / bounds.height;
+      const rotateY = (x - 0.5) * maxTilt * 2;
+      const rotateX = (0.5 - y) * maxTilt * 2;
 
-      card.addEventListener('pointerleave', () => {
-        cancelAnimationFrame(frame);
-        card.style.transform = '';
-      });
+      cancelAnimationFrame(tiltFrames.get(card));
+      tiltFrames.set(card, requestAnimationFrame(() => {
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-3px)`;
+      }));
+    });
+
+    document.addEventListener('pointerout', (event) => {
+      if (!(event.target instanceof Element)) return;
+      const card = event.target.closest(tiltSelector);
+      if (!card || (event.relatedTarget instanceof Node && card.contains(event.relatedTarget))) return;
+      cancelAnimationFrame(tiltFrames.get(card));
+      card.style.transform = '';
     });
   }
 

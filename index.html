@@ -81,6 +81,8 @@
         <a href="index.html" class="nav-link active">Home</a>
         <a href="about.html" class="nav-link">About</a>
         <a href="projects.html" class="nav-link">Projects</a>
+        <a href="experience.html" class="nav-link">Experience</a>
+        <a href="playground.html" class="nav-link">Playground</a>
         <a href="#contact" class="nav-link">Contact</a>
       </nav>
       <form class="site-search site-search--desktop" role="search">
@@ -118,6 +120,8 @@
       <a href="index.html" class="mobile-link active">Home</a>
       <a href="about.html" class="mobile-link">About</a>
       <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="experience.html" class="mobile-link">Experience</a>
+      <a href="playground.html" class="mobile-link">Playground</a>
       <a href="#contact" class="mobile-link">Contact</a>
       <a href="#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
@@ -140,7 +144,7 @@
           <div class="hero-skills reveal-up" aria-label="Core skills">
             <span class="tag">HTML</span>
             <span class="tag">CSS</span>
-            <span class="tag">JavaScript</span>
+            <button type="button" class="tag skill-badge" data-skill-tooltip="Used to build interactive interfaces and browser-side features." aria-expanded="false">JavaScript</button>
             <span class="tag">PHP</span>
             <span class="tag">Python</span>
             <span class="tag">SQL</span>
@@ -214,8 +218,11 @@
           </div>
           <audio id="helloGreetingAudio" src="assets/audio/hello.mp3" preload="none"></audio>
           <p class="hero-name">Aayam Paudel</p>
-          <p class="hero-role">Web Developer · B.Sc. CSIT Student</p>
-          <aside class="hero-profile-card" aria-label="Professional profile">
+          <p class="hero-role" aria-label="B.Sc. CSIT Student, Full-Stack Developer, and Tech Entrepreneur">
+            <span id="heroTypewriter" aria-hidden="true">B.Sc. CSIT Student</span><span class="typewriter-cursor" aria-hidden="true">|</span>
+            <span class="visually-hidden">B.Sc. CSIT Student · Full-Stack Developer · Tech Entrepreneur</span>
+          </p>
+          <aside class="hero-profile-card" aria-label="Professional profile" data-tilt data-tilt-max="4">
             <span class="profile-card-label">PROFESSIONAL PROFILE</span>
             <strong>Building clean, practical web experiences with a learner’s mindset and a focus on real needs.</strong>
             <span class="profile-card-stack">JavaScript · PHP · <b>Python</b> · SQL</span>
@@ -266,11 +273,11 @@
           </div>
           <div class="skill-group">
             <h3>Web development</h3>
-            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">API Integration</span><span class="tag">Backend Development</span></div>
+            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><button type="button" class="tag skill-badge" data-skill-tooltip="Used to build interactive interfaces and browser-side features." aria-expanded="false">JavaScript</button><span class="tag">API Integration</span><span class="tag">Backend Development</span></div>
           </div>
           <div class="skill-group">
             <h3>Database &amp; tools</h3>
-            <div class="tag-row"><span class="tag">SQL</span><span class="tag">phpMyAdmin</span><span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span><span class="tag">XAMPP</span><span class="tag">Vercel</span></div>
+            <div class="tag-row"><button type="button" class="tag skill-badge" data-skill-tooltip="Used to structure and query relational data." aria-expanded="false">SQL</button><span class="tag">phpMyAdmin</span><span class="tag">Git</span><span class="tag">GitHub</span><span class="tag">VS Code</span><span class="tag">XAMPP</span><span class="tag">Vercel</span></div>
           </div>
           <div class="skill-group">
             <h3>Also in the kit</h3>
@@ -488,6 +495,8 @@
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="projects.html">Projects</a>
+        <a href="experience.html">Experience</a>
+        <a href="playground.html">Playground</a>
         <a href="mailto:aayampaudel200@gmail.com">Email</a>
       </nav>
       <div class="footer-social">
