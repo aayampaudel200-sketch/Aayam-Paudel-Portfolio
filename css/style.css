@@ -1,3 +1,19 @@
+/* Ensure font-display: swap for instant font rendering & zero layout blocking */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: local('Inter');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: local('JetBrains Mono');
+}
+
 /* ============================================================
    DESIGN TOKENS
    ============================================================ */
@@ -443,6 +459,31 @@ ul { list-style: none; }
   background: rgba(148, 163, 184, 0.04);
 }
 .btn-ghost:hover { border-color: var(--accent); background: rgba(56, 189, 248, 0.08); transform: translateY(-2px); }
+
+.btn-secondary {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.12);
+  transition: all var(--duration) var(--ease-out);
+}
+.btn-secondary:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: var(--accent);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.25);
+}
+:root[data-theme="light"] .btn-secondary {
+  background: rgba(14, 165, 233, 0.1);
+  color: #0369a1;
+  border-color: rgba(14, 165, 233, 0.35);
+}
+:root[data-theme="light"] .btn-secondary:hover {
+  background: rgba(14, 165, 233, 0.18);
+  color: #0284c7;
+}
+
 :root[data-theme="light"] .btn-ghost { background: rgba(255, 255, 255, 0.72); }
 :root[data-theme="light"] .btn-ghost:hover { background: rgba(14, 165, 233, 0.08); }
 

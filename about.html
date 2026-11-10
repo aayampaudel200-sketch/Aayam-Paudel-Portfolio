@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fast Favicon & Icon Loading (High Priority) -->
+  <link rel="preload" href="favicon.ico" as="image" fetchpriority="high">
+  <link rel="icon" type="image/x-icon" href="favicon.ico" fetchpriority="high">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" fetchpriority="high">
+  <link rel="manifest" href="site.webmanifest">
   <title>About — Aayam Paudel</title>
+    <meta name="keywords" content="Aayam Paudel, Aayam Poudel, Ayam Paudel, Ayam Poudel, Aayam Paudel Nepal, Aayam Poudel Nepal, Web Developer Gaindakot, Aayam Developer, Full Stack Developer Nepal, Lumbini ICT Campus, Tribhuvan University CSIT, Namaste Suman Communication">
   <meta name="description" content="About Aayam Paudel: CSIT student, full-stack developer, and operator of Namaste Suman Communication in Gaindakot, Nepal.">
   <meta property="og:title" content="About Aayam Paudel">
   <meta property="og:description" content="Learning the fundamentals, building real projects, and turning curiosity into practical experience.">
@@ -19,11 +27,6 @@
   <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
   <link rel="canonical" href="https://aayampaudel.com.np/about.html">
   <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,7 +38,7 @@
 
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="logo.png" alt="Aayam Paudel (Aayam Poudel) - Web Developer Logo" class="nav-logo" style="height: 40px; width: auto;" fetchpriority="high" decoding="async" width="40" height="40"><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link active">About</a>
@@ -99,7 +102,7 @@
       <div class="container about-grid">
         <div class="about-portrait reveal-up">
           <div class="portrait-frame portrait-frame--about">
-            <img class="portrait-img portrait-img--about" src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel, full-stack web developer from Gaindakot, working on a laptop">
+            <img class="portrait-img portrait-img--about" src="assets/images/aayam-paudel-working-on-laptop.jpeg" alt="Aayam Paudel (Aayam Poudel) - Full-Stack Developer working on coding projects in Gaindakot, Nepal" loading="lazy" decoding="async" width="480" height="520">
           </div>
         </div>
         <div class="about-copy reveal-up">

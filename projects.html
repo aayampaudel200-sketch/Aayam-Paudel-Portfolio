@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fast Favicon & Icon Loading (High Priority) -->
+  <link rel="preload" href="favicon.ico" as="image" fetchpriority="high">
+  <link rel="icon" type="image/x-icon" href="favicon.ico" fetchpriority="high">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" fetchpriority="high">
+  <link rel="manifest" href="site.webmanifest">
   <title>Projects — Aayam Paudel</title>
+    <meta name="keywords" content="Aayam Paudel, Aayam Poudel, Ayam Paudel, Ayam Poudel, Aayam Paudel Nepal, Aayam Poudel Nepal, Web Developer Gaindakot, Aayam Developer, Full Stack Developer Nepal, Lumbini ICT Campus, Tribhuvan University CSIT, Namaste Suman Communication">
   <meta name="description" content="Selected projects by Aayam Paudel: Haat Bazzar marketplace concept and a Municipal Citizenship Recommendation Portal prototype.">
   <meta property="og:title" content="Projects — Aayam Paudel">
   <meta property="og:description" content="Practical ideas, technical experiments, and digital products focused on real problems.">
@@ -19,11 +27,6 @@
   <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
   <link rel="canonical" href="https://aayampaudel.com.np/projects.html">
   <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,7 +38,7 @@
 
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
-      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="/logo.png" alt="Aayam Paudel Logo" class="nav-logo" style="height: 40px; width: auto;" /><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
+      <a class="wordmark logo-link" href="/" aria-label="Aayam Paudel — Home"><img src="logo.png" alt="Aayam Paudel (Aayam Poudel) - Web Developer Logo" class="nav-logo" style="height: 40px; width: auto;" fetchpriority="high" decoding="async" width="40" height="40"><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span></a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link">Home</a>
         <a href="about.html" class="nav-link">About</a>
@@ -108,7 +111,7 @@
 
           <article class="project-card" id="namaste-suman-automation" data-category="web">
             <div class="project-media">
-              <img src="assets/images/Documentation for visas.png" alt="Full Automatic Website for Namaste Suman Communication with AI Integration" class="project-img" loading="lazy">
+              <img src="assets/images/Documentation for visas.png" alt="Aayam Paudel - Namaste Suman AI Automation Platform & Visa System" class="project-img" loading="lazy" decoding="async" width="600" height="340">
               <span class="project-status" data-status="prototype" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); font-weight: 600;">Coming Soon · AI Integration</span>
             </div>
             <div class="project-body">
@@ -128,9 +131,9 @@
               </div>
             </div>
           </article>
-          <article class="project-card" id="haat-bazzar" data-category="web"><div class="project-media"><img src="assets/images/aayam-paudel-haat-bazzar-marketplace.jpg" alt="Haat Bazzar marketplace interface" class="project-img" loading="lazy"><span class="project-status" data-status="live">Live frontend demo</span></div><div class="project-body"><p class="project-category">Marketplace / Web Application</p><h2 class="project-title">Haat Bazzar — हट बजार</h2><p class="project-desc">A farm-to-consumer marketplace concept for Nepal, focused on product browsing and clearer paths between local farmers and customers.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
-          <article class="project-card" id="municipal-portal" data-category="civic"><div class="project-media"><img src="assets/images/aayam-paudel-citizenship-recommendation-portal.jpg" alt="Municipal Citizenship Recommendation Portal prototype interface" class="project-img" loading="lazy"><span class="project-status" data-status="prototype">Hackathon prototype</span></div><div class="project-body"><p class="project-category">Civic Technology / E-Governance</p><h2 class="project-title">Municipal Citizenship Recommendation Portal</h2><p class="project-desc">A 48-hour hackathon prototype that maps a municipal recommendation workflow without claiming to be a deployed government service.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
-          <article class="project-card" id="aayam-portfolio" data-category="web"><div class="project-media"><img src="assets/images/aayam-paudel-social-preview.jpg" alt="Aayam Paudel portfolio preview" class="project-img" loading="lazy"><span class="project-status" data-status="live">Live</span></div><div class="project-body"><p class="project-category">Personal Portfolio / Web Application</p><h2 class="project-title">Aayam Paudel Portfolio</h2><p class="project-desc">A responsive static portfolio with project browsing, search, theming, and a serverless contact workflow.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
+          <article class="project-card" id="haat-bazzar" data-category="web"><div class="project-media"><img src="assets/images/aayam-paudel-haat-bazzar-marketplace.jpg" alt="Haat Bazzar Marketplace Web App - Developed by Aayam Paudel (Aayam Poudel) Web Developer Gaindakot" class="project-img" loading="lazy" decoding="async" width="600" height="340"><span class="project-status" data-status="live">Live frontend demo</span></div><div class="project-body"><p class="project-category">Marketplace / Web Application</p><h2 class="project-title">Haat Bazzar — हट बजार</h2><p class="project-desc">A farm-to-consumer marketplace concept for Nepal, focused on product browsing and clearer paths between local farmers and customers.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
+          <article class="project-card" id="municipal-portal" data-category="civic"><div class="project-media"><img src="assets/images/aayam-paudel-citizenship-recommendation-portal.jpg" alt="Municipal Citizenship Recommendation Portal - Civic Tech by Aayam Paudel Nepal" class="project-img" loading="lazy" decoding="async" width="600" height="340"><span class="project-status" data-status="prototype">Hackathon prototype</span></div><div class="project-body"><p class="project-category">Civic Technology / E-Governance</p><h2 class="project-title">Municipal Citizenship Recommendation Portal</h2><p class="project-desc">A 48-hour hackathon prototype that maps a municipal recommendation workflow without claiming to be a deployed government service.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
+          <article class="project-card" id="aayam-portfolio" data-category="web"><div class="project-media"><img src="assets/images/aayam-paudel-social-preview.jpg" alt="Aayam Paudel (Aayam Poudel) Portfolio Web App" class="project-img" loading="lazy" decoding="async" width="600" height="340"><span class="project-status" data-status="live">Live</span></div><div class="project-body"><p class="project-category">Personal Portfolio / Web Application</p><h2 class="project-title">Aayam Paudel Portfolio</h2><p class="project-desc">A responsive static portfolio with project browsing, search, theming, and a serverless contact workflow.</p><div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div></article>
           <article class="project-card" id="python-portfolio-audit" data-category="experiments"><div class="project-media"><div class="project-media-placeholder">Python tooling</div><span class="project-status" data-status="prototype">Learning project</span></div><div class="project-body"><p class="project-category">Python / Developer Tooling</p><h2 class="project-title">Python Portfolio Audit Utility</h2><p class="project-desc">A standard-library command-line utility that validates crawler rules, sitemap URLs, and local portfolio pages.</p><div class="project-tags"><span class="tag">Python</span><span class="tag">unittest</span><span class="tag">SEO</span></div></div></article>
           <article class="project-card" id="playground-experiments" data-category="experiments"><div class="project-media"><div class="project-media-placeholder">Interactive experiments</div><span class="project-status" data-status="prototype">Ongoing</span></div><div class="project-body"><p class="project-category">JavaScript / Interactive Experiments</p><h2 class="project-title">Playground Experiments</h2><p class="project-desc">A small learning lab for a sorting visualizer, editable typewriter, and a touch-friendly reaction game.</p><div class="project-tags"><span class="tag">JavaScript</span><span class="tag">CSS</span><span class="tag">Web Audio</span></div></div></article>
         </div>
@@ -146,7 +149,7 @@
             <div class="github-card-header">
               <div class="github-user-info">
                 <div class="github-avatar-wrapper">
-                  <img class="github-avatar" src="https://avatars.githubusercontent.com/u/252325038?v=4" alt="Aayam Paudel GitHub Profile" width="52" height="52" loading="lazy">
+                  <img class="github-avatar" src="https://avatars.githubusercontent.com/u/252325038?v=4" alt="Aayam Paudel (aayampaudel200-sketch) GitHub Profile" width="52" height="52" loading="lazy" decoding="async">
                   <span class="github-status-dot" aria-hidden="true"></span>
                 </div>
                 <div>
