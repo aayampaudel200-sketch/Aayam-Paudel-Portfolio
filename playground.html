@@ -90,21 +90,73 @@
     <section class="page-intro section">
       <div class="container">
         <p class="eyebrow reveal-up">LABS · EXPERIMENTS</p>
-        <h1 class="page-title reveal-up">Playground.</h1>
-        <p class="page-lede reveal-up">A hands-on space for browser experiments, visual algorithms, and small games. Everything runs locally on your device—tap, type, and play.</p>
+        <h1 class="page-title reveal-up">Some games and tools created by me.</h1>
+        <p class="page-lede reveal-up">A hands-on collection of games, arcade challenges, algorithm visualizers, and interactive tools built for both laptop and mobile. Everything runs locally on your device with high performance—tap, shoot, and play!</p>
       </div>
     </section>
 
     <section class="section playground-section">
       <div class="container">
         <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
-          <button type="button" class="playground-tab active" role="tab" data-lab="sort" aria-selected="true">Sorting Visualizer</button>
+          <button type="button" class="playground-tab active" role="tab" data-lab="shooter" aria-selected="true">🚀 Space Defender</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="sort" aria-selected="false">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
           <button type="button" class="playground-tab" role="tab" data-lab="game" aria-selected="false">Neon Tap Rush</button>
           <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
         </div>
 
-        <article class="lab-panel reveal-up is-visible" data-lab-panel="sort" id="lab-sort">
+        <article class="lab-panel reveal-up is-visible" data-lab-panel="shooter" id="lab-shooter">
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">ARCADE SHOOTER · LAPTOP &amp; MOBILE</p>
+              <h2 class="section-title">Cyber Defender — Space Shooter</h2>
+              <p class="lab-lede">Defend your quadrant against incoming alien fleets and cyber meteors! Works smoothly on <strong>Laptop (A/D or Arrows to move, Space/Click to fire)</strong> and <strong>Mobile (Touch &amp; Drag ship or on-screen controls)</strong>.</p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-primary" id="shooterStartBtn">Start Mission</button>
+              <button type="button" class="btn btn-ghost" id="shooterPauseBtn">Pause</button>
+              <button type="button" class="btn btn-ghost" id="shooterQuitBtn">Quit Game</button>
+              <button type="button" class="btn btn-ghost" id="shooterSoundBtn" aria-label="Toggle Sound">🔊 Sound</button>
+            </div>
+          </div>
+
+          <!-- Status Bar -->
+          <div class="shooter-stats-bar" aria-live="polite">
+            <div class="shooter-stat-item">
+              <span class="shooter-stat-label">SCORE</span>
+              <span class="shooter-stat-val" id="shooterScore">0</span>
+            </div>
+            <div class="shooter-stat-item">
+              <span class="shooter-stat-label">SHIELDS</span>
+              <span class="shooter-stat-val" id="shooterShields">🛡️ 🛡️ 🛡️</span>
+            </div>
+            <div class="shooter-stat-item">
+              <span class="shooter-stat-label">WAVE</span>
+              <span class="shooter-stat-val" id="shooterWave">1</span>
+            </div>
+            <div class="shooter-stat-item">
+              <span class="shooter-stat-label">HIGH SCORE</span>
+              <span class="shooter-stat-val" id="shooterHighScore">0</span>
+            </div>
+          </div>
+
+          <!-- Canvas Game Area -->
+          <div class="shooter-canvas-wrapper" id="shooterWrapper">
+            <canvas id="shooterCanvas" width="640" height="420" class="shooter-canvas" tabindex="0" role="application" aria-label="Space shooting arcade game"></canvas>
+            
+            <!-- On-screen mobile controls -->
+            <div class="shooter-mobile-controls" id="shooterMobileControls" aria-hidden="true">
+              <div class="shooter-dpad">
+                <button type="button" class="shooter-touch-btn" id="touchLeftBtn" aria-label="Left">◄</button>
+                <button type="button" class="shooter-touch-btn" id="touchRightBtn" aria-label="Right">►</button>
+              </div>
+              <button type="button" class="shooter-fire-btn" id="touchFireBtn" aria-label="Fire">🔥 FIRE</button>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="lab-panel reveal-up" data-lab-panel="sort" id="lab-sort" hidden>
           <div class="lab-header">
             <div>
               <p class="eyebrow">ALGORITHM</p>
