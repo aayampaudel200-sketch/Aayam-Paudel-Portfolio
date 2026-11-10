@@ -100,15 +100,67 @@
 
     <section class="section playground-section">
       <div class="container">
-        <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
-          <button type="button" class="playground-tab active" role="tab" data-lab="shooter" aria-selected="true">🚀 Space Defender</button>
+                <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
+          <button type="button" class="playground-tab active" role="tab" data-lab="sniper" aria-selected="true">🎯 Target Sniper</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="shooter" aria-selected="false">🚀 Space Defender</button>
           <button type="button" class="playground-tab" role="tab" data-lab="sort" aria-selected="false">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
           <button type="button" class="playground-tab" role="tab" data-lab="game" aria-selected="false">Neon Tap Rush</button>
           <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
         </div>
 
-        <article class="lab-panel reveal-up is-visible" data-lab-panel="shooter" id="lab-shooter">
+        <article class="lab-panel reveal-up is-visible" data-lab-panel="sniper" id="lab-sniper">
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">PRECISION TARGET SHOOTER · MOBILE &amp; LAPTOP</p>
+              <h2 class="section-title">Target Sniper</h2>
+              <p class="lab-lede">
+                Test your marksmanship and reflexes! <strong>Desktop:</strong> Move mouse to aim crosshair, Left-Click to shoot. <strong>Mobile:</strong> Tap or drag anywhere on the range to aim and shoot instantly with 0ms lag!
+              </p>
+            </div>
+            <div class="lab-controls">
+              <button type="button" class="btn btn-primary" id="sniperStartBtn">Start Mission</button>
+              <button type="button" class="btn btn-ghost" id="sniperPauseBtn">Pause</button>
+              <button type="button" class="btn btn-ghost" id="sniperRestartBtn">Restart</button>
+              <button type="button" class="btn btn-ghost" id="sniperSoundBtn" aria-label="Toggle Sound">🔊 Sound</button>
+            </div>
+          </div>
+
+          <!-- Live Scoreboard -->
+          <div class="sniper-stats-bar" aria-live="polite">
+            <div class="sniper-stat-item">
+              <span class="sniper-stat-label">SCORE</span>
+              <span class="sniper-stat-val" id="sniperScore">0</span>
+            </div>
+            <div class="sniper-stat-item">
+              <span class="sniper-stat-label">ACCURACY</span>
+              <span class="sniper-stat-val" id="sniperAccuracy">100%</span>
+            </div>
+            <div class="sniper-stat-item">
+              <span class="sniper-stat-label">TIMER</span>
+              <span class="sniper-stat-val" id="sniperTimer">00:45</span>
+            </div>
+            <div class="sniper-stat-item">
+              <span class="sniper-stat-label">STREAK</span>
+              <span class="sniper-stat-val" id="sniperStreak">0x</span>
+            </div>
+            <div class="sniper-stat-item">
+              <span class="sniper-stat-label">HIGH SCORE</span>
+              <span class="sniper-stat-val" id="sniperHighScore">0</span>
+            </div>
+          </div>
+
+          <!-- Canvas Game Area -->
+          <div class="sniper-canvas-wrapper" id="sniperWrapper">
+            <canvas id="sniperCanvas" width="640" height="420" class="sniper-canvas" tabindex="0" role="application" aria-label="Target Sniper shooting game"></canvas>
+            <div class="sniper-hint-bar" aria-hidden="true">
+              <span>🎯 Tap or Click targets to shoot · Bullseyes grant +100 pts &amp; combo multipliers!</span>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="lab-panel reveal-up" data-lab-panel="shooter" id="lab-shooter" hidden>
           <div class="lab-header">
             <div>
               <p class="eyebrow">ARCADE SHOOTER · LAPTOP &amp; MOBILE</p>

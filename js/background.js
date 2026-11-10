@@ -370,6 +370,27 @@
     { passive: true }
   );
 
+
+  // High-performance IntersectionObserver: pauses starfield animation when scrolled out of view
+  if ('IntersectionObserver' in window && canvas) {
+    const heroObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            isVisible = !document.hidden;
+            if (isVisible) start();
+          } else {
+            isVisible = false;
+            stop();
+          }
+        }
+      },
+      { threshold: 0.05 }
+    );
+    const observeEl = canvas.closest('.hero') || canvas;
+    heroObserver.observe(observeEl);
+  }
+
   resize();
   start();
 })();
