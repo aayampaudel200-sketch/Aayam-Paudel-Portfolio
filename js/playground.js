@@ -3,6 +3,57 @@
  * plus two touch-friendly browser games.
  */
 (() => {
+  const DIFFICULTIES = ['easy', 'medium', 'hard'];
+
+  function readScore(key) {
+    try {
+      return Number.parseInt(localStorage.getItem(key) || '0', 10) || 0;
+    } catch (error) {
+      console.warn('Unable to read saved score:', error);
+      return 0;
+    }
+  }
+
+  function writeScore(key, value) {
+    try {
+      localStorage.setItem(key, String(value));
+      return true;
+    } catch (error) {
+      console.warn('Unable to save score:', error);
+      return false;
+    }
+  }
+
+  function bindDifficulty(labId, storageKey, onChange) {
+    const root = document.querySelector(`[data-difficulty-for="${labId}"]`);
+    let current = 'medium';
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (DIFFICULTIES.includes(saved)) current = saved;
+    } catch (error) {
+      console.warn('Unable to read saved difficulty:', error);
+    }
+
+    function sync() {
+      root?.querySelectorAll('[data-difficulty]').forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.difficulty === current));
+      });
+    }
+
+    root?.querySelectorAll('[data-difficulty]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const next = button.dataset.difficulty;
+        if (!DIFFICULTIES.includes(next) || next === current) return;
+        current = next;
+        try { localStorage.setItem(storageKey, current); } catch (_) {}
+        sync();
+        onChange(current);
+      });
+    });
+    sync();
+    return { get value() { return current; } };
+  }
+
   function initLabTabs() {
     const tabs = [...document.querySelectorAll('.playground-tab')];
     const panels = [...document.querySelectorAll('[data-lab-panel]')];
@@ -411,7 +462,12 @@
       { icon: '◈', label: 'diamond' },
       { icon: '☼', label: 'sun' },
       { icon: '✿', label: 'flower' },
+      { icon: '▲', label: 'triangle' },
+      { icon: '♥', label: 'heart' },
     ];
+    const pairCounts = { easy: 4, medium: 6, hard: 8 };
+    let difficulty = 'medium';
+    function memoryScoreKey() { return `memory-match-best:${difficulty}`; }
     let cards = [];
     let firstIndex = null;
     let locked = false;
@@ -422,11 +478,16 @@
     let revealTimer = null;
     let bestMoves = 0;
 
-    try {
-      bestMoves = Number.parseInt(localStorage.getItem('memory-match-best') || '0', 10) || 0;
-    } catch (error) {
-      console.warn('Unable to read the saved memory-match score:', error);
+    function loadBestMoves() {
+      bestMoves = readScore(memoryScoreKey());
+      if (!bestMoves && difficulty === 'medium') bestMoves = readScore('memory-match-best');
     }
+    difficulty = bindDifficulty('memory', 'memoryMatchDifficulty', (next) => {
+      difficulty = next;
+      loadBestMoves();
+      newGame();
+    }).value;
+    loadBestMoves();
 
     function shuffle(deck) {
       for (let index = deck.length - 1; index > 0; index -= 1) {
@@ -472,11 +533,7 @@
       const isNewBest = !bestMoves || moves < bestMoves;
       if (isNewBest) {
         bestMoves = moves;
-        try {
-          localStorage.setItem('memory-match-best', String(bestMoves));
-        } catch (error) {
-          console.warn('Unable to save the memory-match score:', error);
-        }
+        writeScore(memoryScoreKey(), bestMoves);
       }
       bestEl.textContent = String(bestMoves);
       status.textContent = isNewBest
@@ -530,7 +587,8 @@
     function newGame() {
       window.clearInterval(timerId);
       window.clearTimeout(revealTimer);
-      cards = shuffle([...symbols, ...symbols].map((symbol, index) => ({
+      const deck = symbols.slice(0, pairCounts[difficulty] || 6);
+      cards = shuffle([...deck, ...deck].map((symbol, index) => ({
         ...symbol,
         id: `${symbol.label}-${index}`,
         revealed: false,
@@ -544,7 +602,7 @@
       movesEl.textContent = '0';
       timeEl.textContent = '0:00';
       bestEl.textContent = bestMoves ? String(bestMoves) : '—';
-      status.textContent = 'Find all 6 pairs. The timer starts on your first reveal.';
+      status.textContent = `Find all ${pairCounts[difficulty]} pairs on ${difficulty}. The timer starts on your first reveal.`;
       render();
     }
 
@@ -682,18 +740,32 @@
       }
     }
 
-    // High Score
+    const difficultySettings = {
+      easy: { speedMul: 0.72, spawn: 1.75, shields: 5, waveMul: 8 },
+      medium: { speedMul: 1, spawn: 1.4, shields: 3, waveMul: 12 },
+      hard: { speedMul: 1.4, spawn: 0.82, shields: 2, waveMul: 20 },
+    };
+    let difficulty = 'medium';
+    function shooterScoreKey() { return `cyberDefenderHighScore:${difficulty}`; }
     let highScore = 0;
-    try {
-      highScore = parseInt(localStorage.getItem('cyberDefenderHighScore') || '0', 10);
-      if (isNaN(highScore)) highScore = 0;
-    } catch (_) {}
+    function loadHighScore() {
+      highScore = readScore(shooterScoreKey());
+      if (!highScore && difficulty === 'medium') highScore = readScore('cyberDefenderHighScore');
+    }
+    const difficultyControl = bindDifficulty('shooter', 'cyberDefenderDifficulty', (next) => {
+      difficulty = next;
+      loadHighScore();
+      updateUI();
+      if (state === 'running' || state === 'paused') quitGame();
+    });
+    difficulty = difficultyControl.value;
+    loadHighScore();
     if (highScoreEl) highScoreEl.textContent = String(highScore);
 
     // Game state
     let state = 'idle'; // 'idle', 'running', 'paused', 'gameover'
     let score = 0;
-    let shields = 3;
+    let shields = difficultySettings[difficulty].shields;
     let wave = 1;
     let animId = null;
     let lastTime = 0;
@@ -732,7 +804,7 @@
 
     function resetGame() {
       score = 0;
-      shields = 3;
+      shields = difficultySettings[difficulty].shields;
       wave = 1;
       player.x = canvas.width / 2;
       player.tripleShotTimer = 0;
@@ -792,7 +864,7 @@
     function spawnEnemy() {
       const typeRand = Math.random();
       const isAsteroid = typeRand < 0.35;
-      const speed = 70 + (wave * 12) + (Math.random() * 40);
+      const speed = (70 + (wave * difficultySettings[difficulty].waveMul) + (Math.random() * 40)) * difficultySettings[difficulty].speedMul;
 
       enemies.push({
         x: Math.random() * (canvas.width - 50) + 25,
@@ -933,9 +1005,7 @@
       playSound('gameover');
       if (score > highScore) {
         highScore = score;
-        try {
-          localStorage.setItem('cyberDefenderHighScore', String(highScore));
-        } catch (_) {}
+        writeScore(shooterScoreKey(), highScore);
       }
       updateUI();
       if (startBtn) startBtn.textContent = 'Play Again';
@@ -971,7 +1041,7 @@
 
       // Spawning enemies
       spawnTimer += dt;
-      const spawnInterval = Math.max(0.45, 1.4 - (wave * 0.08));
+      const spawnInterval = Math.max(0.35, difficultySettings[difficulty].spawn - (wave * 0.08));
       if (spawnTimer >= spawnInterval) {
         spawnTimer = 0;
         spawnEnemy();
@@ -2082,14 +2152,34 @@
     const wpmEl = document.getElementById('typingWpm');
     const accuracyEl = document.getElementById('typingAccuracy');
     const timeEl = document.getElementById('typingTime');
+    const bestEl = document.getElementById('typingBest');
     const status = document.getElementById('typingStatus');
     const panel = document.getElementById('lab-typing-shooter');
-    if (!canvas || !startBtn || !pauseBtn || !restartBtn || !mobileInput || !scoreEl || !wpmEl || !accuracyEl || !timeEl || !status || !panel) return;
+    if (!canvas || !startBtn || !pauseBtn || !restartBtn || !mobileInput || !scoreEl || !wpmEl || !accuracyEl || !timeEl || !bestEl || !status || !panel) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const letters = 'ASDFGHJKLQWERTYUIOPZXCVBNM';
-    const duration = 45000;
+    const typingSettings = {
+      easy: { duration: 60000, spawn: 1.35, speed: 0.72 },
+      medium: { duration: 45000, spawn: 1.12, speed: 1 },
+      hard: { duration: 32000, spawn: 0.7, speed: 1.35 },
+    };
+    let difficulty = 'medium';
+    let best = 0;
+    function typingScoreKey() { return `type-blaster-best:${difficulty}`; }
+    function roundDuration() { return typingSettings[difficulty].duration; }
+    function loadTypingBest() {
+      best = readScore(typingScoreKey());
+      bestEl.textContent = String(best);
+    }
+    difficulty = bindDifficulty('typing-shooter', 'typeBlasterDifficulty', (next) => {
+      difficulty = next;
+      loadTypingBest();
+      if (playing || paused) pauseRound('Difficulty changed. Start a new round.');
+      timeEl.textContent = `${Math.ceil(roundDuration() / 1000)}s`;
+    }).value;
+    loadTypingBest();
     let rocks = [];
     let bullets = [];
     let playing = false;
@@ -2113,7 +2203,7 @@
       scoreEl.textContent = String(score);
       wpmEl.textContent = `${wpm} WPM`;
       accuracyEl.textContent = `${accuracy}%`;
-      timeEl.textContent = `${Math.max(0, Math.ceil((duration - elapsed) / 1000))}s`;
+      timeEl.textContent = `${Math.max(0, Math.ceil((roundDuration() - elapsed) / 1000))}s`;
       return elapsed;
     }
 
@@ -2163,7 +2253,7 @@
 
     function spawnRock() {
       const lane = 44 + Math.random() * (canvas.width - 88);
-      rocks.push({ id: nextRockId++, x: lane, y: -28, letter: letters[Math.floor(Math.random() * letters.length)], speed: 28 + Math.min(score * 0.7, 48) + Math.random() * 22 });
+      rocks.push({ id: nextRockId++, x: lane, y: -28, letter: letters[Math.floor(Math.random() * letters.length)], speed: (28 + Math.min(score * 0.7, 48) + Math.random() * 22) * typingSettings[difficulty].speed });
     }
 
     function endRound(message) {
@@ -2172,7 +2262,12 @@
       cancelAnimationFrame(frameId);
       const elapsed = metrics();
       const wpm = Math.round((hits / 5) / Math.max(elapsed / 60000, 1 / 60));
-      status.textContent = `${message} Score ${score}, ${wpm} WPM, ${typed ? Math.round((hits / typed) * 100) : 100}% accuracy.`;
+      if (score > best) {
+        best = score;
+        writeScore(typingScoreKey(), best);
+        bestEl.textContent = String(best);
+      }
+      status.textContent = `${message} Score ${score}, top score ${best} on ${difficulty}, ${wpm} WPM, ${typed ? Math.round((hits / typed) * 100) : 100}% accuracy.`;
       startBtn.textContent = 'Play again';
       pauseBtn.textContent = 'Pause';
       draw();
@@ -2182,9 +2277,9 @@
       if (!playing) return;
       const delta = Math.min((now - lastFrame) / 1000, 0.05);
       lastFrame = now;
-      if (metrics(now) >= duration) return endRound('Round complete!');
+      if (metrics(now) >= roundDuration()) return endRound('Round complete!');
       spawnTimer += delta;
-      if (spawnTimer > Math.max(0.45, 1.12 - score * 0.012)) { spawnTimer = 0; spawnRock(); }
+      if (spawnTimer > Math.max(0.4, typingSettings[difficulty].spawn - score * 0.012)) { spawnTimer = 0; spawnRock(); }
       rocks.forEach((rock) => { rock.y += rock.speed * delta; });
       bullets.forEach((bullet) => { bullet.y -= 700 * delta; });
       bullets = bullets.filter((bullet) => {
@@ -2215,7 +2310,7 @@
     }
 
     function startRound(restart = false) {
-      if (restart || elapsedBeforePause >= duration || !paused) {
+      if (restart || elapsedBeforePause >= roundDuration() || !paused) {
         rocks = []; bullets = []; score = 0; typed = 0; hits = 0; escaped = 0; spawnTimer = 0; elapsedBeforePause = 0; nextRockId = 1;
       }
       playing = true; paused = false; roundStartedAt = performance.now(); lastFrame = roundStartedAt;
@@ -2267,7 +2362,25 @@
     let running = false;
     let timer = null;
     let touchStart = null;
-    try { best = Number.parseInt(localStorage.getItem('nokia-snake-best') || '0', 10) || 0; } catch (error) { console.warn('Unable to read Snake score:', error); }
+    const snakeSpeed = { easy: 180, medium: 130, hard: 85 };
+    let difficulty = 'medium';
+    function snakeScoreKey() { return `nokia-snake-best:${difficulty}`; }
+    function loadSnakeBest() {
+      best = readScore(snakeScoreKey());
+      if (!best && difficulty === 'medium') best = readScore('nokia-snake-best');
+    }
+    difficulty = bindDifficulty('snake', 'nokiaSnakeDifficulty', (next) => {
+      difficulty = next;
+      loadSnakeBest();
+      updateStats();
+      if (running) {
+        running = false;
+        window.clearInterval(timer);
+        timer = null;
+        start(true);
+      }
+    }).value;
+    loadSnakeBest();
 
     function placeFood() {
       do { food = { x: Math.floor(Math.random() * cells), y: Math.floor(Math.random() * cells) }; }
@@ -2292,14 +2405,14 @@
       const body = ate ? snake : snake.slice(0, -1);
       if (head.x < 0 || head.x >= cells || head.y < 0 || head.y >= cells || body.some((part) => part.x === head.x && part.y === head.y)) return stop(`Game over! Final score: ${score}.`);
       snake.unshift(head);
-      if (ate) { score += 10; if (score > best) { best = score; try { localStorage.setItem('nokia-snake-best', String(best)); } catch (error) { console.warn('Unable to save Snake score:', error); } } placeFood(); updateStats(); status.textContent = 'Nice catch! Keep going.'; }
+      if (ate) { score += 10; if (score > best) { best = score; writeScore(snakeScoreKey(), best); } placeFood(); updateStats(); status.textContent = 'Nice catch! Keep going.'; }
       else snake.pop();
       draw();
     }
     function start(restart = false) {
       if (restart || !snake.length) { snake = [{ x: 8, y: 9 }, { x: 7, y: 9 }, { x: 6, y: 9 }]; direction = { x: 1, y: 0 }; queuedDirection = direction; score = 0; placeFood(); updateStats(); }
       if (running) return;
-      running = true; startBtn.textContent = 'Playing…'; pauseBtn.textContent = 'Pause'; status.textContent = 'Use arrow keys, swipe, or the direction pad.'; window.clearInterval(timer); timer = window.setInterval(step, 130); draw();
+      running = true; startBtn.textContent = 'Playing…'; pauseBtn.textContent = 'Pause'; status.textContent = `Use arrow keys, swipe, or the direction pad. Difficulty: ${difficulty}.`; window.clearInterval(timer); timer = window.setInterval(step, snakeSpeed[difficulty]); draw();
     }
     function setDirection(next) { if (!running || (next.x === -direction.x && next.y === -direction.y)) return; queuedDirection = next; }
     const directions = { ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 }, ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 } };
@@ -2314,15 +2427,22 @@
   }
 
   function initPlayground() {
-    initSniperGame();
-    initShooterGame();
+    const lazyInits = {
+      shooter: initShooterGame,
+      sort: initSortLab,
+      typewriter: initTypewriterLab,
+      memory: initMemoryGame,
+      'typing-shooter': initTypingShooterGame,
+      snake: initSnakeGame,
+    };
+    const started = Object.create(null);
+    document.addEventListener('playground:tabchange', (event) => {
+      const labId = event.detail?.labId;
+      if (!labId || started[labId] || !lazyInits[labId]) return;
+      started[labId] = true;
+      lazyInits[labId]();
+    });
     initLabTabs();
-    initSortLab();
-    initTypewriterLab();
-    initTapRushGame();
-    initMemoryGame();
-    initTypingShooterGame();
-    initSnakeGame();
   }
 
   if (document.readyState === 'loading') {

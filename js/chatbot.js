@@ -129,10 +129,17 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message, page: window.location.pathname }),
       });
-      const data = await response.json();
+      const text = await response.text();
+      let data = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        pending.textContent = 'The assistant is temporarily unavailable. Please try again in a moment.';
+        return;
+      }
       if (!response.ok) throw new Error(data?.error || 'The assistant is unavailable.');
-      pending.textContent = data.reply;
-      window.setTimeout(() => executeAction(data.action), 250);
+      pending.textContent = data?.reply || 'I can help with Aayam’s work, projects, and Namaste Suman Communication.';
+      window.setTimeout(() => executeAction(data?.action), 250);
     } catch (error) {
       pending.textContent = error instanceof Error ? error.message : 'The assistant is unavailable right now.';
     } finally {

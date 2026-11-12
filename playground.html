@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261109-v3">
+  <link rel="stylesheet" href="css/style.css?v=20261112-games">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -117,6 +117,11 @@
               <p class="lab-lede">Defend your quadrant against incoming alien fleets and cyber meteors! Works smoothly on <strong>Laptop (A/D or Arrows to move, Space/Click to fire)</strong> and <strong>Mobile (Touch &amp; Drag ship or on-screen controls)</strong>.</p>
             </div>
             <div class="lab-controls">
+              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="shooter">
+                <button type="button" data-difficulty="easy">Easy</button>
+                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                <button type="button" data-difficulty="hard">Hard</button>
+              </div>
               <button type="button" class="btn btn-primary" id="shooterStartBtn">Start Mission</button>
               <button type="button" class="btn btn-ghost" id="shooterPauseBtn">Pause</button>
               <button type="button" class="btn btn-ghost" id="shooterQuitBtn">Quit Game</button>
@@ -139,7 +144,7 @@
               <span class="shooter-stat-val" id="shooterWave">1</span>
             </div>
             <div class="shooter-stat-item">
-              <span class="shooter-stat-label">HIGH SCORE</span>
+              <span class="shooter-stat-label">TOP SCORE</span>
               <span class="shooter-stat-val" id="shooterHighScore">0</span>
             </div>
           </div>
@@ -200,6 +205,11 @@
               <p class="lab-lede">Reveal two symbols at a time and match every pair in as few moves as possible.</p>
             </div>
             <div class="lab-controls">
+              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="memory">
+                <button type="button" data-difficulty="easy">Easy</button>
+                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                <button type="button" data-difficulty="hard">Hard</button>
+              </div>
               <button type="button" class="btn btn-primary" id="memoryReset">New game</button>
               <button type="button" class="btn btn-ghost" id="memoryQuit">Quit game</button>
             </div>
@@ -208,7 +218,7 @@
             <aside class="memory-scoreboard" aria-label="Memory Match score">
               <div><span>Moves</span><strong id="memoryMoves">0</strong></div>
               <div><span>Time</span><strong id="memoryTime">0:00</strong></div>
-              <div><span>Best</span><strong id="memoryBest">—</strong></div>
+              <div><span>Top score</span><strong id="memoryBest">—</strong></div>
             </aside>
             <div class="memory-grid" id="memoryGrid" aria-label="Memory Match board"></div>
           </div>
@@ -223,6 +233,11 @@
               <p class="lab-lede">Type the letter on each incoming rock to fire a bullet. Protect the base for 45 seconds while the game tracks speed, accuracy, and score.</p>
             </div>
             <div class="lab-controls">
+              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="typing-shooter">
+                <button type="button" data-difficulty="easy">Easy</button>
+                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                <button type="button" data-difficulty="hard">Hard</button>
+              </div>
               <button type="button" class="btn btn-primary" id="typingStartBtn">Start round</button>
               <button type="button" class="btn btn-ghost" id="typingPauseBtn">Pause</button>
               <button type="button" class="btn btn-ghost" id="typingRestartBtn">Restart</button>
@@ -233,6 +248,7 @@
             <div><span>Speed</span><strong id="typingWpm">0 WPM</strong></div>
             <div><span>Accuracy</span><strong id="typingAccuracy">100%</strong></div>
             <div><span>Time</span><strong id="typingTime">45s</strong></div>
+            <div><span>Top score</span><strong id="typingBest">0</strong></div>
           </div>
           <div class="typing-shooter-stage">
             <canvas id="typingShooterCanvas" width="640" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
@@ -252,6 +268,11 @@
               <p class="lab-lede">A lightweight take on the classic phone game. Use arrow keys, swipe the board, or tap the direction pad.</p>
             </div>
             <div class="lab-controls">
+              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="snake">
+                <button type="button" data-difficulty="easy">Easy</button>
+                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                <button type="button" data-difficulty="hard">Hard</button>
+              </div>
               <button type="button" class="btn btn-primary" id="snakeStartBtn">Start game</button>
               <button type="button" class="btn btn-ghost" id="snakePauseBtn">Pause</button>
               <button type="button" class="btn btn-ghost" id="snakeRestartBtn">Restart</button>
@@ -260,7 +281,7 @@
           <div class="snake-layout">
             <div class="snake-screen-wrap"><canvas id="snakeCanvas" width="360" height="360" role="img" aria-label="Classic Snake game board"></canvas></div>
             <div class="snake-side">
-              <div class="snake-stats" aria-live="polite"><span>Score <strong id="snakeScore">0</strong></span><span>Best <strong id="snakeBest">0</strong></span></div>
+              <div class="snake-stats" aria-live="polite"><span>Score <strong id="snakeScore">0</strong></span><span>Top score <strong id="snakeBest">0</strong></span></div>
               <div class="snake-controls" aria-label="Snake direction controls">
                 <button type="button" data-snake-direction="up" aria-label="Move up">▲</button>
                 <button type="button" data-snake-direction="left" aria-label="Move left">◀</button>
@@ -309,7 +330,7 @@
   </footer>
 
   <script src="js/main.js?v=site-refresh-2" defer></script>
-  <script src="js/playground.js?v=memory-match-2" defer></script>
+  <script src="js/playground.js?v=difficulty-1" defer></script>
   <script src="/js/chatbot.js" defer></script>
 </body>
 </html>

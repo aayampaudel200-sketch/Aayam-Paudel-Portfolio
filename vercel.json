@@ -1,6 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "node scripts/build-site-knowledge.js",
+  "framework": null,
+  "functions": {
+    "api/chat.js": {
+      "includeFiles": "data/site-knowledge.json",
+      "maxDuration": 10
+    }
+  },
   "redirects": [
     {
       "source": "/assets/images/aayam-portrait-1.jpg",

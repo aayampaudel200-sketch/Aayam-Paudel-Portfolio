@@ -4,8 +4,7 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
 const requestBuckets = new Map();
-const siteKnowledge = require('../data/site-knowledge.json');
-const GEMINI_TIMEOUT_MS = 15000;
+const GEMINI_TIMEOUT_MS = 8000;
 const FALLBACK_REPLY = 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.';
 
 const ACTIONS = new Set([
@@ -14,7 +13,17 @@ const ACTIONS = new Set([
   'OPEN_GITHUB', 'COPY_PHONE_OR_EMAIL',
 ]);
 
-const publicKnowledge = siteKnowledge.pages.map((page) => [
+function loadSiteKnowledge() {
+  try {
+    return require('../data/site-knowledge.json');
+  } catch (error) {
+    console.error('Unable to load site knowledge:', error);
+    return { pages: [] };
+  }
+}
+
+const siteKnowledge = loadSiteKnowledge();
+const publicKnowledge = (siteKnowledge.pages || []).map((page) => [
   `Page: ${page.title} (${page.url})`,
   page.description,
   `Topics: ${page.headings.join(' | ')}`,
@@ -87,7 +96,12 @@ function cleanModelResponse(value) {
 }
 
 function assistantFallback() {
-  return { reply: FALLBACK_REPLY, action: null };
+  return { reply: FALLBACK_REPLY, action: null, target: null };
+}
+
+function sendJson(res, status, payload) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  return res.status(status).json(payload);
 }
 
 async function googleErrorMessage(response) {
@@ -100,9 +114,12 @@ async function googleErrorMessage(response) {
   }
 }
 
-module.exports = async (req, res) => {
+module.exports = async function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  try {
   const origin = req.headers?.origin;
-  if (!isAllowedOrigin(origin)) return res.status(403).json({ error: 'This origin is not allowed to use the assistant.' });
+  if (!isAllowedOrigin(origin)) return sendJson(res, 403, { error: 'This origin is not allowed to use the assistant.' });
 
   if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Vary', 'Origin');
@@ -113,17 +130,17 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).send('');
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST, OPTIONS');
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return sendJson(res, 405, { error: 'Method Not Allowed' });
   }
-  if (isRateLimited(clientKey(req))) return res.status(429).json({ error: 'Too many requests. Please try again in a few minutes.' });
+  if (isRateLimited(clientKey(req))) return sendJson(res, 429, { error: 'Too many requests. Please try again in a few minutes.' });
 
   const body = parseBody(req.body);
   const message = typeof body?.message === 'string' ? body.message.trim() : '';
-  if (!message || message.length > MAX_QUERY_LENGTH) return res.status(400).json({ error: 'Please send a question under 800 characters.' });
+  if (!message || message.length > MAX_QUERY_LENGTH) return sendJson(res, 400, { error: 'Please send a question under 800 characters.' });
 
   if (!process.env.GEMINI_API_KEY) {
     console.error('Chat assistant is missing GEMINI_API_KEY');
-    return res.status(200).json(assistantFallback());
+    return sendJson(res, 200, assistantFallback());
   }
 
   const controller = new AbortController();
@@ -156,18 +173,22 @@ module.exports = async (req, res) => {
     if (!response.ok) {
       const detail = await googleErrorMessage(response);
       console.error('Gemini request failed:', response.status, detail);
-      return res.status(200).json(assistantFallback());
+      return sendJson(res, 200, assistantFallback());
     }
 
     const data = await response.json();
     const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
     if (!text) throw new Error('Gemini returned no text');
-    return res.status(200).json(cleanModelResponse(JSON.parse(text)));
+    return sendJson(res, 200, cleanModelResponse(JSON.parse(text)));
   } catch (error) {
-    const reason = error instanceof Error && error.name === 'AbortError' ? 'Gemini request timed out after 15 seconds' : error instanceof Error ? error.message : 'Unknown error';
+    const reason = error instanceof Error && error.name === 'AbortError' ? 'Gemini request timed out after 8 seconds' : error instanceof Error ? error.message : 'Unknown error';
     console.error('Chat assistant failed:', reason);
-    return res.status(200).json(assistantFallback());
+    return sendJson(res, 200, assistantFallback());
   } finally {
     clearTimeout(timeoutId);
+  }
+  } catch (error) {
+    console.error('Chat handler crashed:', error instanceof Error ? error.message : error);
+    if (!res.headersSent) return sendJson(res, 200, assistantFallback());
   }
 };

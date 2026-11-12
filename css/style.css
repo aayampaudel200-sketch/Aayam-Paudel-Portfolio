@@ -2312,7 +2312,31 @@ ul { list-style: none; }
   margin-top: 0.45rem;
   color: var(--text-muted);
 }
-.lab-controls { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 0.55rem; }
+.lab-controls { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 0.55rem; align-items: center; }
+.difficulty-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.45);
+}
+.difficulty-toggle button {
+  min-height: 40px;
+  padding: 0.4rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.difficulty-toggle button[aria-pressed="true"] {
+  background: var(--gradient-accent);
+  color: #04101c;
+}
 .lab-field-label {
   display: block;
   margin-bottom: 0.45rem;
@@ -2505,7 +2529,7 @@ ul { list-style: none; }
 /* Typing shooter and classic Snake stay canvas-based to keep the playground fast. */
 .typing-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
   gap: 0.65rem;
   margin-bottom: var(--space-md);
 }
@@ -2553,6 +2577,8 @@ ul { list-style: none; }
   .lab-header > div:first-child { flex-basis: 100%; }
   .lab-controls { width: 100%; }
   .lab-controls .btn { flex: 1 1 10rem; }
+  .difficulty-toggle { width: 100%; }
+  .difficulty-toggle button { flex: 1; }
   .sort-stage { height: 180px; }
   .game-scoreboard { gap: 0.4rem; }
   .game-scoreboard div { padding: 0.55rem; }
