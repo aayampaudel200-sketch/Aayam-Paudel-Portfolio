@@ -19,6 +19,8 @@ aayam/
 │   ├── background.js          # Interactive ambient particle canvas with parallax & bfcache restoration
 │   ├── projects.js            # Single data source (PROJECTS), card renderer, filter engine & modal dialog
 │   └── contact.js             # Homepage contact form submission and status messages
+├── scripts/
+│   └── build-site-knowledge.js # Generates public site knowledge for the AI at deploy time
 ├── api/
 │   ├── contact.js             # Vercel Function for sender verification and email delivery
 │   └── contact.test.js        # Contact API tests using Node's built-in test runner
@@ -34,6 +36,15 @@ aayam/
 │       └── aayam-paudel-citizenship-recommendation-portal.jpg # Municipal portal mockup
 └── README.md
 ```
+
+## AI assistant knowledge
+
+The Gemini assistant uses a generated, public-content knowledge file. Vercel runs
+`node scripts/build-site-knowledge.js` on every deployment, so published changes
+to the main pages are added to the assistant's context automatically. Run the same
+command locally after changing page content if you want the local knowledge file to
+match before deployment. The generator intentionally reads only public page content;
+it does not expose environment variables, source code, or backend details to the AI.
 
 ## Python site audit
 

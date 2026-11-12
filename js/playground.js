@@ -2072,6 +2072,247 @@
     renderIdle();
   }
 
+  function initTypingShooterGame() {
+    const canvas = document.getElementById('typingShooterCanvas');
+    const startBtn = document.getElementById('typingStartBtn');
+    const pauseBtn = document.getElementById('typingPauseBtn');
+    const restartBtn = document.getElementById('typingRestartBtn');
+    const mobileInput = document.getElementById('typingShooterInput');
+    const scoreEl = document.getElementById('typingScore');
+    const wpmEl = document.getElementById('typingWpm');
+    const accuracyEl = document.getElementById('typingAccuracy');
+    const timeEl = document.getElementById('typingTime');
+    const status = document.getElementById('typingStatus');
+    const panel = document.getElementById('lab-typing-shooter');
+    if (!canvas || !startBtn || !pauseBtn || !restartBtn || !mobileInput || !scoreEl || !wpmEl || !accuracyEl || !timeEl || !status || !panel) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const letters = 'ASDFGHJKLQWERTYUIOPZXCVBNM';
+    const duration = 45000;
+    let rocks = [];
+    let bullets = [];
+    let playing = false;
+    let paused = false;
+    let roundStartedAt = 0;
+    let elapsedBeforePause = 0;
+    let lastFrame = 0;
+    let spawnTimer = 0;
+    let score = 0;
+    let typed = 0;
+    let hits = 0;
+    let escaped = 0;
+    let frameId = 0;
+    let nextRockId = 1;
+
+    function metrics(now = performance.now()) {
+      const elapsed = playing ? elapsedBeforePause + (now - roundStartedAt) : elapsedBeforePause;
+      const minutes = Math.max(elapsed / 60000, 1 / 60);
+      const wpm = Math.round((hits / 5) / minutes);
+      const accuracy = typed ? Math.round((hits / typed) * 100) : 100;
+      scoreEl.textContent = String(score);
+      wpmEl.textContent = `${wpm} WPM`;
+      accuracyEl.textContent = `${accuracy}%`;
+      timeEl.textContent = `${Math.max(0, Math.ceil((duration - elapsed) / 1000))}s`;
+      return elapsed;
+    }
+
+    function draw(now = performance.now()) {
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#071426');
+      gradient.addColorStop(1, '#0a1020');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.09)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= canvas.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+      for (let y = 0; y <= canvas.height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+      const shipX = canvas.width / 2;
+      const shipY = canvas.height - 36;
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath(); ctx.moveTo(shipX, shipY - 18); ctx.lineTo(shipX - 20, shipY + 18); ctx.lineTo(shipX + 20, shipY + 18); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#e0f2fe'; ctx.fillRect(shipX - 3, shipY - 9, 6, 22);
+      ctx.fillStyle = '#9fb2cc'; ctx.font = '600 13px var(--font-mono, monospace)'; ctx.textAlign = 'left'; ctx.fillText(`BASE INTEGRITY ${Math.max(0, 3 - escaped)} / 3`, 14, canvas.height - 16);
+
+      bullets.forEach((bullet) => {
+        ctx.fillStyle = '#fef08a';
+        ctx.shadowColor = '#facc15'; ctx.shadowBlur = 12;
+        ctx.fillRect(bullet.x - 2, bullet.y - 12, 4, 16);
+        ctx.shadowBlur = 0;
+      });
+      rocks.forEach((rock) => {
+        const radius = 25;
+        const rockGradient = ctx.createRadialGradient(rock.x - 8, rock.y - 9, 2, rock.x, rock.y, radius);
+        rockGradient.addColorStop(0, '#cbd5e1'); rockGradient.addColorStop(0.35, '#64748b'); rockGradient.addColorStop(1, '#1e293b');
+        ctx.fillStyle = rockGradient;
+        ctx.beginPath(); ctx.arc(rock.x, rock.y, radius, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(248,250,252,.45)'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = '700 20px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText(rock.letter, rock.x, rock.y + 7);
+      });
+      if (!playing && !paused && elapsedBeforePause === 0) {
+        ctx.fillStyle = 'rgba(7, 20, 38, .72)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#7dd3fc'; ctx.font = '700 26px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText('TYPE BLASTER', canvas.width / 2, 170);
+        ctx.fillStyle = '#cbd5e1'; ctx.font = '15px var(--font-sans, sans-serif)'; ctx.fillText('Type the letter on each rock to fire.', canvas.width / 2, 205);
+      }
+      if (paused) {
+        ctx.fillStyle = 'rgba(7, 20, 38, .68)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#e0f2fe'; ctx.font = '700 22px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
+      }
+    }
+
+    function spawnRock() {
+      const lane = 44 + Math.random() * (canvas.width - 88);
+      rocks.push({ id: nextRockId++, x: lane, y: -28, letter: letters[Math.floor(Math.random() * letters.length)], speed: 28 + Math.min(score * 0.7, 48) + Math.random() * 22 });
+    }
+
+    function endRound(message) {
+      playing = false;
+      paused = false;
+      cancelAnimationFrame(frameId);
+      const elapsed = metrics();
+      const wpm = Math.round((hits / 5) / Math.max(elapsed / 60000, 1 / 60));
+      status.textContent = `${message} Score ${score}, ${wpm} WPM, ${typed ? Math.round((hits / typed) * 100) : 100}% accuracy.`;
+      startBtn.textContent = 'Play again';
+      pauseBtn.textContent = 'Pause';
+      draw();
+    }
+
+    function tick(now) {
+      if (!playing) return;
+      const delta = Math.min((now - lastFrame) / 1000, 0.05);
+      lastFrame = now;
+      if (metrics(now) >= duration) return endRound('Round complete!');
+      spawnTimer += delta;
+      if (spawnTimer > Math.max(0.45, 1.12 - score * 0.012)) { spawnTimer = 0; spawnRock(); }
+      rocks.forEach((rock) => { rock.y += rock.speed * delta; });
+      bullets.forEach((bullet) => { bullet.y -= 700 * delta; });
+      bullets = bullets.filter((bullet) => {
+        const target = rocks.find((rock) => rock.id === bullet.targetId);
+        if (target && bullet.y <= target.y + 6) {
+          rocks = rocks.filter((rock) => rock.id !== target.id);
+          hits += 1; score += 100;
+          return false;
+        }
+        return bullet.y > -20;
+      });
+      const remaining = [];
+      rocks.forEach((rock) => { if (rock.y > canvas.height - 44) escaped += 1; else remaining.push(rock); });
+      rocks = remaining;
+      if (escaped >= 3) return endRound('The rocks reached the base.');
+      draw(now);
+      frameId = requestAnimationFrame(tick);
+    }
+
+    function fireLetter(character) {
+      const letter = character.toUpperCase();
+      if (!playing || !/^[A-Z]$/.test(letter)) return;
+      typed += 1;
+      const target = rocks.filter((rock) => rock.letter === letter).sort((a, b) => b.y - a.y)[0];
+      bullets.push({ x: canvas.width / 2, y: canvas.height - 56, targetId: target?.id || null });
+      if (!target) status.textContent = `No ${letter} rock in range — keep watching the sky.`;
+      metrics();
+    }
+
+    function startRound(restart = false) {
+      if (restart || elapsedBeforePause >= duration || !paused) {
+        rocks = []; bullets = []; score = 0; typed = 0; hits = 0; escaped = 0; spawnTimer = 0; elapsedBeforePause = 0; nextRockId = 1;
+      }
+      playing = true; paused = false; roundStartedAt = performance.now(); lastFrame = roundStartedAt;
+      startBtn.textContent = 'Playing…'; pauseBtn.textContent = 'Pause'; status.textContent = 'Type the letter shown on an incoming rock to blast it.';
+      if (window.matchMedia('(pointer: coarse)').matches) mobileInput.focus();
+      cancelAnimationFrame(frameId); frameId = requestAnimationFrame(tick);
+    }
+
+    function pauseRound(reason = 'Round paused.') {
+      if (!playing) return;
+      elapsedBeforePause += performance.now() - roundStartedAt;
+      playing = false; paused = true; cancelAnimationFrame(frameId);
+      startBtn.textContent = 'Resume round'; pauseBtn.textContent = 'Resume'; status.textContent = reason; metrics(); draw();
+    }
+
+    startBtn.addEventListener('click', () => startRound(paused ? false : true));
+    restartBtn.addEventListener('click', () => startRound(true));
+    pauseBtn.addEventListener('click', () => { if (playing) pauseRound(); else if (paused) startRound(false); });
+    mobileInput.addEventListener('input', () => { const character = mobileInput.value.slice(-1); mobileInput.value = ''; fireLetter(character); });
+    document.addEventListener('keydown', (event) => {
+      if (!playing || panel.hidden || event.target === mobileInput || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (/^[a-z]$/i.test(event.key)) { event.preventDefault(); fireLetter(event.key); }
+    });
+    document.addEventListener('playground:tabchange', (event) => { if (event.detail.labId !== 'typing-shooter') pauseRound('Round paused. Return to Type Blaster to continue.'); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pauseRound('Round paused while the page was hidden.'); });
+    draw();
+  }
+
+  function initSnakeGame() {
+    const canvas = document.getElementById('snakeCanvas');
+    const startBtn = document.getElementById('snakeStartBtn');
+    const pauseBtn = document.getElementById('snakePauseBtn');
+    const restartBtn = document.getElementById('snakeRestartBtn');
+    const scoreEl = document.getElementById('snakeScore');
+    const bestEl = document.getElementById('snakeBest');
+    const status = document.getElementById('snakeStatus');
+    const panel = document.getElementById('lab-snake');
+    if (!canvas || !startBtn || !pauseBtn || !restartBtn || !scoreEl || !bestEl || !status || !panel) return;
+
+    const ctx = canvas.getContext('2d');
+    const cells = 18;
+    const unit = canvas.width / cells;
+    let snake = [];
+    let food = null;
+    let direction = { x: 1, y: 0 };
+    let queuedDirection = direction;
+    let score = 0;
+    let best = 0;
+    let running = false;
+    let timer = null;
+    let touchStart = null;
+    try { best = Number.parseInt(localStorage.getItem('nokia-snake-best') || '0', 10) || 0; } catch (error) { console.warn('Unable to read Snake score:', error); }
+
+    function placeFood() {
+      do { food = { x: Math.floor(Math.random() * cells), y: Math.floor(Math.random() * cells) }; }
+      while (snake.some((part) => part.x === food.x && part.y === food.y));
+    }
+
+    function draw() {
+      ctx.fillStyle = '#9caf88'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(47, 62, 45, .11)'; ctx.lineWidth = 1;
+      for (let i = 0; i <= cells; i += 1) { ctx.beginPath(); ctx.moveTo(i * unit, 0); ctx.lineTo(i * unit, canvas.height); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i * unit); ctx.lineTo(canvas.width, i * unit); ctx.stroke(); }
+      if (food) { ctx.fillStyle = '#bd3434'; ctx.beginPath(); ctx.arc((food.x + .5) * unit, (food.y + .5) * unit, unit * .28, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#7f1d1d'; ctx.stroke(); }
+      snake.forEach((part, index) => { ctx.fillStyle = index === 0 ? '#183b25' : '#2f6540'; ctx.fillRect(part.x * unit + 2, part.y * unit + 2, unit - 4, unit - 4); });
+      if (!running && !snake.length) { ctx.fillStyle = '#24422c'; ctx.font = '700 20px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText('NOKIA SNAKE', canvas.width / 2, canvas.height / 2 - 10); ctx.font = '14px var(--font-mono, monospace)'; ctx.fillText('Press Start to play', canvas.width / 2, canvas.height / 2 + 18); }
+    }
+
+    function updateStats() { scoreEl.textContent = String(score); bestEl.textContent = String(best); }
+    function stop(message) { running = false; window.clearInterval(timer); timer = null; startBtn.textContent = 'Play again'; pauseBtn.textContent = 'Pause'; status.textContent = message; draw(); }
+    function step() {
+      direction = queuedDirection;
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+      const ate = head.x === food.x && head.y === food.y;
+      const body = ate ? snake : snake.slice(0, -1);
+      if (head.x < 0 || head.x >= cells || head.y < 0 || head.y >= cells || body.some((part) => part.x === head.x && part.y === head.y)) return stop(`Game over! Final score: ${score}.`);
+      snake.unshift(head);
+      if (ate) { score += 10; if (score > best) { best = score; try { localStorage.setItem('nokia-snake-best', String(best)); } catch (error) { console.warn('Unable to save Snake score:', error); } } placeFood(); updateStats(); status.textContent = 'Nice catch! Keep going.'; }
+      else snake.pop();
+      draw();
+    }
+    function start(restart = false) {
+      if (restart || !snake.length) { snake = [{ x: 8, y: 9 }, { x: 7, y: 9 }, { x: 6, y: 9 }]; direction = { x: 1, y: 0 }; queuedDirection = direction; score = 0; placeFood(); updateStats(); }
+      if (running) return;
+      running = true; startBtn.textContent = 'Playing…'; pauseBtn.textContent = 'Pause'; status.textContent = 'Use arrow keys, swipe, or the direction pad.'; window.clearInterval(timer); timer = window.setInterval(step, 130); draw();
+    }
+    function setDirection(next) { if (!running || (next.x === -direction.x && next.y === -direction.y)) return; queuedDirection = next; }
+    const directions = { ArrowUp: { x: 0, y: -1 }, ArrowDown: { x: 0, y: 1 }, ArrowLeft: { x: -1, y: 0 }, ArrowRight: { x: 1, y: 0 } };
+    startBtn.addEventListener('click', () => start(startBtn.textContent === 'Play again')); restartBtn.addEventListener('click', () => start(true)); pauseBtn.addEventListener('click', () => { if (running) { running = false; window.clearInterval(timer); timer = null; startBtn.textContent = 'Resume game'; pauseBtn.textContent = 'Resume'; status.textContent = 'Game paused.'; } else if (snake.length) start(); });
+    document.querySelectorAll('[data-snake-direction]').forEach((button) => button.addEventListener('click', () => setDirection({ up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } }[button.dataset.snakeDirection])));
+    document.addEventListener('keydown', (event) => { if (!running || panel.hidden || !directions[event.key]) return; event.preventDefault(); setDirection(directions[event.key]); });
+    canvas.addEventListener('pointerdown', (event) => { touchStart = { x: event.clientX, y: event.clientY }; });
+    canvas.addEventListener('pointerup', (event) => { if (!touchStart) return; const dx = event.clientX - touchStart.x; const dy = event.clientY - touchStart.y; touchStart = null; if (Math.max(Math.abs(dx), Math.abs(dy)) < 18) return; setDirection(Math.abs(dx) > Math.abs(dy) ? { x: Math.sign(dx), y: 0 } : { x: 0, y: Math.sign(dy) }); });
+    document.addEventListener('playground:tabchange', (event) => { if (event.detail.labId !== 'snake' && running) { running = false; window.clearInterval(timer); timer = null; startBtn.textContent = 'Resume game'; status.textContent = 'Game paused. Return to Nokia Snake to continue.'; } });
+    document.addEventListener('visibilitychange', () => { if (document.hidden && running) { running = false; window.clearInterval(timer); timer = null; startBtn.textContent = 'Resume game'; status.textContent = 'Game paused while the page was hidden.'; } });
+    updateStats(); draw();
+  }
+
   function initPlayground() {
     initSniperGame();
     initShooterGame();
@@ -2080,6 +2321,8 @@
     initTypewriterLab();
     initTapRushGame();
     initMemoryGame();
+    initTypingShooterGame();
+    initSnakeGame();
   }
 
   if (document.readyState === 'loading') {

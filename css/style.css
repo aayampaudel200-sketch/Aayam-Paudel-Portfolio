@@ -2501,6 +2501,44 @@ ul { list-style: none; }
   border-color: transparent;
   background: linear-gradient(135deg, #5eead4, #67e8f9);
 }
+
+/* Typing shooter and classic Snake stay canvas-based to keep the playground fast. */
+.typing-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: var(--space-md);
+}
+.typing-stats div, .snake-stats {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  background: rgba(56, 189, 248, 0.05);
+}
+.typing-stats span, .snake-stats { color: var(--text-dim); font: 0.65rem var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.typing-stats strong, .snake-stats strong { display: block; margin-top: 0.15rem; color: var(--text); font: 700 1.05rem var(--font-mono); }
+.typing-shooter-stage {
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  border-radius: var(--radius-md);
+  background: #070d19;
+  box-shadow: inset 0 0 45px rgba(14, 165, 233, 0.1), 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+.typing-shooter-stage canvas { display: block; width: 100%; height: auto; aspect-ratio: 8 / 5; touch-action: none; }
+.typing-mobile-input-wrap { display: flex; align-items: center; gap: 0.65rem; margin-top: 0.85rem; }
+.typing-mobile-input-wrap label { color: var(--text-muted); font-size: 0.82rem; }
+.typing-mobile-input-wrap input { width: min(100%, 260px); padding: 0.65rem 0.75rem; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); font: 700 1rem var(--font-mono); text-align: center; text-transform: uppercase; }
+.typing-mobile-input-wrap input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.13); }
+.snake-layout { display: grid; grid-template-columns: minmax(0, 360px) minmax(180px, 1fr); justify-content: center; align-items: center; gap: clamp(1rem, 4vw, 2.5rem); }
+.snake-screen-wrap { overflow: hidden; width: 100%; max-width: 360px; border: 12px solid #24313b; border-radius: 1.35rem; background: #9caf88; box-shadow: inset 0 0 0 3px #65735d, 0 18px 34px rgba(0, 0, 0, 0.3); }
+.snake-screen-wrap canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; touch-action: none; }
+.snake-side { display: grid; justify-items: start; gap: 1.2rem; }
+.snake-stats { display: flex; gap: 1.4rem; width: 100%; color: var(--text-muted); }
+.snake-stats strong { display: inline; margin-left: 0.3rem; color: var(--accent); }
+.snake-controls { display: grid; grid-template-columns: repeat(3, 52px); grid-template-areas: '. up .' 'left down right'; gap: 0.35rem; }
+.snake-controls button { width: 52px; height: 48px; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text); font-size: 1.1rem; cursor: pointer; touch-action: manipulation; }
+.snake-controls button:hover, .snake-controls button:focus-visible { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); outline: 0; }
+.snake-controls [data-snake-direction="up"] { grid-area: up; }.snake-controls [data-snake-direction="left"] { grid-area: left; }.snake-controls [data-snake-direction="down"] { grid-area: down; }.snake-controls [data-snake-direction="right"] { grid-area: right; }
 :root[data-theme="light"] .lab-panel,
 :root[data-theme="light"] .sort-stage {
   background: var(--bg-card);
@@ -2526,6 +2564,14 @@ ul { list-style: none; }
   .memory-scoreboard strong { font-size: 0.95rem; }
   .memory-grid { gap: 0.35rem; }
   .memory-card { min-height: 48px; font-size: 1.25rem; }
+  .typing-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem; }
+  .typing-stats div { padding: 0.55rem; }
+  .typing-mobile-input-wrap { align-items: stretch; flex-direction: column; }
+  .typing-mobile-input-wrap input { width: 100%; min-height: 44px; }
+  .snake-layout { grid-template-columns: 1fr; justify-items: center; }
+  .snake-side { width: 100%; justify-items: center; }
+  .snake-stats { justify-content: center; width: auto; }
+  .snake-side .lab-status { text-align: center; }
   .modal-tabs { gap: 0.3rem; }
   .modal-tab { font-size: 0.72rem; padding: 0.4rem 0.65rem; }
 }
