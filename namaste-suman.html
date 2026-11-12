@@ -782,6 +782,41 @@
       .ns-visa-cta-bar { flex-direction: column; align-items: stretch; text-align: center; }
       .ns-visa-cta-bar .btn { width: 100%; }
     }
+
+    /* Clearer visual hierarchy and more consistent shop cards. */
+    .ns-hero {
+      padding-bottom: clamp(4rem, 9vw, 7rem);
+      background-image: radial-gradient(ellipse at 50% 5%, rgba(56, 189, 248, 0.12), transparent 58%);
+    }
+    .ns-hero-container { max-width: 1040px; }
+    .ns-hero-title { text-wrap: balance; }
+    .ns-hero-sub { max-width: 66ch; }
+    .ns-hero-actions .btn {
+      min-height: 48px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    }
+    .ns-hero-actions .btn:hover { transform: translateY(-2px); }
+    .ns-hero-pills { max-width: 780px; margin-inline: auto; margin-bottom: 2rem; }
+    .ns-badge, .ns-live-pill { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); }
+    .ns-info-card, .ns-visa-card, .ns-showcase-card, .ns-faq-card {
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.12);
+    }
+    .ns-info-card { transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease; }
+    .ns-info-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(56, 189, 248, 0.55);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+    }
+    .ns-showcase-media img { display: block; }
+    .ns-subnav { backdrop-filter: blur(16px); }
+    .ns-subnav-pill:focus-visible, .ns-back-link:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ns-info-card, .ns-showcase-card, .ns-showcase-media img, .ns-hero-actions .btn { transition: none; }
+      .ns-info-card:hover, .ns-showcase-card:hover, .ns-hero-actions .btn:hover { transform: none; }
+    }
   </style>
 
   <!-- JSON-LD: Local Business Schema -->

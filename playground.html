@@ -94,71 +94,18 @@
       <div class="container">
         <p class="eyebrow reveal-up">LABS · EXPERIMENTS</p>
         <h1 class="page-title reveal-up">Some games and tools created by me.</h1>
-        <p class="page-lede reveal-up">A hands-on collection of games, arcade challenges, algorithm visualizers, and interactive tools built for both laptop and mobile. Everything runs locally on your device with high performance—tap, shoot, and play!</p>
+        <p class="page-lede reveal-up">A hands-on collection of arcade challenges, algorithm visualizers, and interactive tools built for both laptop and mobile. Everything runs locally on your device.</p>
       </div>
     </section>
 
     <section class="section playground-section">
       <div class="container">
                 <div class="playground-nav reveal-up" role="tablist" aria-label="Playground labs">
-          <button type="button" class="playground-tab active" role="tab" data-lab="sniper" aria-selected="true">🎯 Target Sniper</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="shooter" aria-selected="false">🚀 Space Defender</button>
+          <button type="button" class="playground-tab active" role="tab" data-lab="shooter" aria-selected="true">🚀 Space Defender</button>
           <button type="button" class="playground-tab" role="tab" data-lab="sort" aria-selected="false">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="game" aria-selected="false">Neon Tap Rush</button>
           <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
         </div>
-
-        <article class="lab-panel reveal-up is-visible" data-lab-panel="sniper" id="lab-sniper">
-          <div class="lab-header">
-            <div>
-              <p class="eyebrow">PRECISION TARGET SHOOTER · MOBILE &amp; LAPTOP</p>
-              <h2 class="section-title">Target Sniper</h2>
-              <p class="lab-lede">
-                Test your marksmanship and reflexes! <strong>Desktop:</strong> Move mouse to aim crosshair, Left-Click to shoot. <strong>Mobile:</strong> Tap or drag anywhere on the range to aim and shoot instantly with 0ms lag!
-              </p>
-            </div>
-            <div class="lab-controls">
-              <button type="button" class="btn btn-primary" id="sniperStartBtn">Start Mission</button>
-              <button type="button" class="btn btn-ghost" id="sniperPauseBtn">Pause</button>
-              <button type="button" class="btn btn-ghost" id="sniperRestartBtn">Restart</button>
-              <button type="button" class="btn btn-ghost" id="sniperSoundBtn" aria-label="Toggle Sound">🔊 Sound</button>
-            </div>
-          </div>
-
-          <!-- Live Scoreboard -->
-          <div class="sniper-stats-bar" aria-live="polite">
-            <div class="sniper-stat-item">
-              <span class="sniper-stat-label">SCORE</span>
-              <span class="sniper-stat-val" id="sniperScore">0</span>
-            </div>
-            <div class="sniper-stat-item">
-              <span class="sniper-stat-label">ACCURACY</span>
-              <span class="sniper-stat-val" id="sniperAccuracy">100%</span>
-            </div>
-            <div class="sniper-stat-item">
-              <span class="sniper-stat-label">TIMER</span>
-              <span class="sniper-stat-val" id="sniperTimer">00:45</span>
-            </div>
-            <div class="sniper-stat-item">
-              <span class="sniper-stat-label">STREAK</span>
-              <span class="sniper-stat-val" id="sniperStreak">0x</span>
-            </div>
-            <div class="sniper-stat-item">
-              <span class="sniper-stat-label">HIGH SCORE</span>
-              <span class="sniper-stat-val" id="sniperHighScore">0</span>
-            </div>
-          </div>
-
-          <!-- Canvas Game Area -->
-          <div class="sniper-canvas-wrapper" id="sniperWrapper">
-            <canvas id="sniperCanvas" width="640" height="420" class="sniper-canvas" tabindex="0" role="application" aria-label="Target Sniper shooting game"></canvas>
-            <div class="sniper-hint-bar" aria-hidden="true">
-              <span>🎯 Tap or Click targets to shoot · Bullseyes grant +100 pts &amp; combo multipliers!</span>
-            </div>
-          </div>
-        </article>
-
 
         <article class="lab-panel reveal-up" data-lab-panel="shooter" id="lab-shooter" hidden>
           <div class="lab-header">
@@ -241,31 +188,6 @@
           <label class="lab-field-label" for="typeInput">Phrase</label>
           <input id="typeInput" class="lab-input" type="text" maxlength="80" value="I write code. I ship websites.">
           <p class="typewriter-output" id="typeOutput" aria-live="polite"><span id="typeText"></span><span class="type-caret" aria-hidden="true">|</span></p>
-        </article>
-
-        <article class="lab-panel reveal-up" data-lab-panel="game" id="lab-game" hidden>
-          <div class="lab-header">
-            <div>
-              <p class="eyebrow">MINI GAME</p>
-              <h2 class="section-title">Neon Tap Rush</h2>
-              <p class="lab-lede">You have 20 seconds. Tap or click the moving energy orb as quickly as you can. A fresh best score is saved on this device.</p>
-            </div>
-            <div class="lab-controls">
-              <button type="button" class="btn btn-ghost" id="gameSound" aria-pressed="true">Sound: On</button>
-              <button type="button" class="btn btn-primary" id="gameStart">Start game</button>
-              <button type="button" class="btn btn-ghost" id="gameQuit" disabled>Quit game</button>
-            </div>
-          </div>
-          <div class="game-scoreboard" aria-live="polite">
-            <div><span>Time</span><strong id="gameTime">20.0s</strong></div>
-            <div><span>Score</span><strong id="gameScore">0</strong></div>
-            <div><span>Best</span><strong id="gameBest">0</strong></div>
-          </div>
-          <div class="tap-rush-stage" id="tapRushStage" aria-label="Neon Tap Rush game area" tabindex="0">
-            <button type="button" class="tap-rush-orb" id="tapRushOrb" aria-label="Tap the energy orb" hidden></button>
-            <p class="tap-rush-message" id="gameMessage">Press Start game, then catch the orb.</p>
-          </div>
-          <p class="lab-status" id="gameStatus" role="status">Designed for mouse, trackpad, and touch screens.</p>
         </article>
 
         <article class="lab-panel reveal-up" data-lab-panel="memory" id="lab-memory" hidden>

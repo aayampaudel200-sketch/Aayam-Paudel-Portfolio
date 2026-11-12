@@ -910,6 +910,12 @@ function initMain() {
       'Tip: open projects.html for full details.',
     ];
 
+    const skillLines = [
+      'Frontend: HTML, CSS, JavaScript',
+      'Backend: Python, FastAPI, PHP, SQL',
+      'Focus: accessible interfaces, useful web apps, and SEO.',
+    ];
+
     function appendLine(text, className = '') {
       const line = document.createElement('p');
       if (className) line.className = className;
@@ -933,6 +939,10 @@ function initMain() {
           'Available commands:',
           '  cat about.txt     — short bio',
           '  list projects     — featured projects',
+          '  skills            — tools and areas of focus',
+          '  contact           — ways to get in touch',
+          '  location          — where I am based',
+          '  date              — current local date',
           '  clear             — clear the terminal',
           '  help              — show this list',
         ], 'terminal-ok');
@@ -946,6 +956,30 @@ function initMain() {
 
       if (command === 'list projects' || command === 'ls projects' || command === 'ls') {
         appendBlock(projectLines, 'terminal-ok');
+        return;
+      }
+
+      if (command === 'skills' || command === 'stack') {
+        appendBlock(skillLines, 'terminal-ok');
+        return;
+      }
+
+      if (command === 'contact') {
+        appendBlock([
+          'Email: aayampaudel200@gmail.com',
+          'WhatsApp: +977 9742335474',
+          'Use the Contact section below to send a message.',
+        ], 'terminal-ok');
+        return;
+      }
+
+      if (command === 'location' || command === 'whereami') {
+        appendLine('Gaindakot, Nawalparasi East, Nepal.', 'terminal-ok');
+        return;
+      }
+
+      if (command === 'date') {
+        appendLine(new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(new Date()), 'terminal-ok');
         return;
       }
 
