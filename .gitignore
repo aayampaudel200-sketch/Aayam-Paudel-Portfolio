@@ -1,11 +1,16 @@
 # Environment & secret files (NEVER push to GitHub)
 .env
+.env.local
+.env.*.local
 .env*.local
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 .env*
+*.pem
+*.key
+secrets/
 
 # Build, deploy & cache folders
 .vercel
