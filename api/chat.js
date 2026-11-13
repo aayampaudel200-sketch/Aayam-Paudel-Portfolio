@@ -3,7 +3,7 @@
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
-const GEMINI_TIMEOUT_MS = 8500;
+const GEMINI_TIMEOUT_MS = 25000;
 const GEMINI_CANDIDATE_MODELS = ['gemini-2.5-flash', 'gemini-flash-latest'];
 const requestBuckets = new Map();
 let cachedGeminiModel = '';
@@ -159,15 +159,19 @@ async function googleErrorMessage(response) {
   }
 }
 
-function geminiPayload(message) {
+function geminiPayload(message, modelName) {
+  const generationConfig = {
+    responseMimeType: 'application/json',
+    temperature: 0.4,
+    maxOutputTokens: 700,
+  };
+  if (String(modelName || '').toLowerCase().includes('2.5-flash')) {
+    generationConfig.thinkingConfig = { thinkingBudget: 0 };
+  }
   return {
     system_instruction: { parts: [{ text: FULL_SYSTEM_PROMPT }] },
     contents: [{ role: 'user', parts: [{ text: message }] }],
-    generationConfig: {
-      responseMimeType: 'application/json',
-      temperature: 0.4,
-      maxOutputTokens: 700,
-    },
+    generationConfig,
   };
 }
 
@@ -181,7 +185,7 @@ async function callGenerateContent(apiKey, modelName, message, signal) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     signal,
-    body: JSON.stringify(geminiPayload(message)),
+    body: JSON.stringify(geminiPayload(message, modelName)),
   });
 }
 
@@ -319,7 +323,7 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, cleanModelResponse(parseModelJson(text)));
     } catch (error) {
       const timedOut = error instanceof Error && error.name === 'AbortError';
-      const reason = timedOut ? 'Gemini request timed out after 8.5 seconds' : error instanceof Error ? error.message : 'Unknown error';
+      const reason = timedOut ? 'Gemini request timed out after 25 seconds' : error instanceof Error ? error.message : 'Unknown error';
       console.error('Chat assistant failed:', reason);
       if (timedOut) return sendJson(res, 200, serviceError(504));
       return sendJson(res, 200, {

@@ -4,7 +4,7 @@
   "functions": {
     "api/chat.js": {
       "includeFiles": "data/site-knowledge.json",
-      "maxDuration": 10
+      "maxDuration": 25
     }
   },
   "redirects": [
