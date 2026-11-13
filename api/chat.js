@@ -4,8 +4,9 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
 const GEMINI_TIMEOUT_MS = 8500;
-const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+const GEMINI_CANDIDATE_MODELS = ['gemini-2.5-flash', 'gemini-flash-latest'];
 const requestBuckets = new Map();
+let cachedGeminiModel = '';
 
 const ACTIONS = new Set([
   'OPEN_HOME', 'OPEN_ABOUT', 'OPEN_PROJECTS', 'OPEN_EXPERIENCE',
@@ -170,33 +171,102 @@ function geminiPayload(message) {
   };
 }
 
+function generateContentUrl(apiKey, modelName) {
+  const resource = String(modelName || '').startsWith('models/') ? modelName : `models/${modelName}`;
+  return `https://generativelanguage.googleapis.com/v1beta/${resource}:generateContent?key=${apiKey}`;
+}
+
+async function callGenerateContent(apiKey, modelName, message, signal) {
+  return fetch(generateContentUrl(apiKey, modelName), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify(geminiPayload(message)),
+  });
+}
+
+function pickGenerateContentModel(models) {
+  const usable = (models || []).filter((model) => (
+    Array.isArray(model?.supportedGenerationMethods)
+    && model.supportedGenerationMethods.includes('generateContent')
+    && typeof model.name === 'string'
+    && model.name
+  ));
+  const ranked = usable.slice().sort((left, right) => {
+    const leftName = left.name.toLowerCase();
+    const rightName = right.name.toLowerCase();
+    const leftFlash = leftName.includes('flash') ? 0 : 1;
+    const rightFlash = rightName.includes('flash') ? 0 : 1;
+    if (leftFlash !== rightFlash) return leftFlash - rightFlash;
+    const leftLatest = leftName.includes('latest') ? 0 : 1;
+    const rightLatest = rightName.includes('latest') ? 0 : 1;
+    return leftLatest - rightLatest;
+  });
+  return ranked[0]?.name || null;
+}
+
+async function discoverGeminiModel(apiKey, signal) {
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { signal });
+  if (!response.ok) {
+    const detail = await googleErrorMessage(response);
+    console.error('Gemini model list failed:', response.status, redactSecrets(detail));
+    return { model: null, status: response.status, detail };
+  }
+  const data = await response.json();
+  const model = pickGenerateContentModel(data.models);
+  if (!model) {
+    console.error('Gemini model list contained no generateContent models');
+    return { model: null, status: 404, detail: 'No generateContent models available' };
+  }
+  console.error('Discovered Gemini generateContent model:', model);
+  return { model, status: 200, detail: '' };
+}
+
 async function generateContent(apiKey, message, signal) {
   let lastStatus = 0;
   let lastDetail = '';
+  const tried = new Set();
+  const queue = [];
+  if (cachedGeminiModel) queue.push(cachedGeminiModel);
+  GEMINI_CANDIDATE_MODELS.forEach((model) => queue.push(model));
 
-  for (let index = 0; index < GEMINI_MODELS.length; index += 1) {
-    const model = GEMINI_MODELS[index];
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal,
-        body: JSON.stringify(geminiPayload(message)),
-      },
-    );
+  while (queue.length) {
+    const model = queue.shift();
+    if (!model || tried.has(model)) continue;
+    tried.add(model);
 
-    if (response.ok) return response;
+    const response = await callGenerateContent(apiKey, model, message, signal);
+    if (response.ok) {
+      cachedGeminiModel = model;
+      return response;
+    }
 
     lastStatus = response.status;
     lastDetail = await googleErrorMessage(response);
     console.error('Gemini request failed:', model, response.status, redactSecrets(lastDetail));
 
-    const canRetry = (response.status === 400 || response.status === 404) && index < GEMINI_MODELS.length - 1;
-    if (!canRetry) break;
-    console.error(`Retrying Gemini request with ${GEMINI_MODELS[index + 1]} after HTTP ${response.status}`);
+    if (response.status === 404 && model === cachedGeminiModel) cachedGeminiModel = '';
+    if (response.status !== 400 && response.status !== 404) {
+      return { ok: false, status: lastStatus, detail: lastDetail };
+    }
   }
 
+  const discovered = await discoverGeminiModel(apiKey, signal);
+  if (!discovered.model) {
+    return { ok: false, status: discovered.status || lastStatus || 404, detail: discovered.detail || lastDetail };
+  }
+  if (tried.has(discovered.model)) {
+    return { ok: false, status: lastStatus || 404, detail: lastDetail };
+  }
+
+  const retry = await callGenerateContent(apiKey, discovered.model, message, signal);
+  if (retry.ok) {
+    cachedGeminiModel = discovered.model;
+    return retry;
+  }
+  lastStatus = retry.status;
+  lastDetail = await googleErrorMessage(retry);
+  console.error('Gemini request failed:', discovered.model, retry.status, redactSecrets(lastDetail));
   return { ok: false, status: lastStatus, detail: lastDetail };
 }
 
