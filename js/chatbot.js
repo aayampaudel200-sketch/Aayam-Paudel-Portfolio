@@ -82,9 +82,35 @@
     if (lastFocus instanceof HTMLElement) lastFocus.focus();
   }
 
+  function parseSiteUrl(path) {
+    try {
+      return new URL(path, window.location.origin);
+    } catch {
+      return null;
+    }
+  }
+
+  function samePage(path) {
+    const url = parseSiteUrl(path);
+    if (!url) return false;
+    const current = window.location.pathname.replace(/\/$/, '') || '/';
+    const targetPath = url.pathname.replace(/\/$/, '') || '/';
+    const currentHome = current === '/' || current.endsWith('/index.html');
+    const targetHome = targetPath === '/' || targetPath.endsWith('/index.html');
+    return current === targetPath || (currentHome && targetHome);
+  }
+
   function navigate(path) {
-    if (window.location.pathname === path) return;
-    window.location.assign(path);
+    const url = parseSiteUrl(path);
+    if (!url) return;
+    if (samePage(path)) {
+      if (url.hash) {
+        const section = document.querySelector(url.hash);
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+    window.location.href = `${url.pathname}${url.search}${url.hash}`;
   }
 
   function highlightContact() {
@@ -96,23 +122,51 @@
     }
   }
 
-  function executeAction(action) {
-    if (!action) return;
-    if (actionRoutes[action]) return navigate(actionRoutes[action]);
-    if (action === 'OPEN_GITHUB') return window.open('https://github.com/aayampaudel200-sketch', '_blank', 'noopener,noreferrer');
-    if (action === 'SCROLL_CONTACT') {
-      if (document.querySelector('#contact')) return highlightContact();
-      return navigate('/index.html#contact');
-    }
-    if (action === 'SCROLL_SERVICES') {
-      if (isBusinessPage) {
-        const target = document.querySelector('#visa-documentation, #visas, #civic-docs');
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function fallbackAction(question) {
+    const query = String(question || '').toLowerCase();
+    if (/playground|game|snake|cyber defender|type blaster|memory match/.test(query)) return 'OPEN_PLAYGROUND';
+    if (/namaste|suman|business|shop|print|photo|document/.test(query)) return 'OPEN_BUSINESS';
+    if (/project|haat|bazzar|hackathon|e-?gov|municipal/.test(query)) return 'OPEN_PROJECTS';
+    if (/experience|education|campus|lumbini/.test(query)) return 'OPEN_EXPERIENCE';
+    if (/about|who is|cricket|football/.test(query)) return 'OPEN_ABOUT';
+    if (/contact|email|phone|hire|reach/.test(query)) return 'SCROLL_CONTACT';
+    if (/home/.test(query)) return 'OPEN_HOME';
+    return 'OPEN_PROJECTS';
+  }
+
+  function executeAction(action, target) {
+    try {
+      if (!action || typeof action !== 'string') return;
+      if (actionRoutes[action]) {
+        const route = typeof target === 'string' && target.startsWith('/') ? target : actionRoutes[action];
+        navigate(route);
         return;
       }
-      return navigate('/namaste-suman.html#visa-documentation');
+      if (action === 'OPEN_GITHUB') {
+        window.open(typeof target === 'string' && target.startsWith('https://') ? target : 'https://github.com/aayampaudel200-sketch', '_blank', 'noopener,noreferrer');
+        return;
+      }
+      if (action === 'SCROLL_CONTACT') {
+        if (document.querySelector('#contact')) {
+          highlightContact();
+          return;
+        }
+        navigate(typeof target === 'string' && target.includes('#contact') ? target : '/index.html#contact');
+        return;
+      }
+      if (action === 'SCROLL_SERVICES') {
+        if (isBusinessPage) {
+          const section = document.querySelector('#visa-documentation, #visas, #civic-docs');
+          if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        navigate('/namaste-suman.html#visa-documentation');
+        return;
+      }
+      if (action === 'COPY_PHONE_OR_EMAIL') highlightContact();
+    } catch (error) {
+      console.error('Unable to run assistant page action:', error);
     }
-    if (action === 'COPY_PHONE_OR_EMAIL') highlightContact();
   }
 
   async function submitQuestion(question = input.value) {
@@ -134,14 +188,16 @@
       try {
         data = text ? JSON.parse(text) : null;
       } catch {
-        pending.textContent = 'The assistant is temporarily unavailable. Please try again in a moment.';
-        return;
+        data = null;
       }
-      if (!response.ok) throw new Error(data?.error || 'The assistant is unavailable.');
-      pending.textContent = data?.reply || 'I can help with Aayam’s work, projects, and Namaste Suman Communication.';
-      window.setTimeout(() => executeAction(data?.action), 250);
+      const reply = data?.reply || 'I can help with Aayam’s work, projects, playground games, and Namaste Suman Communication.';
+      pending.textContent = reply;
+      window.setTimeout(() => {
+        executeAction(data ? data.action : fallbackAction(message), data?.target);
+      }, 250);
     } catch (error) {
-      pending.textContent = error instanceof Error ? error.message : 'The assistant is unavailable right now.';
+      pending.textContent = 'I can help with Aayam’s work, projects, playground games, and Namaste Suman Communication.';
+      window.setTimeout(() => executeAction(fallbackAction(message)), 250);
     } finally {
       sendButton.disabled = false;
       input.focus();
