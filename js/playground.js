@@ -24,9 +24,9 @@
     }
   }
 
-  function bindDifficulty(labId, storageKey, onChange) {
+  function bindDifficulty(labId, storageKey, onChange, defaultDifficulty = 'medium') {
     const root = document.querySelector(`[data-difficulty-for="${labId}"]`);
-    let current = 'medium';
+    let current = defaultDifficulty;
     try {
       const saved = localStorage.getItem(storageKey);
       if (DIFFICULTIES.includes(saved)) current = saved;
@@ -2161,11 +2161,11 @@
     if (!ctx) return;
     const letters = 'ASDFGHJKLQWERTYUIOPZXCVBNM';
     const typingSettings = {
-      easy: { duration: 60000, spawn: 1.35, speed: 0.72 },
-      medium: { duration: 45000, spawn: 1.12, speed: 1 },
-      hard: { duration: 32000, spawn: 0.7, speed: 1.35 },
+      easy: { duration: 45000, spawn: 3, speedMin: 52, speedMax: 60, maxRocks: 3, integrity: 5 },
+      medium: { duration: 45000, spawn: 1.95, speedMin: 92, speedMax: 110, maxRocks: 4, integrity: 3 },
+      hard: { duration: 45000, spawn: 1.3, speedMin: 132, speedMax: 160, maxRocks: 6, integrity: 3 },
     };
-    let difficulty = 'medium';
+    let difficulty = 'easy';
     let best = 0;
     function typingScoreKey() { return `type-blaster-best:${difficulty}`; }
     function roundDuration() { return typingSettings[difficulty].duration; }
@@ -2178,7 +2178,7 @@
       loadTypingBest();
       if (playing || paused) pauseRound('Difficulty changed. Start a new round.');
       timeEl.textContent = `${Math.ceil(roundDuration() / 1000)}s`;
-    }).value;
+    }, 'easy').value;
     loadTypingBest();
     let rocks = [];
     let bullets = [];
@@ -2194,6 +2194,7 @@
     let escaped = 0;
     let frameId = 0;
     let nextRockId = 1;
+    let finished = false;
 
     function metrics(now = performance.now()) {
       const elapsed = playing ? elapsedBeforePause + (now - roundStartedAt) : elapsedBeforePause;
@@ -2223,7 +2224,8 @@
       ctx.fillStyle = '#38bdf8';
       ctx.beginPath(); ctx.moveTo(shipX, shipY - 18); ctx.lineTo(shipX - 20, shipY + 18); ctx.lineTo(shipX + 20, shipY + 18); ctx.closePath(); ctx.fill();
       ctx.fillStyle = '#e0f2fe'; ctx.fillRect(shipX - 3, shipY - 9, 6, 22);
-      ctx.fillStyle = '#9fb2cc'; ctx.font = '600 13px var(--font-mono, monospace)'; ctx.textAlign = 'left'; ctx.fillText(`BASE INTEGRITY ${Math.max(0, 3 - escaped)} / 3`, 14, canvas.height - 16);
+      const integrity = typingSettings[difficulty].integrity;
+      ctx.fillStyle = '#9fb2cc'; ctx.font = '600 13px var(--font-mono, monospace)'; ctx.textAlign = 'left'; ctx.fillText(`BASE INTEGRITY ${Math.max(0, integrity - escaped)} / ${integrity}`, 14, canvas.height - 16);
 
       bullets.forEach((bullet) => {
         ctx.fillStyle = '#fef08a';
@@ -2232,13 +2234,16 @@
         ctx.shadowBlur = 0;
       });
       rocks.forEach((rock) => {
-        const radius = 25;
+        const radius = 29;
         const rockGradient = ctx.createRadialGradient(rock.x - 8, rock.y - 9, 2, rock.x, rock.y, radius);
-        rockGradient.addColorStop(0, '#cbd5e1'); rockGradient.addColorStop(0.35, '#64748b'); rockGradient.addColorStop(1, '#1e293b');
+        rockGradient.addColorStop(0, '#dbeafe'); rockGradient.addColorStop(0.35, '#64748b'); rockGradient.addColorStop(1, '#172033');
         ctx.fillStyle = rockGradient;
         ctx.beginPath(); ctx.arc(rock.x, rock.y, radius, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = 'rgba(248,250,252,.45)'; ctx.stroke();
-        ctx.fillStyle = '#fff'; ctx.font = '700 20px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText(rock.letter, rock.x, rock.y + 7);
+        ctx.fillStyle = 'rgba(2, 6, 23, .78)'; ctx.beginPath(); ctx.arc(rock.x, rock.y, 18, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(125, 211, 252, .7)'; ctx.stroke();
+        ctx.fillStyle = '#fff'; ctx.font = '800 34px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(rock.letter, rock.x, rock.y + 1);
+        ctx.textBaseline = 'alphabetic';
       });
       if (!playing && !paused && elapsedBeforePause === 0) {
         ctx.fillStyle = 'rgba(7, 20, 38, .72)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -2249,16 +2254,31 @@
         ctx.fillStyle = 'rgba(7, 20, 38, .68)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#e0f2fe'; ctx.font = '700 22px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
       }
+      if (finished) {
+        ctx.fillStyle = 'rgba(2, 6, 23, .78)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#7dd3fc'; ctx.font = '800 28px var(--font-mono, monospace)'; ctx.textAlign = 'center'; ctx.fillText('ROUND COMPLETE', canvas.width / 2, canvas.height / 2 - 42);
+        ctx.fillStyle = '#e0f2fe'; ctx.font = '600 17px var(--font-sans, sans-serif)'; ctx.fillText(`Score ${score} · ${wpmEl.textContent} · ${accuracyEl.textContent}`, canvas.width / 2, canvas.height / 2);
+        ctx.fillStyle = '#fef08a'; ctx.font = '600 15px var(--font-sans, sans-serif)'; ctx.fillText('Press Play Again to launch another round', canvas.width / 2, canvas.height / 2 + 36);
+      }
     }
 
     function spawnRock() {
-      const lane = 44 + Math.random() * (canvas.width - 88);
-      rocks.push({ id: nextRockId++, x: lane, y: -28, letter: letters[Math.floor(Math.random() * letters.length)], speed: (28 + Math.min(score * 0.7, 48) + Math.random() * 22) * typingSettings[difficulty].speed });
+      const settings = typingSettings[difficulty];
+      if (rocks.length >= settings.maxRocks) return;
+      const occupied = rocks.map((rock) => rock.x);
+      let lane = canvas.width / 2;
+      for (let attempts = 0; attempts < 12; attempts += 1) {
+        const candidate = 44 + Math.random() * (canvas.width - 88);
+        if (occupied.every((x) => Math.abs(x - candidate) > 68)) { lane = candidate; break; }
+      }
+      rocks.push({ id: nextRockId++, x: lane, y: -32, letter: letters[Math.floor(Math.random() * letters.length)], speed: settings.speedMin + Math.random() * (settings.speedMax - settings.speedMin) });
     }
 
     function endRound(message) {
+      if (playing) elapsedBeforePause += performance.now() - roundStartedAt;
       playing = false;
       paused = false;
+      finished = true;
       cancelAnimationFrame(frameId);
       const elapsed = metrics();
       const wpm = Math.round((hits / 5) / Math.max(elapsed / 60000, 1 / 60));
@@ -2279,7 +2299,7 @@
       lastFrame = now;
       if (metrics(now) >= roundDuration()) return endRound('Round complete!');
       spawnTimer += delta;
-      if (spawnTimer > Math.max(0.4, typingSettings[difficulty].spawn - score * 0.012)) { spawnTimer = 0; spawnRock(); }
+      if (spawnTimer >= typingSettings[difficulty].spawn) { spawnTimer = 0; spawnRock(); }
       rocks.forEach((rock) => { rock.y += rock.speed * delta; });
       bullets.forEach((bullet) => { bullet.y -= 700 * delta; });
       bullets = bullets.filter((bullet) => {
@@ -2294,7 +2314,7 @@
       const remaining = [];
       rocks.forEach((rock) => { if (rock.y > canvas.height - 44) escaped += 1; else remaining.push(rock); });
       rocks = remaining;
-      if (escaped >= 3) return endRound('The rocks reached the base.');
+      if (escaped >= typingSettings[difficulty].integrity) return endRound('The rocks reached the base.');
       draw(now);
       frameId = requestAnimationFrame(tick);
     }
@@ -2311,7 +2331,7 @@
 
     function startRound(restart = false) {
       if (restart || elapsedBeforePause >= roundDuration() || !paused) {
-        rocks = []; bullets = []; score = 0; typed = 0; hits = 0; escaped = 0; spawnTimer = 0; elapsedBeforePause = 0; nextRockId = 1;
+        rocks = []; bullets = []; score = 0; typed = 0; hits = 0; escaped = 0; spawnTimer = 0; elapsedBeforePause = 0; nextRockId = 1; finished = false;
       }
       playing = true; paused = false; roundStartedAt = performance.now(); lastFrame = roundStartedAt;
       startBtn.textContent = 'Playing…'; pauseBtn.textContent = 'Pause'; status.textContent = 'Type the letter shown on an incoming rock to blast it.';
@@ -2332,7 +2352,7 @@
     mobileInput.addEventListener('input', () => { const character = mobileInput.value.slice(-1); mobileInput.value = ''; fireLetter(character); });
     document.addEventListener('keydown', (event) => {
       if (!playing || panel.hidden || event.target === mobileInput || event.ctrlKey || event.metaKey || event.altKey) return;
-      if (/^[a-z]$/i.test(event.key)) { event.preventDefault(); fireLetter(event.key); }
+      if (!event.repeat && /^[a-z]$/i.test(event.key)) { event.preventDefault(); fireLetter(event.key); }
     });
     document.addEventListener('playground:tabchange', (event) => { if (event.detail.labId !== 'typing-shooter') pauseRound('Round paused. Return to Type Blaster to continue.'); });
     document.addEventListener('visibilitychange', () => { if (document.hidden) pauseRound('Round paused while the page was hidden.'); });

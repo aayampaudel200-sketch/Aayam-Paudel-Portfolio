@@ -234,8 +234,8 @@
             </div>
             <div class="lab-controls">
               <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="typing-shooter">
-                <button type="button" data-difficulty="easy">Easy</button>
-                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                <button type="button" data-difficulty="easy" aria-pressed="true">Easy</button>
+                <button type="button" data-difficulty="medium">Medium</button>
                 <button type="button" data-difficulty="hard">Hard</button>
               </div>
               <button type="button" class="btn btn-primary" id="typingStartBtn">Start round</button>
@@ -251,11 +251,11 @@
             <div><span>Top score</span><strong id="typingBest">0</strong></div>
           </div>
           <div class="typing-shooter-stage">
-            <canvas id="typingShooterCanvas" width="640" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
+            <canvas id="typingShooterCanvas" width="840" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
           </div>
           <div class="typing-mobile-input-wrap">
             <label for="typingShooterInput">Mobile typing input</label>
-            <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
+            <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
           </div>
           <p class="lab-status" id="typingStatus" role="status">Press Start round, then type the letters on the rocks. On mobile, use the input above.</p>
         </article>
