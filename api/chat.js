@@ -3,15 +3,28 @@
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
+const GEMINI_TIMEOUT_MS = 8500;
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
 const requestBuckets = new Map();
-const GEMINI_TIMEOUT_MS = 8000;
-const FALLBACK_REPLY = 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.';
 
 const ACTIONS = new Set([
   'OPEN_HOME', 'OPEN_ABOUT', 'OPEN_PROJECTS', 'OPEN_EXPERIENCE',
   'OPEN_BUSINESS', 'OPEN_PLAYGROUND', 'SCROLL_CONTACT', 'SCROLL_SERVICES',
   'OPEN_GITHUB', 'COPY_PHONE_OR_EMAIL',
 ]);
+
+const ACTION_TARGETS = {
+  OPEN_HOME: '/index.html',
+  OPEN_ABOUT: '/about.html',
+  OPEN_PROJECTS: '/projects.html',
+  OPEN_EXPERIENCE: '/experience.html',
+  OPEN_BUSINESS: '/namaste-suman.html',
+  OPEN_PLAYGROUND: '/playground.html',
+  SCROLL_CONTACT: '/index.html#contact',
+  SCROLL_SERVICES: '/namaste-suman.html#visa-documentation',
+  OPEN_GITHUB: 'https://github.com/aayampaudel200-sketch',
+  COPY_PHONE_OR_EMAIL: '/index.html#contact',
+};
 
 function loadSiteKnowledge() {
   try {
@@ -26,7 +39,7 @@ const siteKnowledge = loadSiteKnowledge();
 const publicKnowledge = (siteKnowledge.pages || []).map((page) => [
   `Page: ${page.title} (${page.url})`,
   page.description,
-  `Topics: ${page.headings.join(' | ')}`,
+  `Topics: ${(page.headings || []).join(' | ')}`,
   `Content: ${page.summary}`,
 ].filter(Boolean).join('\n')).join('\n\n').slice(0, 12000);
 
@@ -46,7 +59,7 @@ Projects and software work:
 - Haat-Bazzar is a direct farm-to-consumer digital marketplace concept for Nepal.
 - Gaindakot e-Governance Municipal Prototype was built during a 48-hour hackathon to digitize local municipal services.
 - Automated Document Generation Software is an internal tool that streamlines paperwork at Namaste Suman Communication.
-- /playground.html contains custom, touch-friendly HTML5 Canvas browser games, including shooting games and arcade challenges.
+- /playground.html contains custom, touch-friendly HTML5 Canvas browser games: Cyber Defender, Memory Match, Type Blaster, and Nokia Snake, each with Easy, Medium, and Hard modes and local top scores.
 
 Sports and interests:
 - Aayam is a right-arm fast bowler in cricket, a right-footed left-winger (left-ala) in football and futsal, and a competitive mobile gamer.
@@ -88,20 +101,51 @@ function parseBody(body) {
   try { return JSON.parse(body); } catch { return null; }
 }
 
+function redactSecrets(value) {
+  return String(value || '')
+    .replace(/key=[^&\s"'\\]+/gi, 'key=[redacted]')
+    .replace(/AIza[0-9A-Za-z_-]{10,}/g, '[redacted]');
+}
+
+function stripCodeFences(text) {
+  return String(text || '')
+    .replace(/^\s*```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/i, '')
+    .trim();
+}
+
+function parseModelJson(text) {
+  const cleaned = stripCodeFences(text);
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const start = cleaned.indexOf('{');
+    const end = cleaned.lastIndexOf('}');
+    if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end + 1));
+    throw new Error('Model response was not valid JSON');
+  }
+}
+
 function cleanModelResponse(value) {
   const reply = typeof value?.reply === 'string' ? value.reply.trim().slice(0, 2000) : '';
   const action = ACTIONS.has(value?.action) ? value.action : null;
-  const target = typeof value?.target === 'string' ? value.target.trim().slice(0, 250) : null;
+  const target = typeof value?.target === 'string' && value.target.trim()
+    ? value.target.trim().slice(0, 250)
+    : (action ? ACTION_TARGETS[action] : null);
   return { reply: reply || 'I can help with Aayam’s work, projects, and Namaste Suman Communication.', action, target };
-}
-
-function assistantFallback() {
-  return { reply: FALLBACK_REPLY, action: null, target: null };
 }
 
 function sendJson(res, status, payload) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   return res.status(status).json(payload);
+}
+
+function serviceError(status) {
+  return {
+    reply: `AI service error (HTTP ${status}). Please try again shortly.`,
+    action: null,
+    target: null,
+  };
 }
 
 async function googleErrorMessage(response) {
@@ -114,81 +158,116 @@ async function googleErrorMessage(response) {
   }
 }
 
+function geminiPayload(message) {
+  return {
+    system_instruction: { parts: [{ text: FULL_SYSTEM_PROMPT }] },
+    contents: [{ role: 'user', parts: [{ text: message }] }],
+    generationConfig: {
+      responseMimeType: 'application/json',
+      temperature: 0.4,
+      maxOutputTokens: 700,
+    },
+  };
+}
+
+async function generateContent(apiKey, message, signal) {
+  let lastStatus = 0;
+  let lastDetail = '';
+
+  for (let index = 0; index < GEMINI_MODELS.length; index += 1) {
+    const model = GEMINI_MODELS[index];
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal,
+        body: JSON.stringify(geminiPayload(message)),
+      },
+    );
+
+    if (response.ok) return response;
+
+    lastStatus = response.status;
+    lastDetail = await googleErrorMessage(response);
+    console.error('Gemini request failed:', model, response.status, redactSecrets(lastDetail));
+
+    const canRetry = (response.status === 400 || response.status === 404) && index < GEMINI_MODELS.length - 1;
+    if (!canRetry) break;
+    console.error(`Retrying Gemini request with ${GEMINI_MODELS[index + 1]} after HTTP ${response.status}`);
+  }
+
+  return { ok: false, status: lastStatus, detail: lastDetail };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
   try {
-  const origin = req.headers?.origin;
-  if (!isAllowedOrigin(origin)) return sendJson(res, 403, { error: 'This origin is not allowed to use the assistant.' });
+    const origin = req.headers?.origin;
+    if (!isAllowedOrigin(origin)) return sendJson(res, 403, { error: 'This origin is not allowed to use the assistant.' });
 
-  if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Vary', 'Origin');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Cache-Control', 'no-store');
+    if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Cache-Control', 'no-store');
 
-  if (req.method === 'OPTIONS') return res.status(204).send('');
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST, OPTIONS');
-    return sendJson(res, 405, { error: 'Method Not Allowed' });
-  }
-  if (isRateLimited(clientKey(req))) return sendJson(res, 429, { error: 'Too many requests. Please try again in a few minutes.' });
+    if (req.method === 'OPTIONS') return res.status(204).send('');
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST, OPTIONS');
+      return sendJson(res, 405, { error: 'Method Not Allowed' });
+    }
+    if (isRateLimited(clientKey(req))) return sendJson(res, 429, { error: 'Too many requests. Please try again in a few minutes.' });
 
-  const body = parseBody(req.body);
-  const message = typeof body?.message === 'string' ? body.message.trim() : '';
-  if (!message || message.length > MAX_QUERY_LENGTH) return sendJson(res, 400, { error: 'Please send a question under 800 characters.' });
+    const body = parseBody(req.body);
+    const message = typeof body?.message === 'string' ? body.message.trim() : '';
+    if (!message || message.length > MAX_QUERY_LENGTH) return sendJson(res, 400, { error: 'Please send a question under 800 characters.' });
 
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('Chat assistant is missing GEMINI_API_KEY');
-    return sendJson(res, 200, assistantFallback());
-  }
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: controller.signal,
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: FULL_SYSTEM_PROMPT }] },
-        contents: [{ role: 'user', parts: [{ text: message }] }],
-        generationConfig: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'OBJECT',
-            properties: {
-              reply: { type: 'STRING' },
-              action: { type: 'STRING', nullable: true },
-              target: { type: 'STRING', nullable: true },
-            },
-            required: ['reply', 'action', 'target'],
-          },
-          temperature: 0.4,
-          maxOutputTokens: 700,
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const detail = await googleErrorMessage(response);
-      console.error('Gemini request failed:', response.status, detail);
-      return sendJson(res, 200, assistantFallback());
+    const apiKey = String(process.env.GEMINI_API_KEY || '').trim();
+    if (!apiKey) {
+      console.error('Chat assistant is missing GEMINI_API_KEY');
+      return sendJson(res, 200, { reply: 'Server configuration missing GEMINI_API_KEY.', action: null, target: null });
     }
 
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
-    if (!text) throw new Error('Gemini returned no text');
-    return sendJson(res, 200, cleanModelResponse(JSON.parse(text)));
-  } catch (error) {
-    const reason = error instanceof Error && error.name === 'AbortError' ? 'Gemini request timed out after 8 seconds' : error instanceof Error ? error.message : 'Unknown error';
-    console.error('Chat assistant failed:', reason);
-    return sendJson(res, 200, assistantFallback());
-  } finally {
-    clearTimeout(timeoutId);
-  }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+    try {
+      const response = await generateContent(apiKey, message, controller.signal);
+      if (!response.ok) {
+        const status = response.status || 502;
+        return sendJson(res, 200, serviceError(status));
+      }
+
+      const data = await response.json();
+      const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('').trim();
+      if (!text) {
+        const reason = data?.candidates?.[0]?.finishReason || data?.promptFeedback?.blockReason || 'empty';
+        console.error('Gemini returned no text:', reason);
+        throw new Error('Gemini returned no text');
+      }
+      return sendJson(res, 200, cleanModelResponse(parseModelJson(text)));
+    } catch (error) {
+      const timedOut = error instanceof Error && error.name === 'AbortError';
+      const reason = timedOut ? 'Gemini request timed out after 8.5 seconds' : error instanceof Error ? error.message : 'Unknown error';
+      console.error('Chat assistant failed:', reason);
+      if (timedOut) return sendJson(res, 200, serviceError(504));
+      return sendJson(res, 200, {
+        reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.',
+        action: null,
+        target: null,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
   } catch (error) {
     console.error('Chat handler crashed:', error instanceof Error ? error.message : error);
-    if (!res.headersSent) return sendJson(res, 200, assistantFallback());
+    if (!res.headersSent) {
+      return sendJson(res, 200, {
+        reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.',
+        action: null,
+        target: null,
+      });
+    }
   }
 };
