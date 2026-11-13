@@ -3,8 +3,13 @@
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
-const GEMINI_TIMEOUT_MS = 25000;
-const GEMINI_CANDIDATE_MODELS = ['gemini-1.5-flash'];
+const GEMINI_TIMEOUT_MS = 7000;
+const GEMINI_CANDIDATE_MODELS = [
+  'gemini-3.8-flash-lite',
+  'gemini-2.5-flash-lite',
+  'gemini-3.8-flash',
+  'gemini-flash-latest',
+];
 const requestBuckets = new Map();
 let cachedGeminiModel = '';
 
@@ -142,14 +147,6 @@ function sendJson(res, status, payload) {
   return res.status(status).json(payload);
 }
 
-function serviceError(status) {
-  return {
-    reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.',
-    action: null,
-    target: null,
-  };
-}
-
 async function googleErrorMessage(response) {
   const raw = await response.text();
   try {
@@ -200,6 +197,9 @@ function pickGenerateContentModel(models) {
   const ranked = usable.slice().sort((left, right) => {
     const leftName = left.name.toLowerCase();
     const rightName = right.name.toLowerCase();
+    const leftLite = leftName.includes('flash-lite') ? 0 : 1;
+    const rightLite = rightName.includes('flash-lite') ? 0 : 1;
+    if (leftLite !== rightLite) return leftLite - rightLite;
     const leftFlash = leftName.includes('flash') ? 0 : 1;
     const rightFlash = rightName.includes('flash') ? 0 : 1;
     if (leftFlash !== rightFlash) return leftFlash - rightFlash;
@@ -232,7 +232,6 @@ async function generateContent(apiKey, message, signal) {
   let lastDetail = '';
   const tried = new Set();
   const queue = [];
-  if (cachedGeminiModel) queue.push(cachedGeminiModel);
   GEMINI_CANDIDATE_MODELS.forEach((model) => queue.push(model));
 
   while (queue.length) {
@@ -240,7 +239,21 @@ async function generateContent(apiKey, message, signal) {
     if (!model || tried.has(model)) continue;
     tried.add(model);
 
-    const response = await callGenerateContent(apiKey, model, message, signal);
+    const attemptController = new AbortController();
+    const timeoutId = setTimeout(() => attemptController.abort(), GEMINI_TIMEOUT_MS);
+    const abortAttempt = () => attemptController.abort();
+    signal?.addEventListener('abort', abortAttempt, { once: true });
+    let response;
+    try {
+      response = await callGenerateContent(apiKey, model, message, attemptController.signal);
+    } catch (error) {
+      console.error('Gemini request failed:', model, error instanceof Error ? error.name : 'Unknown error');
+      clearTimeout(timeoutId);
+      signal?.removeEventListener('abort', abortAttempt);
+      continue;
+    }
+    clearTimeout(timeoutId);
+    signal?.removeEventListener('abort', abortAttempt);
     if (response.ok) {
       cachedGeminiModel = model;
       return response;
@@ -251,12 +264,22 @@ async function generateContent(apiKey, message, signal) {
     console.error('Gemini request failed:', model, response.status, redactSecrets(lastDetail));
 
     if (response.status === 404 && model === cachedGeminiModel) cachedGeminiModel = '';
-    if (response.status !== 400 && response.status !== 404) {
-      return { ok: false, status: lastStatus, detail: lastDetail };
-    }
   }
 
-  const discovered = await discoverGeminiModel(apiKey, signal);
+  const discoveryController = new AbortController();
+  const discoveryTimeout = setTimeout(() => discoveryController.abort(), GEMINI_TIMEOUT_MS);
+  const abortDiscovery = () => discoveryController.abort();
+  signal?.addEventListener('abort', abortDiscovery, { once: true });
+  let discovered;
+  try {
+    discovered = await discoverGeminiModel(apiKey, discoveryController.signal);
+  } catch (error) {
+    console.error('Gemini model discovery failed:', error instanceof Error ? error.name : 'Unknown error');
+    return { ok: false, status: 0, detail: '' };
+  } finally {
+    clearTimeout(discoveryTimeout);
+    signal?.removeEventListener('abort', abortDiscovery);
+  }
   if (!discovered.model) {
     return { ok: false, status: discovered.status || lastStatus || 404, detail: discovered.detail || lastDetail };
   }
@@ -273,6 +296,26 @@ async function generateContent(apiKey, message, signal) {
   lastDetail = await googleErrorMessage(retry);
   console.error('Gemini request failed:', discovered.model, retry.status, redactSecrets(lastDetail));
   return { ok: false, status: lastStatus, detail: lastDetail };
+}
+
+function localKnowledgeReply(message) {
+  const query = String(message || '').toLowerCase();
+  if (/\b(game|play|snake|playground)\b/.test(query)) {
+    return cleanModelResponse({ reply: 'Explore Playground Games, including interactive mini-games such as Snake, Memory Match, Type Blaster, and Cyber Defender.', action: 'OPEN_PLAYGROUND' });
+  }
+  if (/\b(namaste|suman|shop|photo|print|business|photocopy|laminat|form)\b/.test(query)) {
+    return cleanModelResponse({ reply: 'Namaste Suman Communication is at Nagarpalika Chowk, Gaindakot. Services include DSLR studio photography, printing, photocopying, lamination, official Nepali and English typing, and online form assistance.', action: 'OPEN_BUSINESS' });
+  }
+  if (/\b(project|work|haat|governance|document automation)\b/.test(query)) {
+    return cleanModelResponse({ reply: 'Aayam’s work includes Haat-Bazzar, a farm-to-consumer marketplace; the Gaindakot e-Governance Municipal Prototype; Automated Document Generation Software; and interactive Playground Games.', action: 'OPEN_PROJECTS' });
+  }
+  if (/\b(contact|email|reach)\b/.test(query)) {
+    return cleanModelResponse({ reply: 'You can reach Aayam through the contact section of his portfolio at aayampaudel.com.np.', action: 'SCROLL_CONTACT' });
+  }
+  if (/\b(hire|why|skills|who)\b/.test(query)) {
+    return cleanModelResponse({ reply: 'Aayam Paudel is an 18-year-old B.Sc. CSIT student at Lumbini I.C.T. Campus in Gaindakot, Nepal, and a full-stack developer skilled in HTML, CSS, JavaScript, Python, C/C++, MySQL, and Vercel.', action: 'OPEN_ABOUT' });
+  }
+  return cleanModelResponse({ reply: 'Aayam Paudel is a B.Sc. CSIT student and full-stack developer in Gaindakot, Nepal. Namaste Suman Communication provides photography, printing, and document services for the local community.', action: null });
 }
 
 module.exports = async function handler(req, res) {
@@ -301,16 +344,14 @@ module.exports = async function handler(req, res) {
     const apiKey = String(process.env.GEMINI_API_KEY || '').trim();
     if (!apiKey) {
       console.error('Chat assistant is missing GEMINI_API_KEY');
-      return sendJson(res, 200, { reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.', action: null, target: null });
+      return sendJson(res, 200, localKnowledgeReply(message));
     }
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
     try {
+      const controller = new AbortController();
       const response = await generateContent(apiKey, message, controller.signal);
       if (!response.ok) {
-        const status = response.status || 502;
-        return sendJson(res, 200, serviceError(status));
+        return sendJson(res, 200, localKnowledgeReply(message));
       }
 
       const data = await response.json();
@@ -323,20 +364,14 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 200, cleanModelResponse(parseModelJson(text)));
     } catch (error) {
       const timedOut = error instanceof Error && error.name === 'AbortError';
-      const reason = timedOut ? 'Gemini request timed out after 25 seconds' : error instanceof Error ? error.message : 'Unknown error';
+      const reason = timedOut ? 'Gemini request timed out' : error instanceof Error ? error.message : 'Unknown error';
       console.error('Chat assistant failed:', reason);
-      if (timedOut) return sendJson(res, 200, serviceError(504));
-      return sendJson(res, 200, {
-        reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.',
-        action: null,
-        target: null,
-      });
+      return sendJson(res, 200, localKnowledgeReply(message));
     } finally {
-      clearTimeout(timeoutId);
     }
   } catch (error) {
     console.error('Chat handler crashed:', error instanceof Error ? error.message : error);
-    const fallback = { reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.', action: null, target: null };
+    const fallback = { reply: 'Aayam Paudel is a B.Sc. CSIT student and full-stack developer in Gaindakot, Nepal. Namaste Suman Communication offers local photo, print, and document services.', action: null, target: null };
     try {
       if (!res.headersSent) return sendJson(res, 200, fallback);
       if (!res.writableEnded) res.end(JSON.stringify(fallback));
