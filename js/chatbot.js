@@ -2,6 +2,11 @@
 (() => {
   const page = window.location.pathname.toLowerCase();
   const isBusinessPage = page.endsWith('/namaste-suman.html') || page === '/namaste-suman.html';
+  const assistantName = isBusinessPage ? 'Namaste AI' : 'Aayam AI';
+  const assistantSubtitle = isBusinessPage ? 'Namaste Suman Communication guide' : 'Portfolio guide and smart search';
+  const assistantGreeting = isBusinessPage
+    ? 'Namaste! I’m Namaste AI. Ask about our documentation, visa support, printing, photography, online forms, location, or contact options.'
+    : 'Hi! Ask about Aayam’s projects, web development work, or Namaste Suman Communication.';
   const chips = isBusinessPage
     ? ['What services do you offer?', 'Where is the shop located?', 'Book or contact now']
     : ['Why hire Aayam?', 'Show his projects', 'Open Game Playground'];
@@ -26,7 +31,7 @@
   trigger.className = 'aayam-ai-trigger';
   trigger.setAttribute('aria-haspopup', 'dialog');
   trigger.setAttribute('aria-controls', 'aayamAiDrawer');
-  trigger.innerHTML = '<span aria-hidden="true">✨</span> Ask Aayam AI';
+  trigger.innerHTML = `<span aria-hidden="true">✨</span> Ask ${assistantName}`;
 
   const drawer = document.createElement('div');
   drawer.id = 'aayamAiDrawer';
@@ -34,10 +39,10 @@
   drawer.hidden = true;
   drawer.innerHTML = `
     <section class="aayam-ai-panel" role="dialog" aria-modal="true" aria-labelledby="aayamAiTitle">
-      <header class="aayam-ai-header"><div><h2 class="aayam-ai-title" id="aayamAiTitle">Ask Aayam AI ✨</h2><p class="aayam-ai-subtitle">Portfolio guide and smart search</p></div><button class="aayam-ai-close" type="button" aria-label="Close assistant">×</button></header>
-      <div class="aayam-ai-messages" aria-live="polite"><div class="aayam-ai-message aayam-ai-message--assistant">Hi! Ask about Aayam’s projects, web development work, or Namaste Suman Communication.</div></div>
+      <header class="aayam-ai-header"><div><h2 class="aayam-ai-title" id="aayamAiTitle">Ask ${assistantName} ✨</h2><p class="aayam-ai-subtitle">${assistantSubtitle}</p></div><button class="aayam-ai-close" type="button" aria-label="Close assistant">×</button></header>
+      <div class="aayam-ai-messages" aria-live="polite"><div class="aayam-ai-message aayam-ai-message--assistant">${assistantGreeting}</div></div>
       <div class="aayam-ai-quick"><span class="aayam-ai-quick-label">Try asking</span><div class="aayam-ai-chips"></div></div>
-      <form class="aayam-ai-composer"><label class="visually-hidden" for="aayamAiInput">Ask Aayam AI</label><input class="aayam-ai-input" id="aayamAiInput" maxlength="800" autocomplete="off" placeholder="Search site or ask AI…"><button class="aayam-ai-send" type="submit">Send</button></form>
+      <form class="aayam-ai-composer"><label class="visually-hidden" for="aayamAiInput">Ask ${assistantName}</label><input class="aayam-ai-input" id="aayamAiInput" maxlength="800" autocomplete="off" placeholder="Search site or ask AI…"><button class="aayam-ai-send" type="submit">Send</button></form>
     </section>`;
   document.body.append(trigger, drawer);
 
@@ -122,18 +127,6 @@
     }
   }
 
-  function fallbackAction(question) {
-    const query = String(question || '').toLowerCase();
-    if (/playground|game|snake|cyber defender|type blaster|memory match/.test(query)) return 'OPEN_PLAYGROUND';
-    if (/namaste|suman|business|shop|print|photo|document/.test(query)) return 'OPEN_BUSINESS';
-    if (/project|haat|bazzar|hackathon|e-?gov|municipal/.test(query)) return 'OPEN_PROJECTS';
-    if (/experience|education|campus|lumbini/.test(query)) return 'OPEN_EXPERIENCE';
-    if (/about|who is|cricket|football/.test(query)) return 'OPEN_ABOUT';
-    if (/contact|email|phone|hire|reach/.test(query)) return 'SCROLL_CONTACT';
-    if (/home/.test(query)) return 'OPEN_HOME';
-    return 'OPEN_PROJECTS';
-  }
-
   function executeAction(action, target) {
     try {
       if (!action || typeof action !== 'string') return;
@@ -190,14 +183,11 @@
       } catch {
         data = null;
       }
-      const reply = data?.reply || 'I can help with Aayam’s work, projects, playground games, and Namaste Suman Communication.';
+      const reply = data?.reply || assistantGreeting;
       pending.textContent = reply;
-      window.setTimeout(() => {
-        executeAction(data ? data.action : fallbackAction(message), data?.target);
-      }, 250);
+      if (data?.action) window.setTimeout(() => executeAction(data.action, data.target), 250);
     } catch (error) {
-      pending.textContent = 'I can help with Aayam’s work, projects, playground games, and Namaste Suman Communication.';
-      window.setTimeout(() => executeAction(fallbackAction(message)), 250);
+      pending.textContent = assistantGreeting;
     } finally {
       sendButton.disabled = false;
       input.focus();
