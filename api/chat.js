@@ -4,7 +4,7 @@ const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 20;
 const MAX_QUERY_LENGTH = 800;
 const GEMINI_TIMEOUT_MS = 25000;
-const GEMINI_CANDIDATE_MODELS = ['gemini-3.8-flash'];
+const GEMINI_CANDIDATE_MODELS = ['gemini-1.5-flash'];
 const requestBuckets = new Map();
 let cachedGeminiModel = '';
 
@@ -144,7 +144,7 @@ function sendJson(res, status, payload) {
 
 function serviceError(status) {
   return {
-    reply: `AI service error (HTTP ${status}). Please try again shortly.`,
+    reply: 'I’m sorry, I can’t answer that right now. Please try again shortly or use the contact page to reach Aayam.',
     action: null,
     target: null,
   };
