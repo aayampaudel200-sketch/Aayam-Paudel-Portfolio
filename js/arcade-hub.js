@@ -1,106 +1,298 @@
 /**
- * Arcade Hub: Modular Retro Gaming Shell for Type Blaster & Nokia Snake
+ * Arcade Hub: Premium Retro Gaming Shell for Type Blaster & Nokia Snake
  * 
- * Performance & Architecture Features:
- * - Zero CPU Idle: No requestAnimationFrame or timer executes until user explicitly starts a game.
- * - Strict Lifecycle Management: Full cleanup (cancelAnimationFrame, clearInterval, listener removal)
- *   on pause, game switch, tab switch, or window blur.
- * - Shared Utilities: Unified localStorage management, optimized canvas context, managed events,
- *   and responsive canvas sizing.
- * - Mobile & Touch Optimization: Tactile controls, touch-action: manipulation, zero-scroll event traps.
+ * Features:
+ * - High-contrast futuristic typing arcade with realistic directed laser targeting & particle physics.
+ * - Authentic Nokia monochrome LCD snake with input buffer, directional eye graphics, and swipe controls.
+ * - Built-in zero-dependency Web Audio API retro sound synthesizer with user mute toggle.
+ * - Strict lifecycle management: 0% CPU when idle, paused, tab-switched, or window minimized.
+ * - Solves listener loss: DOM controls bound permanently in setup(); game modes activate/deactivate cleanly.
+ * - Mobile-first touch & keyboard optimization with zero unwanted page scroll.
  */
 
 (() => {
   'use strict';
 
-  // ─── SHARED UTILITIES & CORE MODULE ─────────────────────────────────────────
-  const ArcadeCore = {
-    // 1. Shared Storage Helper
-    storage: {
-      read(key, fallback = 0) {
-        try {
-          const val = localStorage.getItem(key);
-          return val !== null ? Number.parseInt(val, 10) || 0 : fallback;
-        } catch {
-          return fallback;
-        }
-      },
-      write(key, value) {
-        try {
-          localStorage.setItem(key, String(value));
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      getDifficulty(key, fallback = 'medium', valid = ['easy', 'medium', 'hard']) {
-        try {
-          const val = localStorage.getItem(key);
-          return valid.includes(val) ? val : fallback;
-        } catch {
-          return fallback;
-        }
-      },
-      setDifficulty(key, val) {
-        try {
-          localStorage.setItem(key, val);
-        } catch {}
+  // ─── SHARED STORAGE ─────────────────────────────────────────────────────────
+  const ArcadeStorage = {
+    read(key, fallback = 0) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? Number.parseInt(val, 10) || 0 : fallback;
+      } catch {
+        return fallback;
       }
     },
-
-    // 2. Optimized Canvas Context & Responsive Display
-    canvas: {
-      getOptimizedContext(canvas, options = {}) {
-        if (!canvas) return null;
-        return canvas.getContext('2d', {
-          alpha: options.alpha !== undefined ? options.alpha : false,
-          desynchronized: options.desynchronized || false
-        });
+    write(key, value) {
+      try {
+        localStorage.setItem(key, String(value));
+        return true;
+      } catch {
+        return false;
       }
     },
-
-    // 3. Managed Event Listener Registry for Leak-Free Cleanup
-    ManagedEvents: class {
-      constructor() {
-        this.listeners = [];
+    getDifficulty(key, fallback = 'medium', valid = ['easy', 'medium', 'hard']) {
+      try {
+        const val = localStorage.getItem(key);
+        return valid.includes(val) ? val : fallback;
+      } catch {
+        return fallback;
       }
-      add(target, type, handler, options) {
-        if (!target) return;
-        target.addEventListener(type, handler, options);
-        this.listeners.push({ target, type, handler, options });
+    },
+    setDifficulty(key, val) {
+      try {
+        localStorage.setItem(key, val);
+      } catch {}
+    },
+    isSoundEnabled() {
+      try {
+        return localStorage.getItem('arcadeSoundEnabled') !== 'false';
+      } catch {
+        return true;
       }
-      clear() {
-        this.listeners.forEach(({ target, type, handler, options }) => {
-          try { target.removeEventListener(type, handler, options); } catch {}
-        });
-        this.listeners = [];
-      }
+    },
+    setSoundEnabled(enabled) {
+      try {
+        localStorage.setItem('arcadeSoundEnabled', enabled ? 'true' : 'false');
+      } catch {}
     }
   };
 
-  // Backwards-compatible alias for submodules
-  const ArcadeStorage = ArcadeCore.storage;
-  const ManagedEvents = ArcadeCore.ManagedEvents;
 
-  // ─── TYPE BLASTER GAME MODULE ──────────────────────────────────────────────
+  // ─── PURE WEB AUDIO SYNTHESIZER (ZERO EXTERNAL ASSETS) ──────────────────────
+  const ArcadeAudio = (() => {
+    let ctx = null;
+    let enabled = ArcadeStorage.isSoundEnabled();
+
+    function getContext() {
+      if (!enabled) return null;
+      if (!ctx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) {
+          ctx = new AudioClass();
+        }
+      }
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      return ctx;
+    }
+
+    function toggle() {
+      enabled = !enabled;
+      ArcadeStorage.setSoundEnabled(enabled);
+      if (enabled) {
+        getContext();
+        playClick();
+      }
+      return enabled;
+    }
+
+    function isEnabled() {
+      return enabled;
+    }
+
+    function playLaser() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.09);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playExplosion() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    }
+
+    function playMiss() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(90, now + 0.08);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    }
+
+    function playCombo(streak) {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      const pitch = Math.min(440 + streak * 45, 1200);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(pitch, now);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 1.25, now + 0.12);
+
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    }
+
+    function playSnakeBite() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(587, now);
+      osc.frequency.setValueAtTime(880, now + 0.04);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playSnakeDie() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.28);
+
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+
+    function playClick() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(700, now);
+
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+
+    return {
+      toggle,
+      isEnabled,
+      playLaser,
+      playExplosion,
+      playMiss,
+      playCombo,
+      playSnakeBite,
+      playSnakeDie,
+      playClick
+    };
+  })();
+
+
+  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ─────────────────────────────
   const TypeBlasterGame = (() => {
     let container, canvas, ctx;
-    let startBtn, pauseBtn, restartBtn, mobileInput;
-    let scoreEl, wpmEl, accuracyEl, timeEl, bestEl, statusEl;
+    let startBtn, pauseBtn, restartBtn, soundBtn, mobileInput;
+    let scoreEl, comboEl, wpmEl, accuracyEl, timeEl, bestEl, statusEl;
     let diffContainer;
 
-    const events = new ManagedEvents();
-    const letters = 'ASDFGHJKLQWERTYUIOPZXCVBNM';
+    // Difficulty Settings per prompt requirements:
+    // Easy: ~4.0s spawn, 36-44 px/s speed, max 2 rocks, 8 integrity, beginner letter set
+    // Medium: ~2.5s spawn, 72-88 px/s speed, max 3 rocks, 6 integrity, full A-Z
+    // Hard: ~1.5s spawn, 112-132 px/s speed, max 5 rocks, 4 integrity, full A-Z
     const settings = {
-      easy: { duration: 45000, spawn: 3, speedMin: 52, speedMax: 60, maxRocks: 3, integrity: 5 },
-      medium: { duration: 45000, spawn: 1.95, speedMin: 92, speedMax: 110, maxRocks: 4, integrity: 3 },
-      hard: { duration: 45000, spawn: 1.3, speedMin: 132, speedMax: 160, maxRocks: 6, integrity: 3 },
+      easy: {
+        duration: 45000,
+        spawn: 4.0,
+        speedMin: 36,
+        speedMax: 44,
+        maxRocks: 2,
+        integrity: 8,
+        letterPool: 'ASDFJKLERO' // Home-row & most frequent keys for true beginner onboarding
+      },
+      medium: {
+        duration: 45000,
+        spawn: 2.5,
+        speedMin: 72,
+        speedMax: 88,
+        maxRocks: 3,
+        integrity: 6,
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      },
+      hard: {
+        duration: 45000,
+        spawn: 1.5,
+        speedMin: 112,
+        speedMax: 132,
+        maxRocks: 5,
+        integrity: 4,
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      }
     };
 
     let difficulty = 'easy';
     let bestScore = 0;
     let rocks = [];
     let bullets = [];
+    let particles = [];
+    let popups = [];
     let isPlaying = false;
     let isPaused = false;
     let isFinished = false;
@@ -109,12 +301,26 @@
     let lastFrameTime = 0;
     let spawnTimer = 0;
     let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
     let totalTyped = 0;
     let totalHits = 0;
     let escapedRocks = 0;
     let animFrameId = 0;
     let nextRockId = 1;
-    let initialized = false;
+    let turretAngle = -Math.PI / 2;
+    let turretTargetAngle = -Math.PI / 2;
+    let screenShake = 0;
+    let isKeyActive = false;
+    let isSetupDone = false;
+
+    // Background starfield particles (cached once)
+    const stars = Array.from({ length: 42 }, () => ({
+      x: Math.random(),
+      y: Math.random(),
+      r: Math.random() * 1.5 + 0.5,
+      alpha: Math.random() * 0.6 + 0.2
+    }));
 
     function storageKey() {
       return `type-blaster-best:${difficulty}`;
@@ -128,8 +334,16 @@
     function syncDifficultyUI() {
       if (!diffContainer) return;
       diffContainer.querySelectorAll('[data-difficulty]').forEach((btn) => {
-        btn.setAttribute('aria-pressed', String(btn.dataset.difficulty === difficulty));
+        const active = btn.dataset.difficulty === difficulty;
+        btn.setAttribute('aria-pressed', String(active));
       });
+    }
+
+    function syncSoundUI() {
+      if (!soundBtn) return;
+      const on = ArcadeAudio.isEnabled();
+      soundBtn.textContent = on ? '🔊 Sound' : '🔇 Muted';
+      soundBtn.setAttribute('aria-pressed', String(on));
     }
 
     function updateMetrics(now = performance.now()) {
@@ -140,152 +354,66 @@
       const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
 
       if (scoreEl) scoreEl.textContent = String(score);
+      if (comboEl) comboEl.textContent = `${combo}x`;
       if (wpmEl) wpmEl.textContent = `${wpm} WPM`;
       if (accuracyEl) accuracyEl.textContent = `${accuracy}%`;
       if (timeEl) timeEl.textContent = `${Math.max(0, Math.ceil((duration - elapsed) / 1000))}s`;
       return elapsed;
     }
 
-    function draw(now = performance.now()) {
-      if (!ctx || !canvas) return;
-      const w = canvas.width;
-      const h = canvas.height;
-
-      // Dark sci-fi gradient background
-      const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, '#071426');
-      grad.addColorStop(1, '#0a1020');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, w, h);
-
-      // Sub-grid
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
-      ctx.lineWidth = 1;
-      for (let x = 0; x <= w; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = 0; y <= h; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-
-      // Defense cannon / ship
-      const shipX = w / 2;
-      const shipY = h - 36;
-      ctx.fillStyle = '#38bdf8';
-      ctx.beginPath();
-      ctx.moveTo(shipX, shipY - 18);
-      ctx.lineTo(shipX - 20, shipY + 18);
-      ctx.lineTo(shipX + 20, shipY + 18);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#e0f2fe';
-      ctx.fillRect(shipX - 3, shipY - 9, 6, 22);
-
-      // Base integrity
-      const maxIntegrity = settings[difficulty].integrity;
-      const currentIntegrity = Math.max(0, maxIntegrity - escapedRocks);
-      ctx.fillStyle = currentIntegrity <= 1 ? '#f87171' : '#9fb2cc';
-      ctx.font = '600 13px var(--font-mono, monospace)';
-      ctx.textAlign = 'left';
-      ctx.fillText(`BASE INTEGRITY ${currentIntegrity} / ${maxIntegrity}`, 16, h - 16);
-
-      // Bullets
-      ctx.fillStyle = '#fef08a';
-      bullets.forEach((b) => {
-        ctx.fillRect(b.x - 2, b.y - 12, 4, 16);
-      });
-
-      // Rocks
-      rocks.forEach((r) => {
-        const radius = 29;
-        const rGrad = ctx.createRadialGradient(r.x - 8, r.y - 9, 2, r.x, r.y, radius);
-        rGrad.addColorStop(0, '#dbeafe');
-        rGrad.addColorStop(0.35, '#64748b');
-        rGrad.addColorStop(1, '#172033');
-        ctx.fillStyle = rGrad;
-        ctx.beginPath();
-        ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(248, 250, 252, 0.4)';
-        ctx.stroke();
-
-        // Inner glowing circle with letter
-        ctx.fillStyle = 'rgba(2, 6, 23, 0.82)';
-        ctx.beginPath();
-        ctx.arc(r.x, r.y, 18, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(125, 211, 252, 0.7)';
-        ctx.stroke();
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '800 32px var(--font-mono, monospace)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(r.letter, r.x, r.y + 1);
-        ctx.textBaseline = 'alphabetic';
-      });
-
-      // Overlay: Idle splash (ZERO CPU)
-      if (!isPlaying && !isPaused && !isFinished && elapsedBeforePause === 0) {
-        ctx.fillStyle = 'rgba(7, 20, 38, 0.75)';
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#7dd3fc';
-        ctx.font = '700 26px var(--font-mono, monospace)';
-        ctx.textAlign = 'center';
-        ctx.fillText('TYPE BLASTER', w / 2, 170);
-        ctx.fillStyle = '#cbd5e1';
-        ctx.font = '15px var(--font-sans, sans-serif)';
-        ctx.fillText('Type the letter on each falling rock to blast it.', w / 2, 205);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px var(--font-mono, monospace)';
-        ctx.fillText('Press "Start round" to initialize mission.', w / 2, 240);
+    // Helper: generate procedural polygon vertices for authentic organic asteroid look
+    function createRockPolygon(seed, radius) {
+      const points = [];
+      const numVertices = 7;
+      for (let i = 0; i < numVertices; i++) {
+        const angle = (i / numVertices) * Math.PI * 2;
+        // Pseudo-random offset based on seed
+        const pseudo = Math.sin(seed * 3.7 + i * 2.1) * 0.18;
+        const r = radius * (1 + pseudo);
+        points.push({
+          x: Math.cos(angle) * r,
+          y: Math.sin(angle) * r
+        });
       }
-
-      // Overlay: Paused
-      if (isPaused) {
-        ctx.fillStyle = 'rgba(7, 20, 38, 0.72)';
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#e0f2fe';
-        ctx.font = '700 24px var(--font-mono, monospace)';
-        ctx.textAlign = 'center';
-        ctx.fillText('MISSION PAUSED', w / 2, h / 2 - 10);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '14px var(--font-sans, sans-serif)';
-        ctx.fillText('Click Resume or press Pause button to continue', w / 2, h / 2 + 20);
-      }
-
-      // Overlay: Finished
-      if (isFinished) {
-        ctx.fillStyle = 'rgba(2, 6, 23, 0.82)';
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#7dd3fc';
-        ctx.font = '800 28px var(--font-mono, monospace)';
-        ctx.textAlign = 'center';
-        ctx.fillText('ROUND COMPLETE', w / 2, h / 2 - 40);
-        ctx.fillStyle = '#e0f2fe';
-        ctx.font = '600 17px var(--font-sans, sans-serif)';
-        ctx.fillText(`Score ${score} · ${wpmEl ? wpmEl.textContent : ''} · ${accuracyEl ? accuracyEl.textContent : ''}`, w / 2, h / 2 + 2);
-        ctx.fillStyle = '#fef08a';
-        ctx.font = '600 14px var(--font-sans, sans-serif)';
-        ctx.fillText('Press "Play again" to launch another round', w / 2, h / 2 + 40);
-      }
+      return points;
     }
 
     function spawnRock() {
       const cfg = settings[difficulty];
       if (rocks.length >= cfg.maxRocks) return;
+
+      const pool = cfg.letterPool;
+      const currentLetters = new Set(rocks.map((r) => r.letter));
+
+      // Prefer spawning a letter not already falling to ensure variety
+      let availableLetters = pool.split('').filter((c) => !currentLetters.has(c));
+      if (!availableLetters.length) availableLetters = pool.split('');
+
+      const letter = availableLetters[Math.floor(Math.random() * availableLetters.length)];
+      const radius = 32;
+
+      // Distribute lanes with generous spacing
       const occupied = rocks.map((r) => r.x);
       let lane = canvas.width / 2;
-      for (let attempts = 0; attempts < 14; attempts++) {
-        const cand = 48 + Math.random() * (canvas.width - 96);
-        if (occupied.every((x) => Math.abs(x - cand) > 68)) {
+      for (let attempts = 0; attempts < 16; attempts++) {
+        const cand = 64 + Math.random() * (canvas.width - 128);
+        if (occupied.every((x) => Math.abs(x - cand) > 90)) {
           lane = cand;
           break;
         }
       }
+
+      const id = nextRockId++;
       rocks.push({
-        id: nextRockId++,
+        id,
         x: lane,
-        y: -32,
-        letter: letters[Math.floor(Math.random() * letters.length)],
-        speed: cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin)
+        y: -36,
+        radius,
+        letter,
+        speed: cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin),
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.4,
+        polygon: createRockPolygon(id, radius)
       });
     }
 
@@ -295,29 +423,99 @@
       if (!/^[A-Z]$/.test(letter)) return;
 
       totalTyped++;
-      const target = rocks
+
+      // Find the lowest (closest to base) matching rock
+      const targets = rocks
         .filter((r) => r.letter === letter)
-        .sort((a, b) => b.y - a.y)[0];
+        .sort((a, b) => b.y - a.y);
 
-      bullets.push({
-        x: canvas.width / 2,
-        y: canvas.height - 56,
-        targetId: target ? target.id : null
-      });
+      const target = targets[0];
 
-      if (!target && statusEl) {
-        statusEl.textContent = `No ${letter} rock in range — keep watching the sky!`;
+      if (target) {
+        // Successful lock-on!
+        combo++;
+        if (combo > maxCombo) maxCombo = combo;
+        ArcadeAudio.playLaser();
+        if (combo > 1) ArcadeAudio.playCombo(combo);
+
+        // Aim the turret directly at this target
+        const turretX = canvas.width / 2;
+        const turretY = canvas.height - 32;
+        const dx = target.x - turretX;
+        const dy = target.y - turretY;
+        turretTargetAngle = Math.atan2(dy, dx);
+
+        // Compute direct velocity vector toward target
+        const dist = Math.hypot(dx, dy) || 1;
+        const bulletSpeed = 1100; // Fast plasma beam
+
+        bullets.push({
+          x: turretX,
+          y: turretY,
+          vx: (dx / dist) * bulletSpeed,
+          vy: (dy / dist) * bulletSpeed,
+          targetId: target.id,
+          targetLetter: letter,
+          progress: 0,
+          maxDist: dist
+        });
+
+        if (statusEl) {
+          statusEl.textContent = combo > 2 ? `🔥 Streak! Combo ${combo}x!` : `Targeting rock ${letter}!`;
+        }
+      } else {
+        // Miss / incorrect key
+        combo = 0;
+        ArcadeAudio.playMiss();
+        if (statusEl) {
+          statusEl.textContent = `No incoming rock has '${letter}' — stay sharp!`;
+        }
       }
+
       updateMetrics();
     }
 
-    function endRound(msg) {
+    function createExplosion(x, y, letter, pointsEarned) {
+      ArcadeAudio.playExplosion();
+      screenShake = 5.5;
+
+      // Spawn debris & neon plasma sparks
+      const count = 16;
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+        const speed = 70 + Math.random() * 160;
+        const isNeon = i % 2 === 0;
+        particles.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          life: 0.5 + Math.random() * 0.3,
+          maxLife: 0.8,
+          radius: isNeon ? 2.5 : 3.5,
+          color: isNeon ? '#38bdf8' : (Math.random() > 0.5 ? '#f59e0b' : '#e0f2fe')
+        });
+      }
+
+      // Add floating score popup
+      popups.push({
+        x,
+        y: y - 10,
+        text: combo > 1 ? `+${pointsEarned} (${combo}x)` : `+${pointsEarned}`,
+        color: combo > 2 ? '#facc15' : '#7dd3fc',
+        life: 0.8,
+        maxLife: 0.8
+      });
+    }
+
+    function endRound(msg, isVictory = false) {
       if (isPlaying) {
         elapsedBeforePause += performance.now() - roundStartedAt;
       }
       isPlaying = false;
       isPaused = false;
       isFinished = true;
+
       if (animFrameId) {
         cancelAnimationFrame(animFrameId);
         animFrameId = 0;
@@ -325,18 +523,329 @@
 
       const elapsed = updateMetrics();
       const wpm = Math.round((totalHits / 5) / Math.max(elapsed / 60000, 1 / 60));
+      const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
+
+      let isNewRecord = false;
       if (score > bestScore) {
         bestScore = score;
+        isNewRecord = true;
         ArcadeStorage.write(storageKey(), bestScore);
         if (bestEl) bestEl.textContent = String(bestScore);
       }
 
       if (statusEl) {
-        statusEl.textContent = `${msg} Final Score: ${score}, Top Score: ${bestScore} (${difficulty}), ${wpm} WPM.`;
+        const recordNote = isNewRecord ? ' 🏆 NEW HIGH SCORE!' : '';
+        statusEl.textContent = `${msg} Final Score: ${score} · ${wpm} WPM · ${accuracy}% Accuracy.${recordNote}`;
       }
+
       if (startBtn) startBtn.textContent = 'Play again';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
       draw();
+    }
+
+    function draw(now = performance.now()) {
+      if (!ctx || !canvas) return;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.save();
+
+      // Apply subtle screen shake
+      if (screenShake > 0.05) {
+        const shakeX = (Math.random() - 0.5) * screenShake;
+        const shakeY = (Math.random() - 0.5) * screenShake;
+        ctx.translate(shakeX, shakeY);
+      }
+
+      // 1. Deep Space Sci-Fi Backdrop
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, '#040b17');
+      grad.addColorStop(0.55, '#07152b');
+      grad.addColorStop(1, '#0b1b36');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Starfield
+      stars.forEach((s) => {
+        ctx.fillStyle = `rgba(186, 230, 253, ${s.alpha})`;
+        ctx.beginPath();
+        ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 3. Cyber Defense Tactical Grid
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.07)';
+      ctx.lineWidth = 1;
+      const gridStep = 44;
+      for (let x = 0; x <= w; x += gridStep) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h - 38);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= h - 38; y += gridStep) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      // 4. Perimeter Defense Line & Shield Bar
+      const maxIntegrity = settings[difficulty].integrity;
+      const currentIntegrity = Math.max(0, maxIntegrity - escapedRocks);
+      const integrityRatio = currentIntegrity / maxIntegrity;
+
+      // Glow barrier at bottom
+      const shieldY = h - 38;
+      const shieldGlow = ctx.createLinearGradient(0, shieldY - 4, 0, shieldY + 4);
+      shieldGlow.addColorStop(0, 'rgba(56, 189, 248, 0)');
+      shieldGlow.addColorStop(0.5, integrityRatio > 0.35 ? 'rgba(56, 189, 248, 0.8)' : 'rgba(239, 68, 68, 0.85)');
+      shieldGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
+      ctx.fillStyle = shieldGlow;
+      ctx.fillRect(0, shieldY - 4, w, 8);
+
+      // Shield Line
+      ctx.strokeStyle = integrityRatio > 0.35 ? '#38bdf8' : '#f87171';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, shieldY);
+      ctx.lineTo(w, shieldY);
+      ctx.stroke();
+
+      // Base Console Floor
+      ctx.fillStyle = '#071224';
+      ctx.fillRect(0, shieldY, w, h - shieldY);
+
+      // Integrity gauge indicator
+      ctx.fillStyle = integrityRatio > 0.4 ? '#38bdf8' : '#ef4444';
+      ctx.font = '700 12px var(--font-mono, monospace)';
+      ctx.textAlign = 'left';
+      ctx.fillText(`PERIMETER SHIELD: ${currentIntegrity} / ${maxIntegrity}`, 18, h - 14);
+
+      // Combo streak indicator in canvas
+      if (combo > 1) {
+        ctx.fillStyle = '#facc15';
+        ctx.textAlign = 'right';
+        ctx.fillText(`COMBO x${combo} 🔥`, w - 18, h - 14);
+      }
+
+      // 5. Directed Laser Projectiles
+      bullets.forEach((b) => {
+        ctx.save();
+        // Laser glow
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 12;
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        const tailX = b.x - (b.vx * 0.04);
+        const tailY = b.y - (b.vy * 0.04);
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+
+        // White hot inner beam
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tailX + (b.vx * 0.01), tailY + (b.vy * 0.01));
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 6. Incoming Asteroids with High-Contrast Target Badges
+      rocks.forEach((r) => {
+        ctx.save();
+        ctx.translate(r.x, r.y);
+        ctx.rotate(r.rot);
+
+        // A. Shaded Organic Asteroid Body
+        const rGrad = ctx.createRadialGradient(-6, -8, 2, 0, 0, r.radius);
+        rGrad.addColorStop(0, '#94a3b8');
+        rGrad.addColorStop(0.35, '#475569');
+        rGrad.addColorStop(0.85, '#1e293b');
+        rGrad.addColorStop(1, '#0f172a');
+        ctx.fillStyle = rGrad;
+
+        ctx.beginPath();
+        r.polygon.forEach((pt, idx) => {
+          if (idx === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+
+        // Asteroid edge highlight
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.restore(); // Undo rotation for letter badge so letters ALWAYS remain upright!
+
+        // B. Prominent High-Contrast Target Letter Badge (Always upright)
+        ctx.save();
+        ctx.translate(r.x, r.y);
+
+        const isDanger = r.y > h * 0.65;
+        const badgeRadius = 21;
+
+        // Outer Target Ring / Reticle
+        ctx.beginPath();
+        ctx.arc(0, 0, badgeRadius + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = isDanger ? 'rgba(239, 68, 68, 0.75)' : 'rgba(56, 189, 248, 0.65)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Solid Obsidian Badge Background for MAXIMUM Letter Contrast
+        ctx.beginPath();
+        ctx.arc(0, 0, badgeRadius, 0, Math.PI * 2);
+        ctx.fillStyle = '#030816';
+        ctx.fill();
+
+        // Inner Badge Accent Ring
+        ctx.strokeStyle = isDanger ? '#ef4444' : '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Target Reticle Corner Ticks
+        ctx.strokeStyle = isDanger ? '#f87171' : '#7dd3fc';
+        ctx.lineWidth = 2;
+        const tickDist = badgeRadius + 2;
+        [-1, 1].forEach((dirX) => {
+          [-1, 1].forEach((dirY) => {
+            ctx.beginPath();
+            ctx.moveTo(dirX * tickDist, dirY * (tickDist - 5));
+            ctx.lineTo(dirX * tickDist, dirY * tickDist);
+            ctx.lineTo(dirX * (tickDist - 5), dirY * tickDist);
+            ctx.stroke();
+          });
+        });
+
+        // BOLD, CRYSTAL-CLEAR LETTER DISPLAY
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = isDanger ? '#ef4444' : '#38bdf8';
+        ctx.shadowBlur = 6;
+        ctx.font = '900 28px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(r.letter, 0, 1);
+
+        ctx.restore();
+      });
+
+      // 7. Defense Turret Cannon at Base
+      const turretX = w / 2;
+      const turretY = shieldY + 6;
+
+      // Turret base mount
+      ctx.fillStyle = '#0f2744';
+      ctx.beginPath();
+      ctx.arc(turretX, turretY + 6, 24, Math.PI, 0);
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Rotating cannon barrel
+      ctx.save();
+      ctx.translate(turretX, turretY);
+      ctx.rotate(turretAngle + Math.PI / 2); // default points up
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(-5, -28, 10, 28);
+      ctx.fillStyle = '#e0f2fe';
+      ctx.fillRect(-2, -30, 4, 30);
+      ctx.restore();
+
+      // 8. Explosion Particles
+      particles.forEach((p) => {
+        const alpha = Math.max(0, p.life / p.maxLife);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * alpha, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+
+      // 9. Floating Score Popups
+      popups.forEach((pop) => {
+        const alpha = Math.max(0, pop.life / pop.maxLife);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = pop.color;
+        ctx.font = '700 16px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = pop.color;
+        ctx.shadowBlur = 8;
+        ctx.fillText(pop.text, pop.x, pop.y);
+        ctx.restore();
+      });
+
+      // 10. Idle Splash Overlay (0% CPU state)
+      if (!isPlaying && !isPaused && !isFinished && elapsedBeforePause === 0) {
+        ctx.fillStyle = 'rgba(4, 11, 23, 0.85)';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = '#7dd3fc';
+        ctx.font = '800 30px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.fillText('TYPE BLASTER', w / 2, h / 2 - 40);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '500 15px var(--font-sans, sans-serif)';
+        ctx.fillText('Type the letter on each falling rock to fire targeted plasma lasers.', w / 2, h / 2 - 6);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '13px var(--font-mono, monospace)';
+        ctx.fillText('Desktop: Type keys directly · Mobile: Tap input box below', w / 2, h / 2 + 22);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '700 14px var(--font-mono, monospace)';
+        ctx.fillText('Click "Start round" to initialize mission', w / 2, h / 2 + 54);
+      }
+
+      // 11. Paused Overlay
+      if (isPaused) {
+        ctx.fillStyle = 'rgba(4, 11, 23, 0.8)';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = '#e0f2fe';
+        ctx.font = '700 26px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.fillText('MISSION PAUSED', w / 2, h / 2 - 10);
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '14px var(--font-sans, sans-serif)';
+        ctx.fillText('Press Resume to return to combat', w / 2, h / 2 + 22);
+      }
+
+      // 12. Finished Overlay
+      if (isFinished) {
+        ctx.fillStyle = 'rgba(3, 8, 18, 0.88)';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = currentIntegrity > 0 ? '#38bdf8' : '#f87171';
+        ctx.font = '800 28px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.fillText(currentIntegrity > 0 ? 'MISSION ACCOMPLISHED' : 'DEFENSE BREACHED', w / 2, h / 2 - 44);
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = '600 16px var(--font-sans, sans-serif)';
+        ctx.fillText(`Final Score: ${score} · Top Score: ${bestScore} (${difficulty})`, w / 2, h / 2 - 8);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '14px var(--font-mono, monospace)';
+        ctx.fillText(`Speed: ${wpmEl ? wpmEl.textContent : '0 WPM'} · Accuracy: ${accuracyEl ? accuracyEl.textContent : '100%'} · Max Combo: ${maxCombo}x`, w / 2, h / 2 + 20);
+
+        ctx.fillStyle = '#fef08a';
+        ctx.font = '700 14px var(--font-sans, sans-serif)';
+        ctx.fillText('Click "Play again" to launch another mission', w / 2, h / 2 + 54);
+      }
+
+      ctx.restore();
     }
 
     function loop(now) {
@@ -344,29 +853,56 @@
       const delta = Math.min((now - lastFrameTime) / 1000, 0.05);
       lastFrameTime = now;
 
-      if (updateMetrics(now) >= settings[difficulty].duration) {
-        return endRound('Mission time expired! Base protected.');
+      // Update screen shake decay
+      if (screenShake > 0) {
+        screenShake = Math.max(0, screenShake - delta * 24);
       }
 
+      // Smooth turret tracking
+      turretAngle += (turretTargetAngle - turretAngle) * Math.min(delta * 14, 1);
+
+      // Check mission duration
+      if (updateMetrics(now) >= settings[difficulty].duration) {
+        return endRound('Mission complete! Base perimeter secured.', true);
+      }
+
+      // Spawn asteroid timer
       spawnTimer += delta;
       if (spawnTimer >= settings[difficulty].spawn) {
         spawnTimer = 0;
         spawnRock();
       }
 
-      rocks.forEach((r) => { r.y += r.speed * delta; });
-      bullets.forEach((b) => { b.y -= 700 * delta; });
+      // Update rocks movement & rotation
+      rocks.forEach((r) => {
+        r.y += r.speed * delta;
+        r.rot += r.rotSpeed * delta;
+      });
 
-      // Bullet collision with targeted rocks
+      // Update laser bullets
+      bullets.forEach((b) => {
+        b.x += b.vx * delta;
+        b.y += b.vy * delta;
+        b.progress += Math.hypot(b.vx * delta, b.vy * delta);
+      });
+
+      // Bullet collision with targeted asteroids
       bullets = bullets.filter((b) => {
         const target = rocks.find((r) => r.id === b.targetId);
-        if (target && b.y <= target.y + 8) {
-          rocks = rocks.filter((r) => r.id !== target.id);
-          totalHits++;
-          score += 100;
-          return false;
+        if (target) {
+          const distToTarget = Math.hypot(b.x - target.x, b.y - target.y);
+          if (distToTarget <= target.radius + 8 || b.progress >= b.maxDist) {
+            // Hit!
+            rocks = rocks.filter((r) => r.id !== target.id);
+            totalHits++;
+            const pointsEarned = 100 * Math.min(combo, 5);
+            score += pointsEarned;
+            createExplosion(target.x, target.y, target.letter, pointsEarned);
+            return false;
+          }
         }
-        return b.y > -20;
+        // Remove bullet if off screen
+        return b.y > -30 && b.y < canvas.height + 30 && b.x > -30 && b.x < canvas.width + 30;
       });
 
       // Rock breach detection
@@ -374,6 +910,9 @@
       rocks.forEach((r) => {
         if (r.y > canvas.height - 44) {
           escapedRocks++;
+          combo = 0; // Break combo on base damage
+          screenShake = 7;
+          ArcadeAudio.playExplosion();
         } else {
           remaining.push(r);
         }
@@ -381,8 +920,24 @@
       rocks = remaining;
 
       if (escapedRocks >= settings[difficulty].integrity) {
-        return endRound('Base integrity breached! Rocks reached defense perimeter.');
+        return endRound('Base integrity failed! Rocks penetrated defense shield.');
       }
+
+      // Update particles
+      particles.forEach((p) => {
+        p.x += p.vx * delta;
+        p.y += p.vy * delta;
+        p.vy += 60 * delta; // slight gravity
+        p.life -= delta;
+      });
+      particles = particles.filter((p) => p.life > 0);
+
+      // Update floating score popups
+      popups.forEach((pop) => {
+        pop.y -= 38 * delta;
+        pop.life -= delta;
+      });
+      popups = popups.filter((pop) => pop.life > 0);
 
       draw(now);
       animFrameId = requestAnimationFrame(loop);
@@ -392,7 +947,11 @@
       if (restart || elapsedBeforePause >= settings[difficulty].duration || isFinished || !isPaused) {
         rocks = [];
         bullets = [];
+        particles = [];
+        popups = [];
         score = 0;
+        combo = 0;
+        maxCombo = 0;
         totalTyped = 0;
         totalHits = 0;
         escapedRocks = 0;
@@ -400,6 +959,8 @@
         elapsedBeforePause = 0;
         nextRockId = 1;
         isFinished = false;
+        turretAngle = -Math.PI / 2;
+        turretTargetAngle = -Math.PI / 2;
       }
 
       isPlaying = true;
@@ -409,10 +970,10 @@
 
       if (startBtn) startBtn.textContent = 'Playing…';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
-      if (statusEl) statusEl.textContent = 'Type the falling rock letter to blast it!';
+      if (statusEl) statusEl.textContent = 'Type the falling rock letter to fire!';
 
       if (window.matchMedia('(pointer: coarse)').matches && mobileInput) {
-        mobileInput.focus();
+        try { mobileInput.focus(); } catch {}
       }
 
       if (animFrameId) cancelAnimationFrame(animFrameId);
@@ -425,7 +986,6 @@
       isPlaying = false;
       isPaused = true;
 
-      // STRICT CPU LIFECYCLE: cancel animation frame immediately
       if (animFrameId) {
         cancelAnimationFrame(animFrameId);
         animFrameId = 0;
@@ -439,31 +999,56 @@
     }
 
     function destroy() {
-      // 100% CPU halt
       isPlaying = false;
       isPaused = false;
       if (animFrameId) {
         cancelAnimationFrame(animFrameId);
         animFrameId = 0;
       }
-      events.clear();
       if (startBtn) startBtn.textContent = 'Start round';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
       draw();
     }
 
-    function init() {
-      if (initialized) return;
+    // Keydown event handler for active gameplay
+    function handleKeyDown(e) {
+      if (!isPlaying || isPaused || !isKeyActive || container.hidden) return;
+      if (e.target === mobileInput || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (!e.repeat && /^[a-z]$/i.test(e.key)) {
+        e.preventDefault();
+        fireLetter(e.key);
+      }
+    }
+
+    // Called when game is selected/visible in Arcade Hub
+    function activate() {
+      isKeyActive = true;
+      window.addEventListener('keydown', handleKeyDown);
+      draw();
+    }
+
+    // Called when switching to another game or leaving Arcade Hub
+    function deactivate() {
+      isKeyActive = false;
+      window.removeEventListener('keydown', handleKeyDown);
+      pause('Paused while switching.');
+    }
+
+    // One-time setup: queries DOM and attaches permanent button listeners
+    function setup() {
+      if (isSetupDone) return;
       container = document.getElementById('arcadeGameTyping');
       canvas = document.getElementById('typingShooterCanvas');
       if (!container || !canvas) return;
 
-      ctx = ArcadeCore.canvas.getOptimizedContext(canvas, { alpha: false });
+      ctx = canvas.getContext('2d', { alpha: false });
       startBtn = document.getElementById('typingStartBtn');
       pauseBtn = document.getElementById('typingPauseBtn');
       restartBtn = document.getElementById('typingRestartBtn');
+      soundBtn = document.getElementById('typingSoundBtn');
       mobileInput = document.getElementById('typingShooterInput');
       scoreEl = document.getElementById('typingScore');
+      comboEl = document.getElementById('typingCombo');
       wpmEl = document.getElementById('typingWpm');
       accuracyEl = document.getElementById('typingAccuracy');
       timeEl = document.getElementById('typingTime');
@@ -473,14 +1058,15 @@
 
       difficulty = ArcadeStorage.getDifficulty('typeBlasterDifficulty', 'easy');
       syncDifficultyUI();
+      syncSoundUI();
       loadBest();
 
       if (timeEl) timeEl.textContent = `${Math.ceil(settings[difficulty].duration / 1000)}s`;
 
-      // Bind Difficulty Toggle via ManagedEvents
+      // Difficulty buttons
       if (diffContainer) {
         diffContainer.querySelectorAll('[data-difficulty]').forEach((btn) => {
-          events.add(btn, 'click', () => {
+          btn.addEventListener('click', () => {
             const next = btn.dataset.difficulty;
             if (!settings[next] || next === difficulty) return;
             difficulty = next;
@@ -488,55 +1074,56 @@
             syncDifficultyUI();
             loadBest();
             if (isPlaying || isPaused) {
-              pause('Difficulty changed. Start new round.');
+              pause('Difficulty updated. Start new round.');
             }
             if (timeEl) timeEl.textContent = `${Math.ceil(settings[difficulty].duration / 1000)}s`;
           });
         });
       }
 
-      // Bind Controls via ManagedEvents
+      // Game Buttons (permanent listeners)
       if (startBtn) {
-        events.add(startBtn, 'click', () => {
+        startBtn.addEventListener('click', () => {
           if (isPaused) start(false);
           else start(isFinished);
         });
       }
       if (restartBtn) {
-        events.add(restartBtn, 'click', () => start(true));
+        restartBtn.addEventListener('click', () => start(true));
       }
       if (pauseBtn) {
-        events.add(pauseBtn, 'click', () => {
+        pauseBtn.addEventListener('click', () => {
           if (isPlaying) pause();
           else if (isPaused) start(false);
         });
       }
-
-      // Mobile text input listener via ManagedEvents
-      if (mobileInput) {
-        events.add(mobileInput, 'input', () => {
-          const char = mobileInput.value.slice(-1);
-          mobileInput.value = '';
-          fireLetter(char);
+      if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+          ArcadeAudio.toggle();
+          syncSoundUI();
         });
       }
 
-      // Physical keyboard listener via ManagedEvents
-      events.add(document, 'keydown', (e) => {
-        if (!isPlaying || isPaused || container.hidden || e.target === mobileInput || e.ctrlKey || e.metaKey || e.altKey) return;
-        if (!e.repeat && /^[a-z]$/i.test(e.key)) {
-          e.preventDefault();
-          fireLetter(e.key);
-        }
-      });
+      // Mobile virtual keyboard input
+      if (mobileInput) {
+        mobileInput.addEventListener('input', () => {
+          const val = mobileInput.value.trim();
+          if (val) {
+            const char = val.slice(-1);
+            mobileInput.value = '';
+            fireLetter(char);
+          }
+        });
+      }
 
-      initialized = true;
-      // Render static idle splash (Zero CPU usage)
+      isSetupDone = true;
       draw();
     }
 
     return {
-      init,
+      setup,
+      activate,
+      deactivate,
       start,
       pause,
       destroy,
@@ -545,16 +1132,20 @@
   })();
 
 
-  // ─── NOKIA SNAKE GAME MODULE ────────────────────────────────────────────────
+  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ────────────────────────────────
   const NokiaSnakeGame = (() => {
     let container, canvas, ctx;
-    let startBtn, pauseBtn, restartBtn;
+    let startBtn, pauseBtn, restartBtn, soundBtn;
     let scoreEl, bestEl, statusEl;
     let diffContainer;
 
-    const events = new ManagedEvents();
     const cells = 18;
     let unit = 20;
+
+    // Difficulty Speeds:
+    // Easy: 180ms tick (beginner-friendly reaction time)
+    // Medium: 125ms tick (classic authentic Nokia pace)
+    // Hard: 80ms tick (fast arcade challenge)
     const speeds = { easy: 180, medium: 125, hard: 80 };
 
     let difficulty = 'medium';
@@ -562,13 +1153,15 @@
     let snake = [];
     let food = null;
     let direction = { x: 1, y: 0 };
-    let queuedDirection = direction;
+    let inputQueue = []; // Fixed multi-key buffer: prevents 180-deg reversal bug
     let score = 0;
     let isRunning = false;
     let isPaused = false;
     let timerId = null;
     let touchStartCoord = null;
-    let initialized = false;
+    let isKeyActive = false;
+    let isSetupDone = false;
+    let foodBlinkState = true;
 
     function storageKey() {
       return `nokia-snake-best:${difficulty}`;
@@ -585,17 +1178,37 @@
     function syncDifficultyUI() {
       if (!diffContainer) return;
       diffContainer.querySelectorAll('[data-difficulty]').forEach((btn) => {
-        btn.setAttribute('aria-pressed', String(btn.dataset.difficulty === difficulty));
+        const active = btn.dataset.difficulty === difficulty;
+        btn.setAttribute('aria-pressed', String(active));
       });
     }
 
+    function syncSoundUI() {
+      if (!soundBtn) return;
+      const on = ArcadeAudio.isEnabled();
+      soundBtn.textContent = on ? '🔊 Sound' : '🔇 Muted';
+      soundBtn.setAttribute('aria-pressed', String(on));
+    }
+
+    // Safe food placement: gathers available empty cells, avoids infinite loops on win
     function placeFood() {
-      do {
-        food = {
-          x: Math.floor(Math.random() * cells),
-          y: Math.floor(Math.random() * cells)
-        };
-      } while (snake.some((seg) => seg.x === food.x && seg.y === food.y));
+      const occupied = new Set(snake.map((p) => `${p.x},${p.y}`));
+      const emptyCells = [];
+      for (let x = 0; x < cells; x++) {
+        for (let y = 0; y < cells; y++) {
+          if (!occupied.has(`${x},${y}`)) {
+            emptyCells.push({ x, y });
+          }
+        }
+      }
+
+      if (emptyCells.length === 0) {
+        // Board 100% full: Player won!
+        food = null;
+        return stop('🏆 INCREDIBLE! You filled the entire board! You Win!');
+      }
+
+      food = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     }
 
     function draw() {
@@ -603,87 +1216,132 @@
       const w = canvas.width;
       const h = canvas.height;
 
-      // Authentic retro Nokia monochrome green screen
+      // Authentic retro Nokia monochrome green LCD screen
       ctx.fillStyle = '#9caf88';
       ctx.fillRect(0, 0, w, h);
 
-      // LCD Grid lines
-      ctx.strokeStyle = 'rgba(47, 62, 45, 0.12)';
-      ctx.lineWidth = 1;
+      // LCD Pixel Matrix Texture
+      ctx.fillStyle = 'rgba(47, 62, 45, 0.08)';
       for (let i = 0; i <= cells; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * unit, 0);
-        ctx.lineTo(i * unit, h);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, i * unit);
-        ctx.lineTo(w, i * unit);
-        ctx.stroke();
+        ctx.fillRect(i * unit, 0, 1, h);
+        ctx.fillRect(0, i * unit, w, 1);
       }
 
-      // Food
+      // Food (Retro LCD Apple with subtle blink)
       if (food) {
-        ctx.fillStyle = '#bd3434';
-        ctx.beginPath();
-        ctx.arc((food.x + 0.5) * unit, (food.y + 0.5) * unit, unit * 0.32, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#7f1d1d';
-        ctx.stroke();
+        const fx = food.x * unit;
+        const fy = food.y * unit;
+        ctx.fillStyle = '#183b25';
+        // Classic retro blocky apple shape
+        ctx.fillRect(fx + 3, fy + 3, unit - 6, unit - 6);
+        ctx.fillStyle = '#9caf88';
+        ctx.fillRect(fx + 5, fy + 5, 2, 2); // LCD pixel shine
       }
 
-      // Snake body & head
+      // Snake Body & Head
       snake.forEach((part, index) => {
-        ctx.fillStyle = index === 0 ? '#183b25' : '#2f6540';
-        ctx.fillRect(part.x * unit + 2, part.y * unit + 2, unit - 4, unit - 4);
+        const px = part.x * unit;
+        const py = part.y * unit;
+
+        if (index === 0) {
+          // Snake Head: Darker LCD pigment
+          ctx.fillStyle = '#122618';
+          ctx.fillRect(px + 1, py + 1, unit - 2, unit - 2);
+
+          // Expressive Pixel Eyes pointing in direction of movement!
+          ctx.fillStyle = '#9caf88';
+          if (direction.x === 1) { // Right
+            ctx.fillRect(px + unit - 5, py + 3, 2, 2);
+            ctx.fillRect(px + unit - 5, py + unit - 5, 2, 2);
+          } else if (direction.x === -1) { // Left
+            ctx.fillRect(px + 3, py + 3, 2, 2);
+            ctx.fillRect(px + 3, py + unit - 5, 2, 2);
+          } else if (direction.y === 1) { // Down
+            ctx.fillRect(px + 3, py + unit - 5, 2, 2);
+            ctx.fillRect(px + unit - 5, py + unit - 5, 2, 2);
+          } else { // Up
+            ctx.fillRect(px + 3, py + 3, 2, 2);
+            ctx.fillRect(px + unit - 5, py + 3, 2, 2);
+          }
+        } else {
+          // Snake Body: Authentic segmented block with 1.5px bevel
+          ctx.fillStyle = '#1e442c';
+          ctx.fillRect(px + 1.5, py + 1.5, unit - 3, unit - 3);
+          ctx.fillStyle = '#2d5c3d';
+          ctx.fillRect(px + 3, py + 3, unit - 6, unit - 6);
+        }
       });
 
-      // Overlay: Idle
+      // Overlay: Idle (0% CPU)
       if (!isRunning && !snake.length) {
-        ctx.fillStyle = '#24422c';
-        ctx.font = '700 20px var(--font-mono, monospace)';
+        ctx.fillStyle = 'rgba(156, 175, 136, 0.45)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#122618';
+        ctx.font = '800 22px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
-        ctx.fillText('NOKIA SNAKE', w / 2, h / 2 - 12);
-        ctx.font = '14px var(--font-mono, monospace)';
-        ctx.fillText('Press "Start game" to play', w / 2, h / 2 + 16);
+        ctx.fillText('NOKIA 3310 SNAKE', w / 2, h / 2 - 14);
+        ctx.font = '600 13px var(--font-mono, monospace)';
+        ctx.fillText('Desktop: Arrows / WASD · Mobile: Swipe or D-Pad', w / 2, h / 2 + 12);
+        ctx.fillText('Press "Start game" to begin', w / 2, h / 2 + 32);
       }
 
       // Overlay: Paused
       if (isPaused) {
-        ctx.fillStyle = 'rgba(156, 175, 136, 0.75)';
+        ctx.fillStyle = 'rgba(156, 175, 136, 0.78)';
         ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#183b25';
-        ctx.font = '700 22px var(--font-mono, monospace)';
+        ctx.fillStyle = '#122618';
+        ctx.font = '800 24px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
         ctx.fillText('GAME PAUSED', w / 2, h / 2);
       }
     }
 
-    function setDirection(next) {
+    // Direction Queue to prevent 180-deg reversal bugs when pressing keys quickly
+    function queueDirection(next) {
       if (!isRunning || isPaused) return;
-      // Prevent 180-degree instant reversal into oneself
-      if (next.x === -direction.x && next.y === -direction.y) return;
-      queuedDirection = next;
+
+      // Check against current direction or last queued direction
+      const reference = inputQueue.length ? inputQueue[inputQueue.length - 1] : direction;
+
+      // Disallow reversing directly into itself
+      if (next.x === -reference.x && next.y === -reference.y) return;
+      if (next.x === reference.x && next.y === reference.y) return;
+
+      // Limit queue to 2 inputs per tick to prevent sluggishness
+      if (inputQueue.length < 2) {
+        inputQueue.push(next);
+      }
     }
 
     function step() {
       if (!isRunning || isPaused) return;
-      direction = queuedDirection;
+
+      // Consume next buffered direction if available
+      if (inputQueue.length > 0) {
+        direction = inputQueue.shift();
+      }
+
       const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
       const ate = food && head.x === food.x && head.y === food.y;
       const body = ate ? snake : snake.slice(0, -1);
 
-      // Boundary or self collision
-      if (
-        head.x < 0 || head.x >= cells ||
-        head.y < 0 || head.y >= cells ||
-        body.some((part) => part.x === head.x && part.y === head.y)
-      ) {
-        return stop(`Game Over! Final score: ${score}.`);
+      // Boundary / Wall Collision
+      if (head.x < 0 || head.x >= cells || head.y < 0 || head.y >= cells) {
+        ArcadeAudio.playSnakeDie();
+        return stop(`Wall Crash! Game Over. Score: ${score}.`);
+      }
+
+      // Self Collision
+      if (body.some((p) => p.x === head.x && p.y === head.y)) {
+        ArcadeAudio.playSnakeDie();
+        return stop(`Self Collision! Game Over. Score: ${score}.`);
       }
 
       snake.unshift(head);
+
       if (ate) {
         score += 10;
+        ArcadeAudio.playSnakeBite();
         if (score > bestScore) {
           bestScore = score;
           ArcadeStorage.write(storageKey(), bestScore);
@@ -691,7 +1349,7 @@
         placeFood();
         if (scoreEl) scoreEl.textContent = String(score);
         if (bestEl) bestEl.textContent = String(bestScore);
-        if (statusEl) statusEl.textContent = 'Nice catch! Keep growing.';
+        if (statusEl) statusEl.textContent = `Great catch! Length: ${snake.length}. Score: ${score}.`;
       } else {
         snake.pop();
       }
@@ -703,7 +1361,7 @@
       if (restart || !snake.length) {
         snake = [{ x: 8, y: 9 }, { x: 7, y: 9 }, { x: 6, y: 9 }];
         direction = { x: 1, y: 0 };
-        queuedDirection = direction;
+        inputQueue = [];
         score = 0;
         placeFood();
         if (scoreEl) scoreEl.textContent = String(score);
@@ -714,7 +1372,7 @@
       isPaused = false;
       if (startBtn) startBtn.textContent = 'Playing…';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
-      if (statusEl) statusEl.textContent = `Use arrow keys, swipe, or direction pad. Difficulty: ${difficulty}.`;
+      if (statusEl) statusEl.textContent = `Snake running (${difficulty}). Use arrow keys, swipe, or D-pad.`;
 
       if (timerId) clearInterval(timerId);
       timerId = setInterval(step, speeds[difficulty]);
@@ -726,7 +1384,6 @@
       isRunning = false;
       isPaused = true;
 
-      // STRICT CPU LIFECYCLE: cancel interval immediately
       if (timerId) {
         clearInterval(timerId);
         timerId = null;
@@ -758,24 +1415,57 @@
         clearInterval(timerId);
         timerId = null;
       }
-      events.clear();
       if (startBtn) startBtn.textContent = 'Start game';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
       draw();
     }
 
-    function init() {
-      if (initialized) return;
+    // Keyboard controls handler
+    const keyMap = {
+      ArrowUp: { x: 0, y: -1 },
+      ArrowDown: { x: 0, y: 1 },
+      ArrowLeft: { x: -1, y: 0 },
+      ArrowRight: { x: 1, y: 0 },
+      KeyW: { x: 0, y: -1 },
+      KeyS: { x: 0, y: 1 },
+      KeyA: { x: -1, y: 0 },
+      KeyD: { x: 1, y: 0 }
+    };
+
+    function handleKeyDown(e) {
+      if (!isRunning || isPaused || !isKeyActive || container.hidden) return;
+      const mapped = keyMap[e.code] || keyMap[e.key];
+      if (mapped) {
+        e.preventDefault();
+        queueDirection(mapped);
+      }
+    }
+
+    function activate() {
+      isKeyActive = true;
+      window.addEventListener('keydown', handleKeyDown);
+      draw();
+    }
+
+    function deactivate() {
+      isKeyActive = false;
+      window.removeEventListener('keydown', handleKeyDown);
+      pause('Paused while switching.');
+    }
+
+    function setup() {
+      if (isSetupDone) return;
       container = document.getElementById('arcadeGameSnake');
       canvas = document.getElementById('snakeCanvas');
       if (!container || !canvas) return;
 
-      ctx = ArcadeCore.canvas.getOptimizedContext(canvas, { alpha: false });
+      ctx = canvas.getContext('2d', { alpha: false });
       unit = canvas.width / cells;
 
       startBtn = document.getElementById('snakeStartBtn');
       pauseBtn = document.getElementById('snakePauseBtn');
       restartBtn = document.getElementById('snakeRestartBtn');
+      soundBtn = document.getElementById('snakeSoundBtn');
       scoreEl = document.getElementById('snakeScore');
       bestEl = document.getElementById('snakeBest');
       statusEl = document.getElementById('snakeStatus');
@@ -783,103 +1473,96 @@
 
       difficulty = ArcadeStorage.getDifficulty('nokiaSnakeDifficulty', 'medium');
       syncDifficultyUI();
+      syncSoundUI();
       loadBest();
 
-      // Bind Difficulty Toggle via ManagedEvents
+      // Difficulty buttons (permanent listeners)
       if (diffContainer) {
         diffContainer.querySelectorAll('[data-difficulty]').forEach((btn) => {
-          events.add(btn, 'click', () => {
+          btn.addEventListener('click', () => {
             const next = btn.dataset.difficulty;
             if (!speeds[next] || next === difficulty) return;
             difficulty = next;
             ArcadeStorage.setDifficulty('nokiaSnakeDifficulty', difficulty);
             syncDifficultyUI();
             loadBest();
+            // Dynamically update tick interval mid-game
             if (isRunning) {
-              start(true);
+              clearInterval(timerId);
+              timerId = setInterval(step, speeds[difficulty]);
+              if (statusEl) statusEl.textContent = `Speed changed to ${difficulty}.`;
             }
           });
         });
       }
 
-      // Bind Controls via ManagedEvents
+      // Game Buttons (permanent listeners)
       if (startBtn) {
-        events.add(startBtn, 'click', () => {
+        startBtn.addEventListener('click', () => {
           if (isPaused) start(false);
           else start(!snake.length || startBtn.textContent === 'Play again');
         });
       }
       if (restartBtn) {
-        events.add(restartBtn, 'click', () => start(true));
+        restartBtn.addEventListener('click', () => start(true));
       }
       if (pauseBtn) {
-        events.add(pauseBtn, 'click', () => {
+        pauseBtn.addEventListener('click', () => {
           if (isRunning) pause();
           else if (isPaused || snake.length) start(false);
         });
       }
+      if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+          ArcadeAudio.toggle();
+          syncSoundUI();
+        });
+      }
 
-      // D-Pad direction buttons with tactile response
+      // Tactical Direction D-Pad buttons
+      const dirMap = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 }
+      };
+
       document.querySelectorAll('[data-snake-direction]').forEach((btn) => {
-        events.add(btn, 'click', (e) => {
+        btn.addEventListener('pointerdown', (e) => {
           e.preventDefault();
-          const dirMap = {
-            up: { x: 0, y: -1 },
-            down: { x: 0, y: 1 },
-            left: { x: -1, y: 0 },
-            right: { x: 1, y: 0 }
-          };
-          setDirection(dirMap[btn.dataset.snakeDirection]);
+          const d = dirMap[btn.dataset.snakeDirection];
+          if (d) queueDirection(d);
         });
       });
 
-      // Keyboard arrow keys via ManagedEvents
-      const keyMap = {
-        ArrowUp: { x: 0, y: -1 },
-        ArrowDown: { x: 0, y: 1 },
-        ArrowLeft: { x: -1, y: 0 },
-        ArrowRight: { x: 1, y: 0 },
-        KeyW: { x: 0, y: -1 },
-        KeyS: { x: 0, y: 1 },
-        KeyA: { x: -1, y: 0 },
-        KeyD: { x: 1, y: 0 }
-      };
-
-      events.add(document, 'keydown', (e) => {
-        if (!isRunning || isPaused || container.hidden) return;
-        const mapped = keyMap[e.code] || keyMap[e.key];
-        if (mapped) {
-          e.preventDefault();
-          setDirection(mapped);
-        }
-      });
-
-      // Touch / pointer swipe handling on canvas via ManagedEvents
-      events.add(canvas, 'pointerdown', (e) => {
+      // Canvas Touch Swipe Gestures
+      canvas.addEventListener('pointerdown', (e) => {
         touchStartCoord = { x: e.clientX, y: e.clientY };
-      });
+      }, { passive: true });
 
-      events.add(canvas, 'pointerup', (e) => {
+      canvas.addEventListener('pointerup', (e) => {
         if (!touchStartCoord) return;
         const dx = e.clientX - touchStartCoord.x;
         const dy = e.clientY - touchStartCoord.y;
         touchStartCoord = null;
 
-        if (Math.max(Math.abs(dx), Math.abs(dy)) < 18) return;
-        if (Math.abs(dx) > Math.abs(dy)) {
-          setDirection({ x: Math.sign(dx), y: 0 });
-        } else {
-          setDirection({ x: 0, y: Math.sign(dy) });
-        }
-      });
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < 16) return;
 
-      initialized = true;
-      // Render static idle board (Zero CPU usage)
+        if (Math.abs(dx) > Math.abs(dy)) {
+          queueDirection({ x: Math.sign(dx), y: 0 });
+        } else {
+          queueDirection({ x: 0, y: Math.sign(dy) });
+        }
+      }, { passive: true });
+
+      isSetupDone = true;
       draw();
     }
 
     return {
-      init,
+      setup,
+      activate,
+      deactivate,
       start,
       pause,
       destroy,
@@ -891,42 +1574,43 @@
   // ─── UNIFIED ARCADE HUB SHELL CONTROLLER ────────────────────────────────────
   const ArcadeHub = {
     activeGame: 'typing', // 'typing' | 'snake'
-    initialized: false,
+    isInitialized: false,
 
     switchGame(gameId) {
-      if (gameId === this.activeGame && this.initialized) return;
+      if (gameId === this.activeGame && this.isInitialized) return;
 
       const typingView = document.getElementById('arcadeGameTyping');
       const snakeView = document.getElementById('arcadeGameSnake');
       const switcherBtns = document.querySelectorAll('[data-arcade-game]');
 
-      // 1. Strict CPU cleanup: destroy and halt outgoing game loops
+      // 1. Deactivate outgoing game (cancels loops, detaches key listener, CPU = 0%)
       if (this.activeGame === 'typing') {
-        TypeBlasterGame.destroy();
+        TypeBlasterGame.deactivate();
       } else if (this.activeGame === 'snake') {
-        NokiaSnakeGame.destroy();
+        NokiaSnakeGame.deactivate();
       }
 
       this.activeGame = gameId;
 
-      // 2. Toggle UI views
+      // 2. Toggle UI views & accessibility attributes
       switcherBtns.forEach((btn) => {
         const isMatch = btn.dataset.arcadeGame === gameId;
         btn.classList.toggle('active', isMatch);
         btn.setAttribute('aria-selected', String(isMatch));
       });
 
+      // 3. Activate incoming game (attaches key listener, renders fresh idle state)
       if (gameId === 'typing') {
         if (snakeView) snakeView.hidden = true;
         if (typingView) {
           typingView.hidden = false;
-          TypeBlasterGame.drawIdle();
+          TypeBlasterGame.activate();
         }
       } else {
         if (typingView) typingView.hidden = true;
         if (snakeView) {
           snakeView.hidden = false;
-          NokiaSnakeGame.drawIdle();
+          NokiaSnakeGame.activate();
         }
       }
     },
@@ -940,15 +1624,22 @@
     },
 
     init() {
-      if (this.initialized) return;
+      if (this.isInitialized) return;
       const hubPanel = document.getElementById('lab-arcade-hub');
       if (!hubPanel) return;
 
-      // Initialize sub-modules (binds UI, loads records, renders 0% CPU idle canvas)
-      TypeBlasterGame.init();
-      NokiaSnakeGame.init();
+      // One-time setup of both game modules (binds DOM buttons permanently)
+      TypeBlasterGame.setup();
+      NokiaSnakeGame.setup();
 
-      // Bind Sub-Tab Switcher
+      // Activate initial default game
+      if (this.activeGame === 'typing') {
+        TypeBlasterGame.activate();
+      } else {
+        NokiaSnakeGame.activate();
+      }
+
+      // Bind Sub-Tab Switcher buttons
       const switcherBtns = hubPanel.querySelectorAll('[data-arcade-game]');
       switcherBtns.forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -959,8 +1650,12 @@
       // Listen for playground lab tab changes
       document.addEventListener('playground:tabchange', (e) => {
         if (e.detail?.labId !== 'arcade-hub') {
-          // Immediately pause/destroy loops when leaving Arcade Hub
+          // Immediately pause loops when leaving Arcade Hub
           this.pauseCurrentGame('Game paused. Return to Arcade Hub to resume.');
+        } else {
+          // Returning to Arcade Hub: redraw active game
+          if (this.activeGame === 'typing') TypeBlasterGame.drawIdle();
+          else NokiaSnakeGame.drawIdle();
         }
       });
 
@@ -971,7 +1666,7 @@
         }
       });
 
-      this.initialized = true;
+      this.isInitialized = true;
     }
   };
 

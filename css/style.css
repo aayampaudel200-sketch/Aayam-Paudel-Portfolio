@@ -2552,18 +2552,19 @@ ul { list-style: none; }
   box-shadow: inset 0 0 45px rgba(14, 165, 233, 0.1), 0 14px 30px rgba(0, 0, 0, 0.2);
 }
 .typing-shooter-stage canvas { display: block; width: 100%; height: auto; aspect-ratio: 21 / 10; touch-action: none; }
-.typing-mobile-input-wrap { display: flex; align-items: center; gap: 0.65rem; margin-top: 0.85rem; }
-.typing-mobile-input-wrap label { color: var(--text-muted); font-size: 0.82rem; }
-.typing-mobile-input-wrap input { width: min(100%, 260px); padding: 0.65rem 0.75rem; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--text); font: 700 1rem var(--font-mono); text-align: center; text-transform: uppercase; }
-.typing-mobile-input-wrap input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.13); }
+.typing-mobile-input-wrap { display: flex; flex-direction: column; gap: 0.4rem; margin-top: 1rem; }
+.typing-mobile-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--accent); margin-bottom: 0.15rem; }
+.typing-mobile-input-wrap input { width: 100%; min-height: 48px; padding: 0.75rem 1rem; border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: var(--radius-sm); background: rgba(15, 23, 42, 0.8); color: #ffffff; font: 700 16px var(--font-mono, monospace); text-align: center; text-transform: uppercase; touch-action: manipulation; transition: all 0.2s ease; }
+.typing-mobile-input-wrap input:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); background: #070d19; }
 .snake-layout { display: grid; grid-template-columns: minmax(0, 360px) minmax(180px, 1fr); justify-content: center; align-items: center; gap: clamp(1rem, 4vw, 2.5rem); }
 .snake-screen-wrap { overflow: hidden; width: 100%; max-width: 360px; border: 12px solid #24313b; border-radius: 1.35rem; background: #9caf88; box-shadow: inset 0 0 0 3px #65735d, 0 18px 34px rgba(0, 0, 0, 0.3); }
 .snake-screen-wrap canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; touch-action: none; }
 .snake-side { display: grid; justify-items: start; gap: 1.2rem; }
 .snake-stats { display: flex; gap: 1.4rem; width: 100%; color: var(--text-muted); }
 .snake-stats strong { display: inline; margin-left: 0.3rem; color: var(--accent); }
-.snake-controls { display: grid; grid-template-columns: repeat(3, 52px); grid-template-areas: '. up .' 'left down right'; gap: 0.35rem; }
-.snake-controls button { width: 52px; height: 48px; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text); font-size: 1.1rem; cursor: pointer; touch-action: manipulation; }
+.snake-controls { display: grid; grid-template-columns: repeat(3, 56px); grid-template-areas: '. up .' 'left down right'; gap: 0.45rem; justify-content: center; }
+.snake-controls button { width: 56px; height: 50px; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text); font-size: 1.25rem; cursor: pointer; touch-action: manipulation; user-select: none; transition: transform 0.1s ease, background 0.1s ease; }
+.snake-controls button:active { transform: scale(0.94); background: var(--accent); color: #04101c; }
 .snake-controls button:hover, .snake-controls button:focus-visible { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); outline: 0; }
 .snake-controls [data-snake-direction="up"] { grid-area: up; }.snake-controls [data-snake-direction="left"] { grid-area: left; }.snake-controls [data-snake-direction="down"] { grid-area: down; }.snake-controls [data-snake-direction="right"] { grid-area: right; }
 
@@ -2676,6 +2677,9 @@ ul { list-style: none; }
   .snake-side { width: 100%; justify-items: center; }
   .snake-stats { justify-content: center; width: auto; }
   .snake-side .lab-status { text-align: center; }
+
+  .snake-screen-wrap { max-width: 320px; border-width: 8px; }
+  .typing-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem; }
   .arcade-game-switcher { width: 100%; }
   .arcade-switch-btn { flex: 1; text-align: center; padding: 0.5rem 0.65rem; font-size: 0.8rem; }
   .arcade-subbar { flex-direction: column; align-items: stretch; }
