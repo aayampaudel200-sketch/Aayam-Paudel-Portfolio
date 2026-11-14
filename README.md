@@ -106,4 +106,4 @@ working inbox.
 ## ⚡ Live Working Views Counter
 
 The portfolio includes an accurate, live view counter displayed in the **Hero Section**, **Quick Strip (04)**, and **Footer**:
-website : https://www.aayampaudel.com.np/
+Website: https://aayampaudel.com.np/

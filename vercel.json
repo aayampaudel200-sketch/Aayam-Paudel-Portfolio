@@ -9,6 +9,17 @@
   },
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.aayampaudel.com.np"
+        }
+      ],
+      "destination": "https://aayampaudel.com.np/:path*",
+      "permanent": true
+    },
+    {
       "source": "/assets/images/aayam-portrait-1.jpg",
       "destination": "/assets/images/aayam-paudel-web-developer-nepal.jpg",
       "permanent": true
@@ -31,6 +42,66 @@
     {
       "source": "/assets/images/project-municipal.jpg",
       "destination": "/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/Documentation for visas.png",
+      "destination": "/assets/images/namaste-suman-visa-documentation.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/Documentation%20for%20visas.png",
+      "destination": "/assets/images/namaste-suman-visa-documentation.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/namaste suman1.jpg",
+      "destination": "/assets/images/namaste-suman-storefront-gaindakot.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/namaste%20suman1.jpg",
+      "destination": "/assets/images/namaste-suman-storefront-gaindakot.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/namaste suman 2.jpg",
+      "destination": "/assets/images/namaste-suman-service-counter.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/namaste%20suman%202.jpg",
+      "destination": "/assets/images/namaste-suman-service-counter.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/banner design.jpg",
+      "destination": "/assets/images/namaste-suman-flex-banner-design.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/banner%20design.jpg",
+      "destination": "/assets/images/namaste-suman-flex-banner-design.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/card design.jpg",
+      "destination": "/assets/images/namaste-suman-visiting-card-design.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/card%20design.jpg",
+      "destination": "/assets/images/namaste-suman-visiting-card-design.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/some extrs designs.jpg",
+      "destination": "/assets/images/namaste-suman-graphic-promotions.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/assets/images/some%20extrs%20designs.jpg",
+      "destination": "/assets/images/namaste-suman-graphic-promotions.jpg",
       "permanent": true
     }
   ],
@@ -70,11 +141,29 @@
       ]
     },
     {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(css|js)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY=' 'sha256-OOKUcuXncH9CcDFcbZuJLf4VzDBcFHZHa28fEJrzqAo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://avatars.githubusercontent.com; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com https://api.github.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-zfQvHbMy9APWTs9y2iQpLZCeP3TpIBEh0cEFMnXzSTY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https://avatars.githubusercontent.com; media-src 'self'; connect-src 'self' https://countapi.mileshilliard.com https://api.github.com; manifest-src 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
         {
           "key": "Strict-Transport-Security",

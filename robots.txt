@@ -1,16 +1,19 @@
 # 1. ALLOW ALL STANDARD WEB & IMAGE CRAWLERS
 User-agent: *
 Allow: /
+Disallow: /api/
 
 # 2. EXPLICITLY ALLOW SEARCH & IMAGE INDEXING
 User-agent: Googlebot
 Allow: /
+Disallow: /api/
 
 User-agent: Googlebot-Image
 Allow: /
 
 User-agent: Bingbot
 Allow: /
+Disallow: /api/
 
 User-agent: Googlebot-Video
 Allow: /
@@ -23,12 +26,14 @@ Allow: /
 
 User-agent: Applebot
 Allow: /
+Disallow: /api/
 
 User-agent: Applebot-Extended
 Allow: /
 
 User-agent: DuckDuckBot
 Allow: /
+Disallow: /api/
 
 User-agent: Amazonbot
 Allow: /
@@ -66,5 +71,4 @@ Allow: /
 
 # 4. SITEMAP LOCATIONS
 Sitemap: https://aayampaudel.com.np/sitemap.xml
-Sitemap: https://www.aayampaudel.com.np/sitemap.xml
 Sitemap: https://aayampaudel.com.np/video-sitemap.xml

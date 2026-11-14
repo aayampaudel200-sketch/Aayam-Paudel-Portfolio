@@ -2,67 +2,111 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://www.aayampaudel.com.np/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <loc>https://aayampaudel.com.np/</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-web-developer-nepal.jpg</image:loc>
-      <image:title>Aayam Paudel, full-stack web developer from Gaindakot, Nepal</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-web-developer-nepal.jpg</image:loc>
+      <image:title>Aayam Paudel, developer and technology professional from Gaindakot, Nepal</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
-      <image:title>Aayam Paudel working on a laptop</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
+      <image:title>Aayam Paudel working on software projects</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
-      <image:title>Haat Bazzar marketplace project by Aayam Paudel</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
+      <image:title>Haat Bazzar marketplace project interface preview</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
-      <image:title>Municipal citizenship recommendation portal prototype by Aayam Paudel</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
+      <image:title>Municipal citizenship recommendation portal prototype</image:title>
     </image:image>
   </url>
   <url>
-    <loc>https://www.aayampaudel.com.np/about.html</loc>
-    <lastmod>2026-11-02</lastmod>
+    <loc>https://aayampaudel.com.np/about.html</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
-      <image:title>Aayam Paudel working on a laptop</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-working-on-laptop.jpeg</image:loc>
+      <image:title>Aayam Paudel working on software projects</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-ai-car-drift.jpg</image:loc>
+      <image:title>Aayam Paudel AI car drift video showcase thumbnail</image:title>
     </image:image>
   </url>
   <url>
-    <loc>https://www.aayampaudel.com.np/projects.html</loc>
-    <lastmod>2026-11-09</lastmod>
+    <loc>https://aayampaudel.com.np/projects.html</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-visa-documentation.jpg</image:loc>
+      <image:title>Namaste Suman AI Automation Platform and international visa documentation workflow</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
+      <image:title>Haat Bazzar farm-to-consumer marketplace web app</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
+      <image:title>Municipal citizenship recommendation portal prototype</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg</image:loc>
+      <image:title>Aayam Paudel developer portfolio project preview</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://aayampaudel.com.np/experience.html</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-haat-bazzar-marketplace.jpg</image:loc>
-      <image:title>Haat Bazzar marketplace project by Aayam Paudel</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/aayam-paudel-web-developer-nepal.jpg</image:loc>
+      <image:title>Aayam Paudel, Co-Founder and Technical Systems Lead</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://aayampaudel.com.np/namaste-suman.html</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-storefront-gaindakot.jpg</image:loc>
+      <image:title>Namaste Suman Communication storefront and customer entrance at Gaindakot-5 Nagarpalika Chowk</image:title>
     </image:image>
     <image:image>
-      <image:loc>https://www.aayampaudel.com.np/assets/images/aayam-paudel-citizenship-recommendation-portal.jpg</image:loc>
-      <image:title>Municipal citizenship recommendation portal prototype by Aayam Paudel</image:title>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-service-counter.jpg</image:loc>
+      <image:title>Namaste Suman Communication digital service workstations and document processing center</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/anju-gyawali.jpg</image:loc>
+      <image:title>Anju Gyawali, Founder and Managing Director of Namaste Suman Communication</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-visa-documentation.jpg</image:loc>
+      <image:title>International visa documentation service portfolio at Namaste Suman Communication</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-flex-banner-design.jpg</image:loc>
+      <image:title>Commercial flex banner design work by Namaste Suman Communication</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-visiting-card-design.jpg</image:loc>
+      <image:title>Professional visiting and business card design work by Namaste Suman Communication</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://aayampaudel.com.np/assets/images/namaste-suman-graphic-promotions.jpg</image:loc>
+      <image:title>Promotional graphics and branding design by Namaste Suman Communication</image:title>
     </image:image>
   </url>
   <url>
-    <loc>https://www.aayampaudel.com.np/experience.html</loc>
-    <lastmod>2026-11-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.aayampaudel.com.np/playground.html</loc>
-    <lastmod>2026-11-09</lastmod>
+    <loc>https://aayampaudel.com.np/playground.html</loc>
+    <lastmod>2026-11-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://www.aayampaudel.com.np/namaste-suman.html</loc>
-    <lastmod>2026-11-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
   </url>
 </urlset>

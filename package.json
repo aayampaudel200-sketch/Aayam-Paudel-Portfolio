@@ -3,6 +3,10 @@
   "private": true,
   "description": "Personal portfolio of Aayam Paudel",
   "scripts": {
-    "build-knowledge": "node scripts/build-site-knowledge.js"
+    "build-knowledge": "node scripts/build-site-knowledge.js",
+    "test:api": "node api/contact.test.js",
+    "test:seo": "python python/portfolio_audit.py",
+    "test:jsonld": "node scripts/validate-jsonld.js",
+    "test": "node api/contact.test.js && node scripts/validate-jsonld.js && python python/portfolio_audit.py"
   }
 }
