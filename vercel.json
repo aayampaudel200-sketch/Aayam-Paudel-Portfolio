@@ -9,17 +9,6 @@
   },
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "host",
-          "value": "www.aayampaudel.com.np"
-        }
-      ],
-      "destination": "https://aayampaudel.com.np/:path*",
-      "permanent": true
-    },
-    {
       "source": "/assets/images/aayam-portrait-1.jpg",
       "destination": "/assets/images/aayam-paudel-web-developer-nepal.jpg",
       "permanent": true

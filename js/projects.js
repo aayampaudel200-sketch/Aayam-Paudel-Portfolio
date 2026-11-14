@@ -87,7 +87,7 @@ const PROJECTS = [
     tags: ['HTML', 'CSS', 'JavaScript', 'Vercel'],
     image: 'assets/images/aayam-paudel-social-preview.jpg',
     imageAlt: 'Aayam Paudel developer portfolio website preview',
-    demo: 'https://www.aayampaudel.com.np/',
+    demo: 'https://aayampaudel.com.np/',
     github: 'https://github.com/aayampaudel200-sketch/Aayam-Paudel-Portfolio',
     githubOwner: 'aayampaudel200-sketch',
     githubRepo: 'Aayam-Paudel-Portfolio',
