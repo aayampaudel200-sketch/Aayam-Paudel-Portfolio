@@ -204,6 +204,14 @@
               <p class="lab-lede">Watch comparisons and swaps unfold. Shuffle to reset, then run the sort.</p>
             </div>
             <div class="lab-controls">
+              <label class="sort-speed-control" for="sortSpeed">Animation speed
+                <select id="sortSpeed">
+                  <option value="1">1×</option>
+                  <option value="2" selected>2×</option>
+                  <option value="4">4×</option>
+                  <option value="8">8×</option>
+                </select>
+              </label>
               <button type="button" class="btn btn-ghost" id="sortShuffle">Shuffle</button>
               <button type="button" class="btn btn-primary" id="sortRun">Run sort</button>
             </div>
@@ -403,6 +411,7 @@
 
   <script src="js/main.js?v=site-refresh-2" defer></script>
   <script src="js/arcade-hub.js" defer></script>
+  <script src="js/cyber-defender.js" defer></script>
   <script src="js/playground.js?v=difficulty-1" defer></script>
   <script src="/js/chatbot.js" defer></script>
 </body>

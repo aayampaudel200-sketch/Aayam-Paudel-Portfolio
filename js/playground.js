@@ -108,6 +108,7 @@
     const status = document.getElementById('sortStatus');
     const shuffleBtn = document.getElementById('sortShuffle');
     const runBtn = document.getElementById('sortRun');
+    const speedSelect = document.getElementById('sortSpeed');
     if (!stage || !status || !shuffleBtn || !runBtn) return;
 
     let values = [];
@@ -142,7 +143,8 @@
     }
 
     function sleep(ms) {
-      return new Promise((resolve) => setTimeout(resolve, ms));
+      const speed = Number(speedSelect?.value || 2);
+      return new Promise((resolve) => setTimeout(resolve, Math.max(0, ms / speed)));
     }
 
     async function bubbleSort() {
@@ -151,7 +153,7 @@
       cancelSort = false;
       runBtn.disabled = true;
       shuffleBtn.textContent = 'Stop sort';
-      status.textContent = 'Sorting…';
+      status.textContent = `Sorting at ${speedSelect?.value || 2}× speed…`;
 
       const arr = values.slice();
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1179,7 +1181,7 @@
 
   function initPlayground() {
     const lazyInits = {
-      shooter: initShooterGame,
+      shooter: () => window.CyberDefender?.init(),
       sort: initSortLab,
       typewriter: initTypewriterLab,
       memory: initMemoryGame,
