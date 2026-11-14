@@ -304,6 +304,25 @@
             <div class="typing-shooter-stage">
               <canvas id="typingShooterCanvas" width="840" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
             </div>
+            <!-- Meaningful Sentence Target & Live Typed Key Stream -->
+            <div class="typing-sentence-deck" id="typingSentenceDeck" aria-live="polite">
+              <div class="typing-deck-top">
+                <span class="typing-deck-tag" id="typingModeTag">🎯 TARGET SENTENCE</span>
+                <span class="typing-deck-hint">Type the phrase below by shooting the falling letter asteroids!</span>
+              </div>
+              <div class="typing-target-phrase" id="typingTargetPhrase" aria-label="Sentence to type">
+                <span class="phrase-done" id="phraseDone"></span><span class="phrase-current" id="phraseCurrent">_</span><span class="phrase-upcoming" id="phraseUpcoming">Press Start round to begin</span>
+              </div>
+              <div class="typing-stream-row">
+                <div class="typing-stream-info">
+                  <span class="typing-stream-label">Live Typed Keys:</span>
+                  <span class="typing-last-key-badge" id="typingLastKeyBadge">Last key: None</span>
+                </div>
+                <div class="typing-stream-keys" id="typingStreamKeys" aria-label="Recent keystrokes">
+                  <span class="key-pill key-idle">Awaiting first keystroke…</span>
+                </div>
+              </div>
+            </div>
             <div class="typing-mobile-input-wrap">
               <label for="typingShooterInput">Mobile typing input</label>
               <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
@@ -331,7 +350,7 @@
               </div>
             </div>
             <div class="snake-layout">
-              <div class="snake-screen-wrap"><canvas id="snakeCanvas" width="360" height="360" role="img" aria-label="Classic Snake game board"></canvas></div>
+              <div class="snake-screen-wrap"><canvas id="snakeCanvas" width="480" height="480" role="img" aria-label="Classic Snake game board"></canvas></div>
               <div class="snake-side">
                 <div class="snake-stats" aria-live="polite"><span>Score <strong id="snakeScore">0</strong></span><span>Top score <strong id="snakeBest">0</strong></span></div>
                 <div class="snake-controls" aria-label="Snake direction controls">
