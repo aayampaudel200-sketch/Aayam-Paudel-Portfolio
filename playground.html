@@ -137,8 +137,7 @@
           <button type="button" class="playground-tab" role="tab" data-lab="sort" aria-selected="false">Sorting Visualizer</button>
           <button type="button" class="playground-tab" role="tab" data-lab="typewriter" aria-selected="false">Typewriter CSS</button>
           <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="typing-shooter" aria-selected="false">⌨️ Type Blaster</button>
-          <button type="button" class="playground-tab" role="tab" data-lab="snake" aria-selected="false">🐍 Nokia Snake</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="arcade-hub" aria-selected="false">🕹️ Arcade Hub</button>
         </div>
 
         <article class="lab-panel reveal-up" data-lab-panel="shooter" id="lab-shooter" hidden>
@@ -257,70 +256,89 @@
           <p class="lab-status" id="memoryStatus" role="status">Find all 6 pairs. The timer starts on your first reveal.</p>
         </article>
 
-        <article class="lab-panel reveal-up" data-lab-panel="typing-shooter" id="lab-typing-shooter" hidden>
-          <div class="lab-header">
+        <article class="lab-panel reveal-up" data-lab-panel="arcade-hub" id="lab-arcade-hub" hidden>
+          <div class="lab-header arcade-hub-header">
             <div>
-              <p class="eyebrow">TYPING ARCADE · MOBILE &amp; LAPTOP</p>
-              <h2 class="section-title">Type Blaster</h2>
-              <p class="lab-lede">Type the letter on each incoming rock to fire a bullet. Protect the base for 45 seconds while the game tracks speed, accuracy, and score.</p>
+              <p class="eyebrow">RETRO ARCADE HUB · ZERO CPU IDLE · MOBILE &amp; DESKTOP</p>
+              <h2 class="section-title">Arcade Hub</h2>
+              <p class="lab-lede">Switch seamlessly between retro arcade classics. Built with vanilla Canvas, unified storage, and strict lifecycle management for zero idle CPU usage.</p>
             </div>
-            <div class="lab-controls">
-              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="typing-shooter">
-                <button type="button" data-difficulty="easy" aria-pressed="true">Easy</button>
-                <button type="button" data-difficulty="medium">Medium</button>
-                <button type="button" data-difficulty="hard">Hard</button>
-              </div>
-              <button type="button" class="btn btn-primary" id="typingStartBtn">Start round</button>
-              <button type="button" class="btn btn-ghost" id="typingPauseBtn">Pause</button>
-              <button type="button" class="btn btn-ghost" id="typingRestartBtn">Restart</button>
+            <!-- Game Switcher Tabs -->
+            <div class="arcade-game-switcher" role="tablist" aria-label="Arcade Games">
+              <button type="button" class="arcade-switch-btn active" role="tab" data-arcade-game="typing" aria-selected="true">
+                ⌨️ Type Blaster
+              </button>
+              <button type="button" class="arcade-switch-btn" role="tab" data-arcade-game="snake" aria-selected="false">
+                🐍 Nokia Snake
+              </button>
             </div>
           </div>
-          <div class="typing-stats" aria-live="polite">
-            <div><span>Score</span><strong id="typingScore">0</strong></div>
-            <div><span>Speed</span><strong id="typingWpm">0 WPM</strong></div>
-            <div><span>Accuracy</span><strong id="typingAccuracy">100%</strong></div>
-            <div><span>Time</span><strong id="typingTime">45s</strong></div>
-            <div><span>Top score</span><strong id="typingBest">0</strong></div>
-          </div>
-          <div class="typing-shooter-stage">
-            <canvas id="typingShooterCanvas" width="840" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
-          </div>
-          <div class="typing-mobile-input-wrap">
-            <label for="typingShooterInput">Mobile typing input</label>
-            <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
-          </div>
-          <p class="lab-status" id="typingStatus" role="status">Press Start round, then type the letters on the rocks. On mobile, use the input above.</p>
-        </article>
 
-        <article class="lab-panel reveal-up" data-lab-panel="snake" id="lab-snake" hidden>
-          <div class="lab-header">
-            <div>
-              <p class="eyebrow">CLASSIC ARCADE · MOBILE &amp; LAPTOP</p>
-              <h2 class="section-title">Nokia Snake</h2>
-              <p class="lab-lede">A lightweight take on the classic phone game. Use arrow keys, swipe the board, or tap the direction pad.</p>
-            </div>
-            <div class="lab-controls">
-              <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="snake">
-                <button type="button" data-difficulty="easy">Easy</button>
-                <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
-                <button type="button" data-difficulty="hard">Hard</button>
+          <!-- Sub-view 1: Type Blaster -->
+          <div class="arcade-game-view" id="arcadeGameTyping">
+            <div class="arcade-subbar">
+              <div class="arcade-subbar-info">
+                <strong>Type Blaster</strong>
+                <span>Blast incoming rocks with targeted keystrokes. Protect the base for 45 seconds!</span>
               </div>
-              <button type="button" class="btn btn-primary" id="snakeStartBtn">Start game</button>
-              <button type="button" class="btn btn-ghost" id="snakePauseBtn">Pause</button>
-              <button type="button" class="btn btn-ghost" id="snakeRestartBtn">Restart</button>
+              <div class="lab-controls">
+                <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="typing-shooter">
+                  <button type="button" data-difficulty="easy" aria-pressed="true">Easy</button>
+                  <button type="button" data-difficulty="medium">Medium</button>
+                  <button type="button" data-difficulty="hard">Hard</button>
+                </div>
+                <button type="button" class="btn btn-primary" id="typingStartBtn">Start round</button>
+                <button type="button" class="btn btn-ghost" id="typingPauseBtn">Pause</button>
+                <button type="button" class="btn btn-ghost" id="typingRestartBtn">Restart</button>
+              </div>
             </div>
+            <div class="typing-stats" aria-live="polite">
+              <div><span>Score</span><strong id="typingScore">0</strong></div>
+              <div><span>Speed</span><strong id="typingWpm">0 WPM</strong></div>
+              <div><span>Accuracy</span><strong id="typingAccuracy">100%</strong></div>
+              <div><span>Time</span><strong id="typingTime">45s</strong></div>
+              <div><span>Top score</span><strong id="typingBest">0</strong></div>
+            </div>
+            <div class="typing-shooter-stage">
+              <canvas id="typingShooterCanvas" width="840" height="400" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
+            </div>
+            <div class="typing-mobile-input-wrap">
+              <label for="typingShooterInput">Mobile typing input</label>
+              <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
+            </div>
+            <p class="lab-status" id="typingStatus" role="status">Press Start round, then type the letters on the rocks. On mobile, use the input above.</p>
           </div>
-          <div class="snake-layout">
-            <div class="snake-screen-wrap"><canvas id="snakeCanvas" width="360" height="360" role="img" aria-label="Classic Snake game board"></canvas></div>
-            <div class="snake-side">
-              <div class="snake-stats" aria-live="polite"><span>Score <strong id="snakeScore">0</strong></span><span>Top score <strong id="snakeBest">0</strong></span></div>
-              <div class="snake-controls" aria-label="Snake direction controls">
-                <button type="button" data-snake-direction="up" aria-label="Move up">▲</button>
-                <button type="button" data-snake-direction="left" aria-label="Move left">◀</button>
-                <button type="button" data-snake-direction="down" aria-label="Move down">▼</button>
-                <button type="button" data-snake-direction="right" aria-label="Move right">▶</button>
+
+          <!-- Sub-view 2: Nokia Snake -->
+          <div class="arcade-game-view" id="arcadeGameSnake" hidden>
+            <div class="arcade-subbar">
+              <div class="arcade-subbar-info">
+                <strong>Nokia Snake</strong>
+                <span>Authentic retro phone snake. Use arrow keys, swipe the screen, or tap the D-pad.</span>
               </div>
-              <p class="lab-status" id="snakeStatus" role="status">Press Start game to begin.</p>
+              <div class="lab-controls">
+                <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="snake">
+                  <button type="button" data-difficulty="easy">Easy</button>
+                  <button type="button" data-difficulty="medium" aria-pressed="true">Medium</button>
+                  <button type="button" data-difficulty="hard">Hard</button>
+                </div>
+                <button type="button" class="btn btn-primary" id="snakeStartBtn">Start game</button>
+                <button type="button" class="btn btn-ghost" id="snakePauseBtn">Pause</button>
+                <button type="button" class="btn btn-ghost" id="snakeRestartBtn">Restart</button>
+              </div>
+            </div>
+            <div class="snake-layout">
+              <div class="snake-screen-wrap"><canvas id="snakeCanvas" width="360" height="360" role="img" aria-label="Classic Snake game board"></canvas></div>
+              <div class="snake-side">
+                <div class="snake-stats" aria-live="polite"><span>Score <strong id="snakeScore">0</strong></span><span>Top score <strong id="snakeBest">0</strong></span></div>
+                <div class="snake-controls" aria-label="Snake direction controls">
+                  <button type="button" data-snake-direction="up" aria-label="Move up">▲</button>
+                  <button type="button" data-snake-direction="left" aria-label="Move left">◀</button>
+                  <button type="button" data-snake-direction="down" aria-label="Move down">▼</button>
+                  <button type="button" data-snake-direction="right" aria-label="Move right">▶</button>
+                </div>
+                <p class="lab-status" id="snakeStatus" role="status">Press Start game to begin.</p>
+              </div>
             </div>
           </div>
         </article>
@@ -362,6 +380,7 @@
   </footer>
 
   <script src="js/main.js?v=site-refresh-2" defer></script>
+  <script src="js/arcade-hub.js" defer></script>
   <script src="js/playground.js?v=difficulty-1" defer></script>
   <script src="/js/chatbot.js" defer></script>
 </body>

@@ -2566,6 +2566,80 @@ ul { list-style: none; }
 .snake-controls button { width: 52px; height: 48px; border: 1px solid var(--surface-border-strong); border-radius: var(--radius-sm); background: var(--bg-elevated); color: var(--text); font-size: 1.1rem; cursor: pointer; touch-action: manipulation; }
 .snake-controls button:hover, .snake-controls button:focus-visible { border-color: var(--accent); background: rgba(56, 189, 248, 0.12); outline: 0; }
 .snake-controls [data-snake-direction="up"] { grid-area: up; }.snake-controls [data-snake-direction="left"] { grid-area: left; }.snake-controls [data-snake-direction="down"] { grid-area: down; }.snake-controls [data-snake-direction="right"] { grid-area: right; }
+
+/* Arcade Hub Unified Shell */
+.arcade-hub-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.arcade-game-switcher {
+  display: inline-flex;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  background: var(--bg-surface, rgba(15, 23, 42, 0.6));
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.arcade-switch-btn {
+  padding: 0.55rem 1.15rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 0.375rem);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.arcade-switch-btn:hover {
+  color: var(--text);
+  border-color: var(--surface-border-strong);
+}
+
+.arcade-switch-btn.active,
+.arcade-switch-btn[aria-selected="true"] {
+  background: var(--accent);
+  color: #04101c;
+  border-color: transparent;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+}
+
+.arcade-subbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1.15rem;
+  background: rgba(56, 189, 248, 0.04);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md, 0.5rem);
+}
+
+.arcade-subbar-info strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.arcade-subbar-info span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.arcade-game-view[hidden] {
+  display: none !important;
+}
+
 :root[data-theme="light"] .lab-panel,
 :root[data-theme="light"] .sort-stage {
   background: var(--bg-card);
@@ -2602,6 +2676,10 @@ ul { list-style: none; }
   .snake-side { width: 100%; justify-items: center; }
   .snake-stats { justify-content: center; width: auto; }
   .snake-side .lab-status { text-align: center; }
+  .arcade-game-switcher { width: 100%; }
+  .arcade-switch-btn { flex: 1; text-align: center; padding: 0.5rem 0.65rem; font-size: 0.8rem; }
+  .arcade-subbar { flex-direction: column; align-items: stretch; }
+
   .modal-tabs { gap: 0.3rem; }
   .modal-tab { font-size: 0.72rem; padding: 0.4rem 0.65rem; }
 }
