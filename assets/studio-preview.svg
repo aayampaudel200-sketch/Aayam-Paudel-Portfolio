@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-labelledby="title desc">
+  <title id="title">Namaste Suman Studio preview</title>
+  <desc id="desc">A dark studio interface with portrait tools and an AI finishing panel.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101b2b"/><stop offset="1" stop-color="#171536"/></linearGradient>
+    <linearGradient id="accent"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+    <radialGradient id="glow"><stop stop-color="#38bdf8" stop-opacity=".28"/><stop offset="1" stop-color="#38bdf8" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="960" height="600" rx="28" fill="url(#bg)"/>
+  <circle cx="750" cy="130" r="280" fill="url(#glow)"/>
+  <rect x="36" y="34" width="888" height="532" rx="20" fill="#0b111c" stroke="#64748b" stroke-opacity=".32"/>
+  <circle cx="64" cy="62" r="6" fill="#fb7185"/><circle cx="84" cy="62" r="6" fill="#fbbf24"/><circle cx="104" cy="62" r="6" fill="#34d399"/>
+  <text x="140" y="68" fill="#94a3b8" font-family="Inter,Arial" font-size="16">NAMASTE SUMAN STUDIO</text>
+  <rect x="68" y="100" width="500" height="420" rx="14" fill="#131d2b" stroke="#64748b" stroke-opacity=".25"/>
+  <rect x="88" y="120" width="460" height="300" rx="10" fill="#17283a"/>
+  <circle cx="320" cy="225" r="72" fill="#bc8d77"/>
+  <path d="M250 222c4-81 137-105 143-1-26-29-48-42-73-41-24 2-44 15-70 42Z" fill="#1a2030"/>
+  <path d="M205 414c9-104 65-147 115-147s108 43 117 147" fill="#273957"/>
+  <rect x="105" y="445" width="152" height="44" rx="22" fill="#142b3a" stroke="#38bdf8" stroke-opacity=".5"/>
+  <text x="128" y="473" fill="#7dd3fc" font-family="Inter,Arial" font-size="14">AI WARDROBE</text>
+  <rect x="275" y="445" width="246" height="44" rx="22" fill="url(#accent)"/>
+  <text x="310" y="473" fill="#06101c" font-family="Inter,Arial" font-size="14" font-weight="700">SMART AI FINISH</text>
+  <text x="610" y="145" fill="#38bdf8" font-family="monospace" font-size="13" letter-spacing="2">PRIVATE WORKSPACE</text>
+  <text x="610" y="190" fill="#e8edf5" font-family="Inter,Arial" font-size="28" font-weight="700">Studio tools,</text>
+  <text x="610" y="226" fill="#e8edf5" font-family="Inter,Arial" font-size="28" font-weight="700">ready to create.</text>
+  <text x="610" y="275" fill="#94a3b8" font-family="Inter,Arial" font-size="16">Portrait workflows</text>
+  <text x="610" y="309" fill="#94a3b8" font-family="Inter,Arial" font-size="16">AI assisted finishing</text>
+  <text x="610" y="343" fill="#94a3b8" font-family="Inter,Arial" font-size="16">Passport photo tools</text>
+  <rect x="610" y="390" width="255" height="54" rx="12" fill="url(#accent)"/>
+  <text x="646" y="423" fill="#06101c" font-family="Inter,Arial" font-size="16" font-weight="700">OPEN PRIVATE STUDIO</text>
+  <text x="610" y="480" fill="#64748b" font-family="monospace" font-size="12">NAMASTE SUMAN · GAINDAKOT</text>
+</svg>

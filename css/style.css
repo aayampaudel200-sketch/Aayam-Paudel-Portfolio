@@ -1253,6 +1253,33 @@ ul { list-style: none; }
 .contact-meta { display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--text-dim); }
 .contact-meta a { color: var(--text-muted); }
 .contact-meta a:hover { color: var(--accent); }
+.contact-meet-link { display: flex; flex-direction: column; gap: .2rem; align-items: center; padding: .75rem 1rem; border: 1px solid var(--surface-border); border-radius: var(--radius-md); background: rgba(56,189,248,.05); }
+.contact-meet-link strong { color: var(--accent); font-size: .9rem; }
+.contact-meet-link span { color: var(--text-muted); }
+
+/* Private studio portal */
+.studio-page { min-height: 75vh; }
+.studio-shell { padding-top: calc(var(--header-h) + clamp(3rem, 7vw, 6rem)); }
+.studio-heading { max-width: 850px; margin: 0 auto var(--space-xl); text-align: center; }
+.studio-heading .page-title { font-size: clamp(2rem, 5vw, 3.5rem); }
+.studio-verified { display: inline-flex; align-items: center; gap: .45rem; margin-top: 1.1rem; padding: .42rem .75rem; border: 1px solid rgba(52,211,153,.3); border-radius: 999px; background: rgba(52,211,153,.08); color: var(--green); font: .7rem var(--font-mono); letter-spacing: .04em; }
+.studio-card { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(300px,.9fr); gap: clamp(1.5rem,4vw,3.5rem); align-items: center; padding: clamp(1rem,3vw,2rem); border: 1px solid var(--surface-border-strong); border-radius: var(--radius-lg); background: linear-gradient(135deg,rgba(17,24,39,.94),rgba(10,15,25,.96)); box-shadow: var(--shadow-lift); }
+:root[data-theme="light"] .studio-card,:root[data-theme="light"] .studio-access-card { background: rgba(255,255,255,.9); }
+.studio-preview-frame { overflow: hidden; border: 1px solid var(--surface-border); border-radius: var(--radius-md); background: var(--bg-elevated); }
+.studio-preview-frame img { width: 100%; height: 100%; object-fit: cover; }
+.studio-card-copy h2,.studio-access-card h2 { font-size: clamp(1.35rem,2.8vw,2rem); line-height: 1.2; letter-spacing: -.025em; }
+.studio-intro,.studio-access-card p:not(.eyebrow) { margin-top: .55rem; color: var(--text-muted); font-size: .92rem; }
+.studio-feature-list { display: grid; gap: .65rem; margin: 1.2rem 0 1.4rem; }
+.studio-feature-list li { display: flex; align-items: center; gap: .75rem; padding: .65rem .75rem; border: 1px solid var(--surface-border); border-radius: var(--radius-sm); background: rgba(148,163,184,.035); }
+.studio-feature-list li > span { display: grid; place-items: center; width: 2rem; height: 2rem; flex: 0 0 auto; border-radius: 9px; background: var(--gradient-soft); color: var(--accent); }
+.studio-feature-list strong,.studio-feature-list small { display: block; }.studio-feature-list strong { font-size: .86rem; }.studio-feature-list small { margin-top: .12rem; color: var(--text-dim); font-size: .74rem; }
+.studio-launch { width: 100%; min-height: 48px; }
+.studio-launch-note { margin-top: .55rem; color: var(--text-dim); font-size: .72rem; text-align: center; }
+.studio-access-card { display: flex; justify-content: space-between; align-items: center; gap: var(--space-lg); margin-top: var(--space-lg); padding: clamp(1.25rem,3vw,2rem); border: 1px solid var(--surface-border); border-radius: var(--radius-lg); background: rgba(14,19,29,.72); }
+.studio-request { flex: 0 0 auto; }
+.studio-back { margin-top: var(--space-lg); text-align: center; }
+.studio-footer { margin-top: 0; }
+.studio-footer .footer-bottom { border-top: 0; }
 
 /* ============================================================
    STORYTELLING / 3D CONTENT BLOCKS
@@ -1637,6 +1664,9 @@ ul { list-style: none; }
   .footer-grid { grid-template-columns: 1fr; gap: var(--space-md); }
   .footer-social { flex-direction: row; }
   .modal { padding: var(--space-lg); }
+  .studio-card { grid-template-columns: 1fr; }
+  .studio-access-card { align-items: flex-start; flex-direction: column; }
+  .studio-request { width: 100%; }
 }
 
 @media (hover: none) {
@@ -1774,6 +1804,8 @@ ul { list-style: none; }
   .stage-card { font-size: .64rem; padding: .55rem; }.stage-card--one { bottom: 3rem; }.stage-card--two { bottom: -.25rem; }
   .manifesto-card { padding: 1.6rem; }.manifesto-footer { align-items: flex-start; flex-direction: column; }.manifesto-orbit { display: none; }.manifesto-footer .btn { margin-left: 0; }
   .focus-stats { grid-template-columns: 1fr; }
+  .contact-meet-link { align-items: flex-start; text-align: left; }
+  .studio-heading .page-title { font-size: clamp(1.85rem, 9vw, 2.6rem); }
   .business-highlight-card { padding: 1.35rem 1rem; border-radius: var(--radius-md); }
   .business-details { min-width: 0; width: 100%; padding: 0.9rem; }
   .business-address address { word-break: break-word; }
