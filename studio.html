@@ -11,6 +11,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20261114-studio">
+<style>
+.studio-request-form{
+  background:#222;
+  color:#fff;
+  padding:1rem;
+  border-radius:0.5rem;
+}
+.studio-request-form input,
+.studio-request-form textarea{
+  background:#333;
+  color:#fff;
+  border:1px solid #555;
+}
+.studio-request-form button{
+  background:#0ea5e9;
+  color:#fff;
+  border:none;
+}
+</style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -80,11 +99,11 @@ document.getElementById('accessRequestForm').addEventListener('submit', async fu
   e.preventDefault();
   const form = e.target;
   const payload = {
-    access_key: '[INSERT_WEB3FORMS_KEY]',
+    access_key: '1f8f5541-48e5-40ab-b71b-a89f0fd3cf72',
     name: form.fullName.value,
     email: form.email.value,
     message: form.reason.value,
-    subject: 'Namaste Suman Studio Access Request'
+    subject: 'Access Request: Namaste Suman Studio'
   };
   try {
     const response = await fetch('https://api.web3forms.com/submit', {
