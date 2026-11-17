@@ -48,7 +48,7 @@
               <li><span>▦</span><div><strong>Studio Passport Tools</strong><small>Prepare studio photo workflows.</small></div></li>
             </ul>
             <!-- Paste the regenerated private Gemini share URL into this href before enabling launch. -->
-            <a class="btn btn-primary studio-launch" href="[INSERT_PRIVATE_GEMINI_SHARE_LINK_HERE]" target="_blank" rel="noopener noreferrer" aria-describedby="studioLaunchNote">Launch Namaste Suman Studio (Members Only) <span aria-hidden="true">↗</span></a>
+            <a class="btn btn-primary studio-launch" href="https://gemini.google.com/share/dc8d8030e8bc?social_preview=false&skid=259e704c-8df2-402b-b95e-971e11c61298" target="_blank" rel="noopener noreferrer" aria-describedby="studioLaunchNote">Launch Namaste Suman Studio (Members Only) <span aria-hidden="true">↗</span></a>
             <p class="studio-launch-note" id="studioLaunchNote">Private studio destination will be enabled when its regenerated link is added.</p>
           </div>
         </article>
@@ -59,7 +59,57 @@
             <h2 id="requestAccessTitle">Request an approved invitation.</h2>
             <p>Send your name, the Gmail address to whitelist, and a short note about how you plan to use the studio.</p>
           </div>
-          <a class="btn btn-ghost studio-request" href="mailto:aayampaudel200@gmail.com?subject=Access%20Request%3A%20Namaste%20Suman%20Studio&amp;body=Name%3A%20%0AGmail%20Address%20to%20Whitelist%3A%20%0APurpose%3A%20">Request Access <span aria-hidden="true">→</span></a>
+          <form id="accessRequestForm" class="studio-request-form" style="display:flex;flex-direction:column;gap:0.5rem;max-width:300px;">
+  <div class="form-group">
+    <label for="fullName" class="sr-only">Full Name</label>
+    <input type="text" id="fullName" name="fullName" placeholder="Full Name" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;"/>
+  </div>
+  <div class="form-group">
+    <label for="email" class="sr-only">Email Address</label>
+    <input type="email" id="email" name="email" placeholder="Email Address" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;"/>
+  </div>
+  <div class="form-group">
+    <label for="reason" class="sr-only">Reason / Organization</label>
+    <textarea id="reason" name="reason" placeholder="Reason / Organization" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">Request Access</button>
+  <p id="formMessage" style="margin-top:0.5rem;display:none;"></p>
+</form>
+<script>
+document.getElementById('accessRequestForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const payload = {
+    access_key: '[INSERT_WEB3FORMS_KEY]',
+    name: form.fullName.value,
+    email: form.email.value,
+    message: form.reason.value,
+    subject: 'Namaste Suman Studio Access Request'
+  };
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    const msg = document.getElementById('formMessage');
+    msg.style.display = 'block';
+    if (result.success) {
+      msg.textContent = 'Request submitted! Aayam will review and email your private access link.';
+      msg.style.color = 'green';
+    } else {
+      msg.textContent = 'Submission failed. Please try again later.';
+      msg.style.color = 'red';
+    }
+  } catch (err) {
+    const msg = document.getElementById('formMessage');
+    msg.style.display = 'block';
+    msg.textContent = 'An error occurred. Please try again.';
+    msg.style.color = 'red';
+  }
+});
+</script>
         </section>
         <p class="studio-back"><a class="text-link" href="namaste-suman.html">← Back to Namaste Suman Communication</a></p>
       </div>
