@@ -87,10 +87,7 @@
     <label for="email" class="sr-only">Your Email Address</label>
     <input type="email" id="email" name="email" placeholder="Your Email Address" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;">
   </div>
-  <div class="form-group">
-    <label for="confirm_email" class="sr-only">Confirm Email Address</label>
-    <input type="email" id="confirm_email" name="confirm_email" placeholder="Confirm Email Address" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;">
-  </div>
+
   <div class="form-group">
     <label for="message" class="sr-only">Why do you need access?</label>
     <textarea id="message" name="message" placeholder="Why do you need access?" required class="input w-full" style="padding:0.5rem;border-radius:0.25rem;border:1px solid #ccc;"></textarea>
@@ -104,7 +101,7 @@
       const form = e.target;
       const name = form.fullName.value.trim();
       const email = form.email.value.trim();
-      const confirmEmail = form.confirm_email.value.trim();
+
       const message = form.message.value.trim();
       const msgEl = document.getElementById('formMessage');
       // Helper to show error
