@@ -1,7 +1,7 @@
 /* Cyber Defender: zero-dependency Canvas 2D arcade module. */
 (() => {
   'use strict';
-  const W = 640, H = 420, MAX = { bullets: 42, enemyBullets: 36, enemies: 18, particles: 150 };
+  const W = 800, H = 600, MAX = { bullets: 42, enemyBullets: 36, enemies: 18, particles: 150 };
   const settings = {
     easy: { shields: 5, pace: 0.78, spawn: 1.18 },
     medium: { shields: 3, pace: 1, spawn: 0.9 },
@@ -87,6 +87,7 @@
       function damagePlayer() { if (player.invincible > 0) return; shields--; combo = 1; player.invincible = 1; shake = 9; burst(player.x, player.y, colors.red, 22); floating('SHIELD HIT', player.x, player.y - 20, colors.red); tone('hit'); updateUI(); if (shields <= 0) gameOver(); }
       function destroy(e) {
         const gain = Math.round(e.points * combo); score += gain; combo = Math.min(5, combo + 1); shake = Math.max(shake, e.type === 'boss' ? 11 : 4); burst(e.x, e.y, e.type === 'heavy' || e.type === 'boss' ? colors.orange : colors.cyan, e.type === 'boss' ? 42 : 16); floating(`+${gain}`, e.x, e.y, colors.green); if (combo > 2) floating(`x${combo} COMBO!`, e.x, e.y + 18, colors.orange); tone('blast');
+        if (score > highScore) { highScore = score; saveScore(); }
         if (e.type !== 'boss' && Math.random() < .15 && powerups.length < 4) powerups.push({ x: e.x, y: e.y, type: Math.random() < .4 ? 'triple' : Math.random() < .5 ? 'rapid' : 'shield', life: 7, phase: 0 });
         kills++; if (e.type === 'boss') { bossActive = false; wave++; kills = 0; waveBanner = 2.3; } else if (kills >= 7 + wave * 2) { wave++; kills = 0; waveBanner = 2.3; }
         updateUI();

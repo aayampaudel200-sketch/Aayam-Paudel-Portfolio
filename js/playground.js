@@ -3,7 +3,7 @@
  * plus two touch-friendly browser games.
  */
 (() => {
-  const DIFFICULTIES = ['easy', 'medium', 'hard'];
+  const DIFFICULTIES = ['easy', 'medium', 'hard', 'veryhard'];
 
   function readScore(key) {
     try {
@@ -1185,7 +1185,15 @@
       sort: initSortLab,
       typewriter: initTypewriterLab,
       memory: initMemoryGame,
-      'arcade-hub': () => window.ArcadeHub?.init(),
+      'type-blaster': () => {
+        window.TypeBlasterGame?.setup?.();
+        window.TypeBlasterGame?.activate?.();
+      },
+      'nokia-snake': () => {
+        window.NokiaSnakeGame?.setup?.();
+        window.NokiaSnakeGame?.activate?.();
+      },
+      'arcade-hub': () => window.ArcadeHub?.init?.(),
     };
     const started = Object.create(null);
     document.addEventListener('playground:tabchange', (event) => {

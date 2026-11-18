@@ -8,6 +8,7 @@
  * - Strict lifecycle management: 0% CPU when idle, paused, tab-switched, or window minimized.
  * - Solves listener loss: DOM controls bound permanently in setup(); game modes activate/deactivate cleanly.
  * - Mobile-first touch & keyboard optimization with zero unwanted page scroll.
+ * - Type Blaster & Nokia Snake are independent playground tabs (no sub-tab switcher).
  */
 
 (() => {
@@ -31,7 +32,7 @@
         return false;
       }
     },
-    getDifficulty(key, fallback = 'medium', valid = ['easy', 'medium', 'hard']) {
+    getDifficulty(key, fallback = 'medium', valid = ['easy', 'medium', 'hard', 'veryhard']) {
       try {
         const val = localStorage.getItem(key);
         return valid.includes(val) ? val : fallback;
@@ -246,14 +247,17 @@
   })();
 
 
+  // ─── MOBILE DETECTION ───────────────────────────────────────────────────────
+  const isMobile = window.matchMedia('(pointer: coarse)').matches;
+  const MAX_PARTICLES = isMobile ? 100 : 500;
+
+
   // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ─────────────────────────────
   const TypeBlasterGame = (() => {
     let container, canvas, ctx;
-    let startBtn, pauseBtn, restartBtn, soundBtn, mobileInput;
+    let startBtn, pauseBtn, soundBtn, mobileInput;
     let scoreEl, comboEl, wpmEl, accuracyEl, timeEl, bestEl, statusEl;
     let diffContainer;
-    let phraseDoneEl, phraseCurrentEl, phraseUpcomingEl;
-    let typingStreamKeysEl, typingLastKeyBadgeEl, typingModeTagEl;
 
     // Meaningful Developer Sentence Pools by Difficulty
     const SENTENCE_POOLS = {
@@ -288,13 +292,17 @@
         'ITEMS.FILTER(X => X.ACTIVE);',
         'FETCH("/API/STATUS").THEN(RES => RES.JSON());',
         'EXPORT DEFAULT FUNCTION HANDLER(REQ, RES) {}'
+      ],
+      veryhard: [
+        'CONST HANDLER = ASYNC (REQ) => { RETURN RESPONSE.JSON(); }',
+        'FOR (LET I = 0; I < ARR.LENGTH; I++) { SUM += ARR[I]; }',
+        'EXPORT CLASS CONTROLLER EXTENDS BASE { CONSTRUCTOR() { SUPER(); } }',
+        'TRY { AWAIT DB.QUERY(SQL); } CATCH (ERR) { LOG(ERR.STACK); }',
+        'CONST [DATA, SET] = USESTATE({ LOADING: TRUE, ERROR: NULL });',
       ]
     };
 
-    // Difficulty Settings:
-    // Easy: ~3.6s spawn, 36-46 px/s speed, max 3 rocks, 8 integrity
-    // Medium: ~2.2s spawn, 78-96 px/s speed, max 4 rocks, 6 integrity
-    // Hard: ~0.95s spawn, 140-175 px/s speed, max 6 rocks, 3 integrity (genuinely hard speed test!)
+    // Difficulty Settings
     const settings = {
       easy: {
         duration: 45000,
@@ -321,7 +329,16 @@
         speedMax: 175,
         maxRocks: 6,
         integrity: 3,
-        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ{};()=><_!+-."'
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ{};()=><=_!+-."'
+      },
+      veryhard: {
+        duration: 30000,
+        spawn: 0.45,
+        speedMin: 240,
+        speedMax: 350,
+        maxRocks: 8,
+        integrity: 2,
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ{};()=><=_!+-."\'',
       }
     };
 
@@ -356,7 +373,15 @@
     let currentSentence = '';
     let sentenceIndex = 0;
     let sentencePoolIndex = 0;
-    let recentKeystrokes = [];
+
+    // WPM/Accuracy tracking — array of {time, correct}
+    let keypressTimes = [];
+    let firstKeypressTime = 0;
+
+    // Cached backdrop gradient (reused across frames)
+    let cachedBackdropGrad = null;
+    let cachedBackdropW = 0;
+    let cachedBackdropH = 0;
 
     // Starfield particles (cached)
     const stars = Array.from({ length: 42 }, () => ({
@@ -381,9 +406,6 @@
         const active = btn.dataset.difficulty === difficulty;
         btn.setAttribute('aria-pressed', String(active));
       });
-      if (typingModeTagEl) {
-        typingModeTagEl.textContent = `🎯 TARGET SENTENCE (${difficulty.toUpperCase()})`;
-      }
     }
 
     function syncSoundUI() {
@@ -397,7 +419,6 @@
       const pool = SENTENCE_POOLS[difficulty] || SENTENCE_POOLS.easy;
       currentSentence = pool[sentencePoolIndex % pool.length];
       sentenceIndex = 0;
-      syncSentenceHUD();
     }
 
     function advanceToNextSentence() {
@@ -405,7 +426,6 @@
       sentencePoolIndex = (sentencePoolIndex + 1) % pool.length;
       currentSentence = pool[sentencePoolIndex];
       sentenceIndex = 0;
-      syncSentenceHUD();
     }
 
     function getActiveTargetChar() {
@@ -418,59 +438,24 @@
       return currentSentence[sentenceIndex].toUpperCase();
     }
 
-    function syncSentenceHUD() {
-      if (!currentSentence) {
-        if (phraseDoneEl) phraseDoneEl.textContent = '';
-        if (phraseCurrentEl) phraseCurrentEl.textContent = '_';
-        if (phraseUpcomingEl) phraseUpcomingEl.textContent = 'Press Start round to begin';
-        return;
-      }
-
-      // If at space, advance
-      while (sentenceIndex < currentSentence.length && currentSentence[sentenceIndex] === ' ') {
-        sentenceIndex++;
-      }
-
-      const done = currentSentence.slice(0, sentenceIndex);
-      const current = sentenceIndex < currentSentence.length ? currentSentence[sentenceIndex] : '✓';
-      const upcoming = sentenceIndex < currentSentence.length ? currentSentence.slice(sentenceIndex + 1) : '';
-
-      if (phraseDoneEl) phraseDoneEl.textContent = done;
-      if (phraseCurrentEl) {
-        phraseCurrentEl.textContent = current === ' ' ? '␣' : current;
-      }
-      if (phraseUpcomingEl) phraseUpcomingEl.textContent = upcoming;
-    }
-
-    function addKeystrokeLog(char, isHit) {
-      const displayChar = char === ' ' ? 'SPACE' : String(char).toUpperCase();
-      recentKeystrokes.push({ char: displayChar, isHit, id: Date.now() + Math.random() });
-      if (recentKeystrokes.length > 8) {
-        recentKeystrokes.shift();
-      }
-
-      if (typingLastKeyBadgeEl) {
-        typingLastKeyBadgeEl.className = `typing-last-key-badge ${isHit ? 'badge-hit' : 'badge-miss'}`;
-        typingLastKeyBadgeEl.textContent = `${isHit ? 'HIT' : 'MISS'} [${displayChar}]`;
-      }
-
-      if (typingStreamKeysEl) {
-        typingStreamKeysEl.replaceChildren();
-        recentKeystrokes.forEach((k) => {
-          const pill = document.createElement('span');
-          pill.className = `key-pill ${k.isHit ? 'key-hit' : 'key-miss'}`;
-          pill.textContent = `${k.char} ${k.isHit ? '✓' : '✗'}`;
-          typingStreamKeysEl.appendChild(pill);
-        });
-      }
-    }
-
     function updateMetrics(now = performance.now()) {
       const elapsed = isPlaying ? elapsedBeforePause + (now - roundStartedAt) : elapsedBeforePause;
       const duration = settings[difficulty].duration;
-      const minutes = Math.max(elapsed / 60000, 1 / 60);
-      const wpm = Math.round((totalHits / 5) / minutes);
-      const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
+
+      // WPM from first keypress to now
+      let wpm = 0;
+      if (keypressTimes.length > 0 && firstKeypressTime > 0) {
+        const correctChars = keypressTimes.filter(k => k.correct).length;
+        const elapsedFromFirst = (now - firstKeypressTime) / 60000; // minutes
+        if (elapsedFromFirst > 0) {
+          wpm = Math.round((correctChars / 5) / elapsedFromFirst);
+        }
+      }
+
+      // Accuracy
+      const accuracy = keypressTimes.length > 0
+        ? Math.round((keypressTimes.filter(k => k.correct).length / keypressTimes.length) * 100)
+        : 100;
 
       if (scoreEl) scoreEl.textContent = String(score);
       if (comboEl) comboEl.textContent = `${combo}x`;
@@ -543,7 +528,7 @@
       }
 
       const id = nextRockId++;
-      rocks.push({
+      const rock = {
         id,
         x: lane,
         y: -44,
@@ -552,8 +537,54 @@
         speed: cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin),
         rot: Math.random() * Math.PI * 2,
         rotSpeed: (Math.random() - 0.5) * 0.35,
-        polygon: createRockPolygon(id, radius)
-      });
+        polygon: createRockPolygon(id, radius),
+        drift: 0
+      };
+
+      // Very Hard: erratic horizontal drift
+      if (difficulty === 'veryhard') {
+        rock.drift = (Math.random() - 0.5) * 120;
+      }
+
+      rocks.push(rock);
+    }
+
+    // Very Hard: spawn 1-2 distractor rocks with random letters NOT in the sentence
+    function spawnDistractorRocks() {
+      if (difficulty !== 'veryhard') return;
+      const cfg = settings[difficulty];
+      const count = 1 + Math.floor(Math.random() * 2); // 1-2 distractors
+      const sentenceChars = new Set(currentSentence.replace(/ /g, '').split('').map(c => c.toUpperCase()));
+      const pool = cfg.letterPool.split('').filter(c => !sentenceChars.has(c.toUpperCase()));
+      if (pool.length === 0) return;
+
+      for (let d = 0; d < count; d++) {
+        if (rocks.length >= cfg.maxRocks) break;
+        const letter = pool[Math.floor(Math.random() * pool.length)].toUpperCase();
+        const radius = 44;
+        const occupied = rocks.map(r => r.x);
+        let lane = canvas.width / 2;
+        for (let attempts = 0; attempts < 16; attempts++) {
+          const cand = 72 + Math.random() * (canvas.width - 144);
+          if (occupied.every(x => Math.abs(x - cand) > 96)) {
+            lane = cand;
+            break;
+          }
+        }
+        const id = nextRockId++;
+        rocks.push({
+          id,
+          x: lane,
+          y: -44,
+          radius,
+          letter,
+          speed: cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin),
+          rot: Math.random() * Math.PI * 2,
+          rotSpeed: (Math.random() - 0.5) * 0.35,
+          polygon: createRockPolygon(id, radius),
+          drift: (Math.random() - 0.5) * 120
+        });
+      }
     }
 
     function fireLetter(char) {
@@ -563,11 +594,16 @@
 
       totalTyped++;
 
+      const now = performance.now();
+      if (firstKeypressTime === 0) {
+        firstKeypressTime = now;
+      }
+
       const activeTarget = getActiveTargetChar();
       if (!activeTarget || upper !== activeTarget) {
         combo = 0;
         ArcadeAudio.playMiss();
-        addKeystrokeLog(upper, false);
+        keypressTimes.push({ time: now, correct: false });
         if (statusEl) statusEl.textContent = `Type ${activeTarget || 'the highlighted character'} next to continue the sentence.`;
         updateMetrics();
         return;
@@ -587,9 +623,12 @@
         ArcadeAudio.playLaser();
         if (combo > 1) ArcadeAudio.playCombo(combo);
 
+        keypressTimes.push({ time: now, correct: true });
+        totalHits++;
+
         // Aim defense turret directly at target rock
         const turretX = canvas.width / 2;
-        const turretY = canvas.height - 32;
+        const turretY = canvas.height - 42;
         const dx = target.x - turretX;
         const dy = target.y - turretY;
         turretTargetAngle = Math.atan2(dy, dx);
@@ -608,8 +647,10 @@
           maxDist: dist
         });
 
-        addKeystrokeLog(upper, true);
-        totalHits++;
+        // Dynamic TOP SCORE — update immediately if we exceed best
+        const pointsPreview = 100 * Math.min(combo, 5);
+        // We'll add score when bullet hits, but check preview
+        // Actually score is added in the bullet collision handler
 
         // Advance sentence if matched active character
         if (activeTarget && target.letter.toUpperCase() === activeTarget) {
@@ -622,6 +663,12 @@
           // Check if sentence complete
           if (sentenceIndex >= currentSentence.length) {
             score += 500;
+            // Dynamic TOP SCORE
+            if (score > bestScore) {
+              bestScore = score;
+              ArcadeStorage.write(storageKey(), bestScore);
+              if (bestEl) bestEl.textContent = String(bestScore);
+            }
             ArcadeAudio.playCombo(6);
             popups.push({
               x: canvas.width / 2,
@@ -636,7 +683,6 @@
               statusEl.textContent = '🎉 Sentence completed! +500 Bonus Points! Next sentence loaded.';
             }
           } else {
-            syncSentenceHUD();
             if (statusEl) {
               statusEl.textContent = combo > 2 ? `🔥 Streak! Combo ${combo}x!` : `Blasted rock ${upper}! Keep typing!`;
             }
@@ -650,7 +696,7 @@
         // The right character was typed before its matching asteroid entered range.
         combo = 0;
         ArcadeAudio.playMiss();
-        addKeystrokeLog(upper, false);
+        keypressTimes.push({ time: now, correct: false });
         if (statusEl) {
           statusEl.textContent = `No incoming rock has '${upper}' — check the target phrase below!`;
         }
@@ -665,6 +711,7 @@
 
       const count = 18;
       for (let i = 0; i < count; i++) {
+        if (particles.length >= MAX_PARTICLES) break;
         const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
         const speed = 80 + Math.random() * 180;
         const isNeon = i % 2 === 0;
@@ -703,9 +750,20 @@
         animFrameId = 0;
       }
 
-      const elapsed = updateMetrics();
-      const wpm = Math.round((totalHits / 5) / Math.max(elapsed / 60000, 1 / 60));
-      const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
+      const now = performance.now();
+      updateMetrics(now);
+
+      // Final WPM/Accuracy from keypressTimes
+      let wpm = 0;
+      let accuracy = 100;
+      if (keypressTimes.length > 0 && firstKeypressTime > 0) {
+        const correctChars = keypressTimes.filter(k => k.correct).length;
+        const elapsedFromFirst = (now - firstKeypressTime) / 60000;
+        if (elapsedFromFirst > 0) {
+          wpm = Math.round((correctChars / 5) / elapsedFromFirst);
+        }
+        accuracy = Math.round((correctChars / keypressTimes.length) * 100);
+      }
 
       let rank = 'Novice Typist';
       if (wpm >= 80) rank = 'Master Typist 🔥';
@@ -731,6 +789,20 @@
       draw();
     }
 
+    // Get or create cached backdrop gradient
+    function getBackdropGradient(w, h) {
+      if (cachedBackdropW === w && cachedBackdropH === h && cachedBackdropGrad) {
+        return cachedBackdropGrad;
+      }
+      cachedBackdropGrad = ctx.createLinearGradient(0, 0, 0, h);
+      cachedBackdropGrad.addColorStop(0, '#040b17');
+      cachedBackdropGrad.addColorStop(0.55, '#07152b');
+      cachedBackdropGrad.addColorStop(1, '#0b1b36');
+      cachedBackdropW = w;
+      cachedBackdropH = h;
+      return cachedBackdropGrad;
+    }
+
     function draw(now = performance.now()) {
       if (!ctx || !canvas) return;
       const w = canvas.width;
@@ -745,12 +817,8 @@
         ctx.translate(shakeX, shakeY);
       }
 
-      // 1. Sci-Fi Space Backdrop
-      const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, '#040b17');
-      grad.addColorStop(0.55, '#07152b');
-      grad.addColorStop(1, '#0b1b36');
-      ctx.fillStyle = grad;
+      // 1. Sci-Fi Space Backdrop (reuse gradient)
+      ctx.fillStyle = getBackdropGradient(w, h);
       ctx.fillRect(0, 0, w, h);
 
       // 2. Starfield
@@ -768,10 +836,10 @@
       for (let x = 0; x <= w; x += gridStep) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, h - 38);
+        ctx.lineTo(x, h - 48);
         ctx.stroke();
       }
-      for (let y = 0; y <= h - 38; y += gridStep) {
+      for (let y = 0; y <= h - 48; y += gridStep) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w, y);
@@ -783,7 +851,7 @@
       const currentIntegrity = Math.max(0, maxIntegrity - escapedRocks);
       const integrityRatio = currentIntegrity / maxIntegrity;
 
-      const shieldY = h - 38;
+      const shieldY = h - 48;
       const shieldGlow = ctx.createLinearGradient(0, shieldY - 4, 0, shieldY + 4);
       shieldGlow.addColorStop(0, 'rgba(56, 189, 248, 0)');
       shieldGlow.addColorStop(0.5, integrityRatio > 0.35 ? 'rgba(56, 189, 248, 0.8)' : 'rgba(239, 68, 68, 0.85)');
@@ -805,12 +873,12 @@
       ctx.fillStyle = integrityRatio > 0.4 ? '#38bdf8' : '#ef4444';
       ctx.font = '700 12px var(--font-mono, monospace)';
       ctx.textAlign = 'left';
-      ctx.fillText(`PERIMETER SHIELD: ${currentIntegrity} / ${maxIntegrity} [${difficulty.toUpperCase()}]`, 18, h - 14);
+      ctx.fillText(`PERIMETER SHIELD: ${currentIntegrity} / ${maxIntegrity} [${difficulty.toUpperCase()}]`, 18, h - 20);
 
       if (combo > 1) {
         ctx.fillStyle = '#facc15';
         ctx.textAlign = 'right';
-        ctx.fillText(`COMBO x${combo} 🔥`, w - 18, h - 14);
+        ctx.fillText(`COMBO x${combo} 🔥`, w - 18, h - 20);
       }
 
       // 5. Directed Laser Projectiles
@@ -936,7 +1004,7 @@
 
       // 7. Defense Turret Cannon at Base
       const turretX = w / 2;
-      const turretY = shieldY + 6;
+      const turretY = shieldY + 8;
 
       ctx.fillStyle = '#0f2744';
       ctx.beginPath();
@@ -955,6 +1023,67 @@
       ctx.fillStyle = '#e0f2fe';
       ctx.fillRect(-2, -30, 4, 30);
       ctx.restore();
+
+      // 7b. Canvas HUD — Show target letter above turret
+      const activeChar = getActiveTargetChar();
+      if (activeChar && (isPlaying || isPaused)) {
+        ctx.save();
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '800 20px var(--font-mono, monospace)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 8;
+        ctx.fillText(`NEXT: [${activeChar}]`, turretX, shieldY - 10);
+        ctx.restore();
+      }
+
+      // 7c. Canvas HUD — Show sentence progress overlay (small, top of canvas)
+      if (currentSentence && (isPlaying || isPaused)) {
+        ctx.save();
+        const done = currentSentence.slice(0, sentenceIndex).replace(/ /g, '·');
+        const current = sentenceIndex < currentSentence.length ? currentSentence[sentenceIndex] : '✓';
+        const upcoming = sentenceIndex < currentSentence.length ? currentSentence.slice(sentenceIndex + 1) : '';
+
+        const sentenceY = 24;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        // Background bar
+        ctx.fillStyle = 'rgba(4, 11, 23, 0.75)';
+        ctx.fillRect(0, 0, w, 36);
+
+        // Done portion (green)
+        const doneText = done;
+        const currentText = current === ' ' ? '·' : current;
+        const upcomingText = upcoming;
+
+        ctx.font = '700 13px var(--font-mono, monospace)';
+
+        const fullText = doneText + currentText + upcomingText;
+        const getTextWidth = (txt) => (ctx.measureText ? (ctx.measureText(txt)?.width || txt.length * 8) : txt.length * 8);
+        const fullWidth = getTextWidth(fullText);
+        const startX = (w - fullWidth) / 2;
+
+        // Draw done
+        ctx.fillStyle = '#34d399';
+        ctx.textAlign = 'left';
+        ctx.fillText(doneText, startX, 10);
+
+        // Draw current
+        const doneWidth = getTextWidth(doneText);
+        ctx.fillStyle = '#facc15';
+        ctx.font = '900 14px var(--font-mono, monospace)';
+        ctx.fillText(currentText, startX + doneWidth, 9);
+
+        // Draw upcoming
+        const currentWidth = getTextWidth(currentText);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '700 13px var(--font-mono, monospace)';
+        ctx.fillText(upcomingText, startX + doneWidth + currentWidth, 10);
+
+        ctx.restore();
+      }
 
       // 8. Explosion Particles
       particles.forEach((p) => {
@@ -986,19 +1115,19 @@
         ctx.fillStyle = '#38bdf8';
         ctx.font = '800 28px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
-        ctx.fillText('TYPE BLASTER: SPEED TYPING ARCADE', w / 2, h / 2 - 34);
+        ctx.fillText('TYPE BLASTER: SPEED TYPING ARCADE', w / 2, h / 2 - 44);
 
         ctx.fillStyle = '#e2e8f0';
         ctx.font = '600 15px var(--font-sans, sans-serif)';
-        ctx.fillText('Blast falling letter asteroids by typing meaningful dev sentences!', w / 2, h / 2);
+        ctx.fillText('Blast falling letter asteroids by typing meaningful dev sentences!', w / 2, h / 2 - 10);
 
         ctx.fillStyle = '#94a3b8';
         ctx.font = '13px var(--font-mono, monospace)';
-        ctx.fillText('Desktop: Type keys directly · Live keystrokes stream below', w / 2, h / 2 + 24);
+        ctx.fillText('Desktop: Type keys directly · Mobile: Tap input field', w / 2, h / 2 + 16);
 
         ctx.fillStyle = '#38bdf8';
         ctx.font = '700 14px var(--font-mono, monospace)';
-        ctx.fillText('Click "Start round" to initialize speed mission', w / 2, h / 2 + 56);
+        ctx.fillText('Click "Start round" to initialize speed mission', w / 2, h / 2 + 52);
       }
 
       // 11. Paused Overlay
@@ -1024,21 +1153,21 @@
         ctx.fillStyle = currentIntegrity > 0 ? '#38bdf8' : '#f87171';
         ctx.font = '800 28px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
-        ctx.fillText(currentIntegrity > 0 ? 'MISSION ACCOMPLISHED' : 'DEFENSE BREACHED', w / 2, h / 2 - 46);
+        ctx.fillText(currentIntegrity > 0 ? 'MISSION ACCOMPLISHED' : 'DEFENSE BREACHED', w / 2, h / 2 - 56);
 
         ctx.fillStyle = '#f8fafc';
         ctx.font = '600 16px var(--font-sans, sans-serif)';
-        ctx.fillText(`Final Score: ${score} · High Score: ${bestScore} (${difficulty})`, w / 2, h / 2 - 12);
+        ctx.fillText(`Final Score: ${score} · High Score: ${bestScore} (${difficulty})`, w / 2, h / 2 - 22);
 
         ctx.fillStyle = '#34d399';
         ctx.font = '700 15px var(--font-mono, monospace)';
         const finalWpm = wpmEl ? wpmEl.textContent : '0 WPM';
         const finalAcc = accuracyEl ? accuracyEl.textContent : '100%';
-        ctx.fillText(`Typing Speed: ${finalWpm} · Accuracy: ${finalAcc} · Streak: ${maxCombo}x`, w / 2, h / 2 + 18);
+        ctx.fillText(`Typing Speed: ${finalWpm} · Accuracy: ${finalAcc} · Streak: ${maxCombo}x`, w / 2, h / 2 + 10);
 
         ctx.fillStyle = '#fef08a';
         ctx.font = '700 14px var(--font-sans, sans-serif)';
-        ctx.fillText('Click "Play again" to launch another speed run', w / 2, h / 2 + 54);
+        ctx.fillText('Click "Play again" to launch another speed run', w / 2, h / 2 + 46);
       }
 
       ctx.restore();
@@ -1063,11 +1192,21 @@
       if (spawnTimer >= settings[difficulty].spawn) {
         spawnTimer = 0;
         spawnRock();
+        // Very Hard: also spawn distractors
+        if (difficulty === 'veryhard') {
+          spawnDistractorRocks();
+        }
       }
 
       rocks.forEach((r) => {
         r.y += r.speed * delta;
         r.rot += r.rotSpeed * delta;
+        // Very Hard: erratic horizontal drift
+        if (r.drift && difficulty === 'veryhard') {
+          r.x += r.drift * Math.sin(now * 0.003 + r.id) * delta;
+          // Clamp to canvas bounds
+          r.x = Math.max(r.radius, Math.min(canvas.width - r.radius, r.x));
+        }
       });
 
       bullets.forEach((b) => {
@@ -1084,6 +1223,12 @@
             rocks = rocks.filter((r) => r.id !== target.id);
             const pointsEarned = 100 * Math.min(combo, 5);
             score += pointsEarned;
+            // Dynamic TOP SCORE — update immediately during gameplay
+            if (score > bestScore) {
+              bestScore = score;
+              ArcadeStorage.write(storageKey(), bestScore);
+              if (bestEl) bestEl.textContent = String(bestScore);
+            }
             createExplosion(target.x, target.y, target.letter, pointsEarned);
             return false;
           }
@@ -1093,7 +1238,7 @@
 
       const remaining = [];
       rocks.forEach((r) => {
-        if (r.y > canvas.height - 44) {
+        if (r.y > canvas.height - 54) {
           escapedRocks++;
           combo = 0;
           screenShake = 8;
@@ -1132,7 +1277,8 @@
         bullets = [];
         particles = [];
         popups = [];
-        recentKeystrokes = [];
+        keypressTimes = [];
+        firstKeypressTime = 0;
         score = 0;
         combo = 0;
         maxCombo = 0;
@@ -1147,17 +1293,6 @@
         turretTargetAngle = -Math.PI / 2;
         initSentence();
         spawnRock();
-        if (typingStreamKeysEl) {
-          typingStreamKeysEl.replaceChildren();
-          const idlePill = document.createElement('span');
-          idlePill.className = 'key-pill key-idle';
-          idlePill.textContent = 'Awaiting first keystroke…';
-          typingStreamKeysEl.appendChild(idlePill);
-        }
-        if (typingLastKeyBadgeEl) {
-          typingLastKeyBadgeEl.className = 'typing-last-key-badge';
-          typingLastKeyBadgeEl.textContent = 'Last key: None';
-        }
       }
 
       isPlaying = true;
@@ -1169,7 +1304,7 @@
       if (pauseBtn) pauseBtn.textContent = 'Pause';
       if (statusEl) statusEl.textContent = 'Type the falling rock letters to complete the target sentence!';
 
-      if (window.matchMedia('(pointer: coarse)').matches && mobileInput) {
+      if (isMobile && mobileInput) {
         try { mobileInput.focus(); } catch {}
       }
 
@@ -1188,8 +1323,9 @@
         animFrameId = 0;
       }
 
-      if (startBtn) startBtn.textContent = 'Resume round';
+      // pauseBtn toggles to Resume
       if (pauseBtn) pauseBtn.textContent = 'Resume';
+      if (startBtn) startBtn.textContent = 'Resume round';
       if (statusEl) statusEl.textContent = reason;
       updateMetrics();
       draw();
@@ -1219,7 +1355,6 @@
     function activate() {
       isKeyActive = true;
       window.addEventListener('keydown', handleKeyDown);
-      syncSentenceHUD();
       draw();
     }
 
@@ -1231,14 +1366,17 @@
 
     function setup() {
       if (isSetupDone) return;
-      container = document.getElementById('arcadeGameTyping');
+      container = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
       canvas = document.getElementById('typingShooterCanvas');
       if (!container || !canvas) return;
+
+      // Set canvas dimensions to 960×640
+      canvas.width = 960;
+      canvas.height = 640;
 
       ctx = canvas.getContext('2d', { alpha: false });
       startBtn = document.getElementById('typingStartBtn');
       pauseBtn = document.getElementById('typingPauseBtn');
-      restartBtn = document.getElementById('typingRestartBtn');
       soundBtn = document.getElementById('typingSoundBtn');
       mobileInput = document.getElementById('typingShooterInput');
       scoreEl = document.getElementById('typingScore');
@@ -1249,13 +1387,6 @@
       bestEl = document.getElementById('typingBest');
       statusEl = document.getElementById('typingStatus');
       diffContainer = container.querySelector('[data-difficulty-for]');
-
-      phraseDoneEl = document.getElementById('phraseDone');
-      phraseCurrentEl = document.getElementById('phraseCurrent');
-      phraseUpcomingEl = document.getElementById('phraseUpcoming');
-      typingStreamKeysEl = document.getElementById('typingStreamKeys');
-      typingLastKeyBadgeEl = document.getElementById('typingLastKeyBadge');
-      typingModeTagEl = document.getElementById('typingModeTag');
 
       difficulty = ArcadeStorage.getDifficulty('typeBlasterDifficulty', 'easy');
       syncDifficultyUI();
@@ -1283,21 +1414,22 @@
         });
       }
 
+      // startBtn toggles between "Start round" / "Playing…" / "Play again"
       if (startBtn) {
         startBtn.addEventListener('click', () => {
           if (isPaused) start(false);
           else start(isFinished);
         });
       }
-      if (restartBtn) {
-        restartBtn.addEventListener('click', () => start(true));
-      }
+
+      // pauseBtn toggles between pause and resume (no separate restart button)
       if (pauseBtn) {
         pauseBtn.addEventListener('click', () => {
           if (isPlaying) pause();
           else if (isPaused) start(false);
         });
       }
+
       if (soundBtn) {
         soundBtn.addEventListener('click', () => {
           ArcadeAudio.toggle();
@@ -1339,9 +1471,11 @@
     let scoreEl, bestEl, statusEl;
     let diffContainer;
 
-    // 20x20 Grid with 24px units on 480x480 canvas for enlarged, crisp Nokia LCD display
+    // 20 cells — use square cells via Math.min, board centered
     const cells = 20;
     let unit = 24;
+    let boardOffsetX = 0;
+    let boardOffsetY = 0;
 
     // Difficulty Speeds:
     // Easy: 160ms tick (beginner-friendly)
@@ -1362,7 +1496,6 @@
     let touchStartCoord = null;
     let isKeyActive = false;
     let isSetupDone = false;
-    let foodBlinkState = true;
 
     function storageKey() {
       return `nokia-snake-best:${difficulty}`;
@@ -1391,6 +1524,16 @@
       soundBtn.setAttribute('aria-pressed', String(on));
     }
 
+    function computeLayout() {
+      if (!canvas) return;
+      // Keep cells square: unit = min(w, h) / cells, board centered
+      unit = Math.min(canvas.width, canvas.height) / cells;
+      const boardW = unit * cells;
+      const boardH = unit * cells;
+      boardOffsetX = Math.floor((canvas.width - boardW) / 2);
+      boardOffsetY = Math.floor((canvas.height - boardH) / 2);
+    }
+
     function placeFood() {
       const occupied = new Set(snake.map((p) => `${p.x},${p.y}`));
       const emptyCells = [];
@@ -1415,21 +1558,27 @@
       const w = canvas.width;
       const h = canvas.height;
 
-      // Authentic retro Nokia monochrome green LCD screen
-      ctx.fillStyle = '#9caf88';
+      // Fill entire canvas with dark border
+      ctx.fillStyle = '#6b7a60';
       ctx.fillRect(0, 0, w, h);
+
+      // Authentic retro Nokia monochrome green LCD screen (centered board)
+      const boardW = unit * cells;
+      const boardH = unit * cells;
+      ctx.fillStyle = '#9caf88';
+      ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
 
       // LCD Pixel Matrix Texture
       ctx.fillStyle = 'rgba(47, 62, 45, 0.08)';
       for (let i = 0; i <= cells; i++) {
-        ctx.fillRect(i * unit, 0, 1, h);
-        ctx.fillRect(0, i * unit, w, 1);
+        ctx.fillRect(boardOffsetX + i * unit, boardOffsetY, 1, boardH);
+        ctx.fillRect(boardOffsetX, boardOffsetY + i * unit, boardW, 1);
       }
 
-      // Food (Retro LCD Apple with subtle blink)
+      // Food (Retro LCD Apple)
       if (food) {
-        const fx = food.x * unit;
-        const fy = food.y * unit;
+        const fx = boardOffsetX + food.x * unit;
+        const fy = boardOffsetY + food.y * unit;
         ctx.fillStyle = '#183b25';
         ctx.fillRect(fx + 3, fy + 3, unit - 6, unit - 6);
         ctx.fillStyle = '#9caf88';
@@ -1438,8 +1587,8 @@
 
       // Snake Body & Head
       snake.forEach((part, index) => {
-        const px = part.x * unit;
-        const py = part.y * unit;
+        const px = boardOffsetX + part.x * unit;
+        const py = boardOffsetY + part.y * unit;
 
         if (index === 0) {
           ctx.fillStyle = '#122618';
@@ -1471,7 +1620,7 @@
       // Overlay: Idle
       if (!isRunning && !isPaused && !snake.length) {
         ctx.fillStyle = 'rgba(156, 175, 136, 0.88)';
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
 
         ctx.fillStyle = '#122618';
         ctx.font = '700 24px monospace';
@@ -1486,7 +1635,7 @@
       // Overlay: Paused
       if (isPaused) {
         ctx.fillStyle = 'rgba(156, 175, 136, 0.85)';
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
 
         ctx.fillStyle = '#122618';
         ctx.font = '700 22px monospace';
@@ -1681,12 +1830,16 @@
 
     function setup() {
       if (isSetupDone) return;
-      container = document.getElementById('arcadeGameSnake');
+      container = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
       canvas = document.getElementById('snakeCanvas');
       if (!container || !canvas) return;
 
+      // Set canvas to 480×640 internal resolution
+      canvas.width = 480;
+      canvas.height = 640;
+
       ctx = canvas.getContext('2d', { alpha: false });
-      unit = canvas.width / cells;
+      computeLayout();
 
       startBtn = document.getElementById('snakeStartBtn');
       pauseBtn = document.getElementById('snakePauseBtn');
@@ -1792,112 +1945,124 @@
   })();
 
 
-  // ─── UNIFIED ARCADE HUB SHELL CONTROLLER ────────────────────────────────────
-  const ArcadeHub = {
-    activeGame: 'typing', // 'typing' | 'snake'
-    isInitialized: false,
+  // ─── INDEPENDENT TAB CONTROLLERS (NO GAME SWITCHER) ─────────────────────────
+  // Each game is a separate playground tab. No sub-tab switcher logic.
 
-    switchGame(gameId) {
-      if (gameId === this.activeGame && this.isInitialized) return;
+  let typeBlasterInitialized = false;
+  let nokiaSnakeInitialized = false;
 
-      const typingView = document.getElementById('arcadeGameTyping');
-      const snakeView = document.getElementById('arcadeGameSnake');
-      const switcherBtns = document.querySelectorAll('[data-arcade-game]');
+  function initTypeBlaster() {
+    if (typeBlasterInitialized) return;
+    const panel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+    if (!panel) return;
+    TypeBlasterGame.setup();
+    TypeBlasterGame.activate();
+    typeBlasterInitialized = true;
+  }
 
-      // 1. Deactivate outgoing game (cancels loops, detaches key listener, CPU = 0%)
-      if (this.activeGame === 'typing') {
+  function initNokiaSnake() {
+    if (nokiaSnakeInitialized) return;
+    const panel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+    if (!panel) return;
+    NokiaSnakeGame.setup();
+    NokiaSnakeGame.activate();
+    nokiaSnakeInitialized = true;
+  }
+
+  // Listen for playground:tabchange events for each game independently
+  document.addEventListener('playground:tabchange', (e) => {
+    const labId = e.detail?.labId;
+
+    if (labId === 'type-blaster') {
+      initTypeBlaster();
+      TypeBlasterGame.activate();
+      TypeBlasterGame.drawIdle();
+    } else {
+      // Leaving type-blaster tab
+      if (typeBlasterInitialized) {
         TypeBlasterGame.deactivate();
-      } else if (this.activeGame === 'snake') {
+      }
+    }
+
+    if (labId === 'nokia-snake') {
+      initNokiaSnake();
+      NokiaSnakeGame.activate();
+      NokiaSnakeGame.drawIdle();
+    } else {
+      // Leaving nokia-snake tab
+      if (nokiaSnakeInitialized) {
         NokiaSnakeGame.deactivate();
       }
+    }
+  });
 
-      this.activeGame = gameId;
+  // Window Visibility change: immediately freeze animations when tab is hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (typeBlasterInitialized) TypeBlasterGame.pause('Game paused while window was hidden.');
+      if (nokiaSnakeInitialized) NokiaSnakeGame.pause('Game paused while window was hidden.');
+    }
+  });
 
-      // 2. Toggle UI views & accessibility attributes
-      switcherBtns.forEach((btn) => {
-        const isMatch = btn.dataset.arcadeGame === gameId;
-        btn.classList.toggle('active', isMatch);
-        btn.setAttribute('aria-selected', String(isMatch));
-      });
+  // Dynamic Viewport Height (100dvh / visualViewport) handling for mobile keyboard support
+  if (window.visualViewport) {
+    const updateVisualViewport = () => {
+      const vh = window.visualViewport.height;
+      document.documentElement.style.setProperty('--visual-vh', `${vh}px`);
+    };
+    window.visualViewport.addEventListener('resize', updateVisualViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', updateVisualViewport, { passive: true });
+    updateVisualViewport();
+  }
 
-      // 3. Activate incoming game (attaches key listener, renders fresh idle state)
-      if (gameId === 'typing') {
-        if (snakeView) snakeView.hidden = true;
-        if (typingView) {
-          typingView.hidden = false;
-          TypeBlasterGame.activate();
-        }
-      } else {
-        if (typingView) typingView.hidden = true;
-        if (snakeView) {
-          snakeView.hidden = false;
-          NokiaSnakeGame.activate();
-        }
-      }
-    },
+  // Expose individual game classes and backward-compatible ArcadeHub shell on window
+  window.TypeBlasterGame = TypeBlasterGame;
+  window.NokiaSnakeGame = NokiaSnakeGame;
 
-    pauseCurrentGame(reason = 'Game paused.') {
-      if (this.activeGame === 'typing') {
-        TypeBlasterGame.pause(reason);
-      } else if (this.activeGame === 'snake') {
-        NokiaSnakeGame.pause(reason);
-      }
-    },
-
-    init() {
-      if (this.isInitialized) return;
-      const hubPanel = document.getElementById('lab-arcade-hub');
-      if (!hubPanel) return;
-
-      // One-time setup of both game modules (binds DOM buttons permanently)
-      TypeBlasterGame.setup();
-      NokiaSnakeGame.setup();
-
-      // Activate initial default game
-      if (this.activeGame === 'typing') {
+  const ArcadeHub = {
+    activeGame: 'typing',
+    switchGame(gameId) {
+      const typePanel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+      const snakePanel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+      if (gameId === 'typing' || gameId === 'type-blaster') {
+        if (snakePanel) snakePanel.hidden = true;
+        if (typePanel) typePanel.hidden = false;
+        NokiaSnakeGame.deactivate();
+        initTypeBlaster();
         TypeBlasterGame.activate();
-      } else {
+        this.activeGame = 'typing';
+      } else if (gameId === 'snake' || gameId === 'nokia-snake') {
+        if (typePanel) typePanel.hidden = true;
+        if (snakePanel) snakePanel.hidden = false;
+        TypeBlasterGame.deactivate();
+        initNokiaSnake();
         NokiaSnakeGame.activate();
+        this.activeGame = 'snake';
       }
-
-      // Bind Sub-Tab Switcher buttons
-      const switcherBtns = hubPanel.querySelectorAll('[data-arcade-game]');
-      switcherBtns.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          this.switchGame(btn.dataset.arcadeGame);
-        });
-      });
-
-      // Listen for playground lab tab changes
-      document.addEventListener('playground:tabchange', (e) => {
-        if (e.detail?.labId !== 'arcade-hub') {
-          // Immediately pause loops when leaving Arcade Hub
-          this.pauseCurrentGame('Game paused. Return to Arcade Hub to resume.');
-        } else {
-          // Returning to Arcade Hub: redraw active game
-          if (this.activeGame === 'typing') TypeBlasterGame.drawIdle();
-          else NokiaSnakeGame.drawIdle();
-        }
-      });
-
-      // Window Visibility change: immediately freeze animations when tab is hidden
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-          this.pauseCurrentGame('Game paused while window was hidden.');
-        }
-      });
-
-      this.isInitialized = true;
+    },
+    init() {
+      initTypeBlaster();
+      initNokiaSnake();
     }
   };
-
-  // Expose on window for modularity and integration
   window.ArcadeHub = ArcadeHub;
 
-  // Auto-init on DOM readiness
+  // Auto-init on DOM readiness — set up both games if their containers exist
+  function autoInit() {
+    const typingPanel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+    const snakePanel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+
+    if (typingPanel && !typingPanel.hidden) {
+      initTypeBlaster();
+    }
+    if (snakePanel && !snakePanel.hidden) {
+      initNokiaSnake();
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => ArcadeHub.init());
+    document.addEventListener('DOMContentLoaded', autoInit);
   } else {
-    ArcadeHub.init();
+    autoInit();
   }
 })();
