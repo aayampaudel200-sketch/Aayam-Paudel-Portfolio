@@ -78,24 +78,32 @@ function initThemeToggle() {
 
   function applyTheme(theme) {
     const isLight = theme === 'light';
-    document.documentElement.dataset.theme = isLight ? 'light' : 'dark';
+    const activeTheme = isLight ? 'light' : 'dark';
+    document.documentElement.dataset.theme = activeTheme;
+    document.documentElement.style.colorScheme = activeTheme;
     toggles.forEach((toggle) => {
       const label = `Switch to ${isLight ? 'dark' : 'light'} theme`;
       toggle.setAttribute('aria-label', label);
       toggle.title = label;
     });
+    window.dispatchEvent(new CustomEvent('site-theme-change', { detail: { theme: activeTheme } }));
   }
 
   let savedTheme = 'dark';
   try {
-    savedTheme = localStorage.getItem('site-theme') === 'light' ? 'light' : 'dark';
+    const stored = localStorage.getItem('site-theme');
+    savedTheme = stored === 'light' ? 'light' : 'dark';
   } catch (error) {
     console.warn('Unable to read the saved color theme:', error);
   }
   applyTheme(savedTheme);
+
   toggles.forEach((toggle) => {
+    if (toggle.dataset.themeBound === '1') return;
+    toggle.dataset.themeBound = '1';
     toggle.addEventListener('click', () => {
-      const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+      const current = document.documentElement.dataset.theme;
+      const nextTheme = current === 'light' ? 'dark' : 'light';
       applyTheme(nextTheme);
       try {
         localStorage.setItem('site-theme', nextTheme);

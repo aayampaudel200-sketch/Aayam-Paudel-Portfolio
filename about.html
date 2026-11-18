@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,7 +51,8 @@
           "https://gravatar.com/glitterymortally47bbbaaf4c",
           "https://medium.com/@aayampaudel200",
           "https://orcid.org/0009-0000-1874-6060",
-          "https://x.com/APaudel75350"
+          "https://x.com/APaudel75350",
+          "https://www.linkedin.com/in/aayam-paudel-885a78371"
         ]
       },
       {
@@ -67,11 +68,22 @@
     ]
   }
   </script>
-  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
+  <!-- Instant Dark Theme Default / Zero-FOUC Theme Script -->
+  <script>
+    try {
+      const savedTheme = localStorage.getItem('site-theme');
+      const theme = (savedTheme === 'light') ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch (e) {
+      document.documentElement.dataset.theme = 'dark';
+      document.documentElement.style.colorScheme = 'dark';
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261109-v3">
+  <link rel="stylesheet" href="css/style.css?v=20261118-refresh">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -124,127 +136,490 @@
       <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
   </header>
+
   <main id="main">
-    <section class="page-intro section">
+    <!-- 1. HERO SECTION: 2-COLUMN BALANCED GRID -->
+    <section class="section about-hero-section">
       <div class="container">
-        <p class="eyebrow reveal-up">PROFILE</p>
-        <h1 class="page-title reveal-up">Who I Am</h1>
-        <p class="page-lede reveal-up">B.Sc. CSIT student, web developer, and tech entrepreneur from Gaindakot, Nepal.</p>
+        <div class="about-hero-grid">
+          <!-- Left Column: Photo & Bento Metadata Card -->
+          <div class="about-hero-visual reveal-up">
+            <div class="about-photo-wrapper">
+              <div class="about-photo-glow" aria-hidden="true"></div>
+              <img
+                src="assets/images/aayam-paudel-working-on-laptop.jpeg"
+                alt="Aayam Paudel working on a laptop"
+                class="about-profile-img"
+                width="440"
+                height="440"
+                fetchpriority="high"
+                decoding="async"
+              >
+              <div class="about-photo-badge">
+                <span class="status-pulse-dot" aria-hidden="true"></span>
+                <span>Gaindakot-5, Gandaki, Nepal</span>
+              </div>
+            </div>
+
+            <!-- Bento Metadata Pills -->
+            <div class="about-meta-grid">
+              <div class="about-meta-item">
+                <span class="about-meta-label">Date of Birth</span>
+                <span class="about-meta-val">4 December 2007</span>
+              </div>
+              <div class="about-meta-item">
+                <span class="about-meta-label">Age</span>
+                <span class="about-meta-val"><span id="aayamAge">18</span> Years</span>
+              </div>
+              <div class="about-meta-item">
+                <span class="about-meta-label">Role</span>
+                <span class="about-meta-val">Dev &amp; Tech Systems Lead</span>
+              </div>
+              <div class="about-meta-item">
+                <span class="about-meta-label">Academics</span>
+                <span class="about-meta-val">B.Sc. CSIT · TU Affiliated</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Name, Headline & Bio -->
+          <div class="about-hero-copy reveal-up">
+            <p class="eyebrow"><span class="code-caret" aria-hidden="true">&gt;_</span> DEVELOPER · CSIT STUDENT · TECH ENTREPRENEUR</p>
+            <h1 class="page-title">Aayam Paudel</h1>
+            <p class="about-lead">
+              I’m <strong>Aayam Paudel</strong> (also written as <em>Aayam Poudel</em>), a developer, technology professional and B.Sc. CSIT student at <strong>Lumbini I.C.T. Campus</strong>, affiliated with <strong>Tribhuvan University</strong>. I live in Gaindakot, Nawalparasi East, Gandaki Province, Nepal. I co‑found <strong>Namaste Suman Communication</strong> where I lead technical systems.
+            </p>
+            <p class="about-lead" style="font-size: 1rem; color: var(--text-muted);">
+              My interest in programming began in high school, evolving through self‑directed learning, open‑source contributions, and building real‑world web applications. The portfolio site you are viewing is the result of continuous experimentation and a desire to solve practical problems.
+            </p>
+            <div class="about-hero-actions">
+              <a href="index.html#contact" class="btn btn-primary">Let’s Talk</a>
+              <a href="projects.html" class="btn btn-secondary">Explore Projects</a>
+              <a href="experience.html" class="btn btn-ghost">Experience Timeline ↗</a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-    <!-- A. Who I Am -->
-    <section class="section" id="who-i-am">
-      <div class="container">
-        <h2>Who I Am</h2>
-        <p>I’m <strong>Aayam Paudel</strong> (also written as <em>Aayam Poudel</em>), a developer, technology professional and B.Sc. CSIT student at Lumbini I.C.T. Campus, affiliated with Tribhuvan University. I live in Gaindakot, Nawalparasi East, Gandaki Province, Nepal. I co‑found Namaste Suman Communication where I lead technical systems.</p>
-      </div>
-    </section>
-    <!-- B. My Journey -->
-    <section class="section" id="my-journey">
-      <div class="container">
-        <h2>My Journey</h2>
-        <p>My interest in programming began in high school, evolving through self‑directed learning, open‑source contributions and building real‑world web applications. The portfolio site you are viewing is the result of continuous experimentation and a desire to solve practical problems.</p>
-      </div>
-    </section>
-    <!-- C. Academic Background -->
+
+    <!-- 2. BENTO / CARD GRID: ACADEMIC BACKGROUND & ENTREPRENEURSHIP -->
     <section class="section" id="education">
       <div class="container">
-        <h2>Academic Background</h2>
-        <ul>
-          <li><strong>B.Sc. CSIT</strong> – Lumbini I.C.T. Campus (Tribhuvan University), currently in the final semester.</li>
-          <li><strong>+2 Science</strong> – Orchid College, Bharatpur, Chitwan, Nepal.</li>
-        </ul>
+        <div class="about-sections-grid">
+          <!-- Academic Background Card -->
+          <article class="about-card reveal-up">
+            <div class="card-eyebrow">ACADEMIC FOUNDATION</div>
+            <h2>Academic Background</h2>
+            <div class="bento-subcard-list">
+              <div class="bento-subcard">
+                <span class="bento-badge">Degree Program</span>
+                <h3>B.Sc. CSIT</h3>
+                <p class="bento-org"><a href="https://lict.edu.np/" target="_blank" rel="noopener noreferrer" class="text-link">Lumbini I.C.T. Campus ↗</a> (Tribhuvan University)</p>
+                <p class="bento-desc">Currently in the final semester. Coursework and practical focus in algorithms, systems programming, database systems, and modern web architectures.</p>
+              </div>
+              <div class="bento-subcard">
+                <span class="bento-badge">Higher Secondary</span>
+                <h3>+2 Science</h3>
+                <p class="bento-org">Orchid College · Bharatpur, Chitwan, Nepal</p>
+                <p class="bento-desc">Graduated with a science major, establishing foundational training in mathematics, physics, and computer fundamentals.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Business & Entrepreneurship Card -->
+          <article class="about-card reveal-up" id="business">
+            <div class="card-eyebrow">BUSINESS &amp; LEADERSHIP</div>
+            <h2>Business &amp; Entrepreneurship</h2>
+            <div class="bento-subcard">
+              <span class="bento-badge">Co-Founder &amp; Tech Lead</span>
+              <h3>Namaste Suman Communication</h3>
+              <p class="bento-org">Gaindakot-5, Nawalparasi East, Gandaki Province, Nepal</p>
+              <p class="bento-desc">
+                Co‑founder and Technical Systems Lead at <a href="namaste-suman.html" class="text-link">Namaste Suman Communication ↗</a>, a local digital service provider that automates visa documentation workflows for the Gaindakot municipality.
+              </p>
+              <div class="tag-row" style="margin-top: 1.15rem;">
+                <span class="tag">10+ Years Trust</span>
+                <span class="tag">Visa Documentation</span>
+                <span class="tag">Civic Tech</span>
+                <span class="tag">Workflow Automation</span>
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
-    <!-- D. Technical Skills -->
+
+    <!-- 3. AI CAR DRIFT VIDEO SHOWCASE (SMALL & CENTERED IN MIDDLE) -->
+    <section class="section about-video-section">
+      <div class="container">
+        <div class="video-center-container reveal-up">
+          <div class="section-head text-center">
+            <p class="eyebrow">VISUAL EXPERIMENT · AI CREATIVE LAB</p>
+            <h2 class="section-title">AI Car Drift Showcase</h2>
+            <p class="page-lede" style="margin-inline: auto; text-align: center;">A 10-second AI-generated visual drift video featuring Aayam Paudel in motion.</p>
+          </div>
+
+          <div class="about-video-card">
+            <div class="about-video-frame">
+              <video
+                controls
+                preload="metadata"
+                poster="assets/images/aayam-paudel-ai-car-drift.jpg"
+                class="about-video"
+                playsinline
+              >
+                <source src="assets/videos/aayam-in-car.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <figcaption class="about-video-caption">
+              <div class="video-caption-left">
+                <strong>Aayam Paudel – AI Car Drift</strong>
+                <span>10‑second AI‑generated visual drift video</span>
+              </div>
+              <span class="video-duration-badge">0:10 MP4</span>
+            </figcaption>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. TECHNICAL SKILLS: STRUCTURED BENTO CATEGORY PILL GRID -->
     <section class="section" id="technical-skills">
       <div class="container">
-        <h2>Technical Skills</h2>
-        <h3>Programming (used in projects)</h3>
-        <p>C, C++, Python, JavaScript, PHP</p>
-        <h3>Web Development</h3>
-        <p>HTML, CSS, JavaScript, API integration, backend development (Node.js, FastAPI)</p>
-        <h3>Databases</h3>
-        <p>SQL, phpMyAdmin, fundamentals of relational design</p>
-        <h3>Tools &amp; Platforms</h3>
-        <p>Git, GitHub, VS Code, XAMPP, Vercel, Docker (basic), Figma (design review)</p>
-        <h3>Creative &amp; Exploration</h3>
-        <p>Adobe Photoshop, Wondershare Filmora, AI/ML experimentation, data science basics</p>
-        <h3>Current Learning</h3>
-        <p>Advanced AI/ML techniques, cloud native deployment, performance engineering.</p>
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">EXPERTISE &amp; TOOLKIT</p>
+            <h2 class="section-title">Technical Skills</h2>
+            <p class="page-lede">Practical languages, frameworks, and workflows leveraged across real-world client workflows and personal engineering experiments.</p>
+          </div>
+        </div>
+
+        <div class="skills-categories-grid reveal-up">
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">💻 Programming (used in projects)</div>
+            <p class="skills-cat-desc">C, C++, Python, JavaScript, PHP</p>
+            <div class="tag-row">
+              <span class="tag">C</span>
+              <span class="tag">C++</span>
+              <span class="tag">Python</span>
+              <span class="tag">JavaScript</span>
+              <span class="tag">PHP</span>
+            </div>
+          </div>
+
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">🌐 Web Development</div>
+            <p class="skills-cat-desc">HTML, CSS, JavaScript, API integration, backend development (Node.js, FastAPI)</p>
+            <div class="tag-row">
+              <span class="tag">HTML5</span>
+              <span class="tag">CSS3</span>
+              <span class="tag">FastAPI</span>
+              <span class="tag">Node.js</span>
+              <span class="tag">API Integration</span>
+            </div>
+          </div>
+
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">🗄️ Databases</div>
+            <p class="skills-cat-desc">SQL, phpMyAdmin, fundamentals of relational design</p>
+            <div class="tag-row">
+              <span class="tag">SQL</span>
+              <span class="tag">MySQL</span>
+              <span class="tag">phpMyAdmin</span>
+              <span class="tag">Relational Design</span>
+            </div>
+          </div>
+
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">🛠️ Tools &amp; Platforms</div>
+            <p class="skills-cat-desc">Git, GitHub, VS Code, XAMPP, Vercel, Docker (basic), Figma (design review)</p>
+            <div class="tag-row">
+              <span class="tag">Git</span>
+              <span class="tag">GitHub</span>
+              <span class="tag">VS Code</span>
+              <span class="tag">Vercel</span>
+              <span class="tag">XAMPP</span>
+              <span class="tag">Figma</span>
+            </div>
+          </div>
+
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">🎨 Creative &amp; Exploration</div>
+            <p class="skills-cat-desc">Adobe Photoshop, Wondershare Filmora, AI/ML experimentation, data science basics</p>
+            <div class="tag-row">
+              <span class="tag">Photoshop</span>
+              <span class="tag">Filmora</span>
+              <span class="tag">AI/ML Labs</span>
+              <span class="tag">Data Science</span>
+            </div>
+          </div>
+
+          <div class="skills-cat-card">
+            <div class="skills-cat-title">🚀 Current Learning</div>
+            <p class="skills-cat-desc">Advanced AI/ML techniques, cloud native deployment, performance engineering.</p>
+            <div class="tag-row">
+              <span class="tag">Advanced AI/ML</span>
+              <span class="tag">Cloud Native</span>
+              <span class="tag">Performance Eng</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
-    <!-- E. Projects -->
+
+    <!-- 5. PROJECTS: BENTO CARDS GRID -->
     <section class="section" id="projects">
       <div class="container">
-        <h2>Projects</h2>
-        <ul>
-          <li><strong>Personal Portfolio Website</strong> – Live portfolio (this site). Technologies: HTML, CSS, JavaScript, Vercel hosting.</li>
-          <li><strong>Haat Bazzar — हट बजार</strong> – Farm‑to‑consumer marketplace demo. Live frontend demo, built with HTML/CSS/JS.</li>
-          <li><strong>Municipal Citizenship Recommendation Portal</strong> – Hackathon prototype for civic workflow.</li>
-          <li><strong>Namaste Suman AI Automation Platform</strong> – Planned AI‑powered documentation automation (prototype stage).</li>
-          <li><strong>Python Portfolio Audit Utility</strong> – CLI tool for validating site assets and SEO.</li>
-          <li><strong>Playground Experiments</strong> – Interactive JavaScript experiments for learning.</li>
-        </ul>
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">PORTFOLIO WORK</p>
+            <h2 class="section-title">Projects</h2>
+            <p class="page-lede">Real-world applications, civic hackathon prototypes, and technical utilities developed by Aayam Paudel.</p>
+          </div>
+          <a href="projects.html" class="btn btn-secondary">Explore All Projects →</a>
+        </div>
+
+        <div class="projects-bento-grid reveal-up">
+          <div class="project-bento-item">
+            <span class="bento-badge">Production Web</span>
+            <h3>Personal Portfolio Website</h3>
+            <p>Live portfolio (this site). Technologies: HTML, CSS, JavaScript, Vercel hosting. Built from scratch with zero runtime frameworks, instant theme switching, and interactive canvas games.</p>
+            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">Vercel</span></div>
+          </div>
+
+          <div class="project-bento-item">
+            <span class="bento-badge">Marketplace Demo</span>
+            <h3>Haat Bazzar — हट बजार</h3>
+            <p>Farm‑to‑consumer marketplace demo. Live frontend demo, built with HTML/CSS/JS connecting agricultural producers to municipal consumers.</p>
+            <div class="tag-row"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JS</span><span class="tag">E-Commerce</span></div>
+          </div>
+
+          <div class="project-bento-item">
+            <span class="bento-badge">Civic Tech Hackathon</span>
+            <h3>Municipal Citizenship Recommendation Portal</h3>
+            <p>Hackathon prototype for civic workflow streamlining citizen recommendation and local ward administrative filings.</p>
+            <div class="tag-row"><span class="tag">Civic Tech</span><span class="tag">Hackathon</span><span class="tag">Workflow</span></div>
+          </div>
+
+          <div class="project-bento-item">
+            <span class="bento-badge">Enterprise Automation</span>
+            <h3>Namaste Suman AI Automation Platform</h3>
+            <p>Planned AI‑powered documentation automation (prototype stage) automating visa filing checklists, validation, and forms.</p>
+            <div class="tag-row"><span class="tag">AI Automation</span><span class="tag">Visa Dossiers</span><span class="tag">OCR</span></div>
+          </div>
+
+          <div class="project-bento-item">
+            <span class="bento-badge">CLI / QA Utility</span>
+            <h3>Python Portfolio Audit Utility</h3>
+            <p>CLI tool for validating site assets, HTTP redirect chains, headers, SEO tags, and JSON-LD schemas.</p>
+            <div class="tag-row"><span class="tag">Python</span><span class="tag">CLI</span><span class="tag">SEO Testing</span></div>
+          </div>
+
+          <div class="project-bento-item">
+            <span class="bento-badge">Canvas &amp; Games</span>
+            <h3>Playground Experiments</h3>
+            <p>Interactive JavaScript experiments for learning, including Space Defender arcade, Type Blaster typing shooter, Nokia Snake, and sorting visualizers.</p>
+            <div class="tag-row"><span class="tag">Canvas</span><span class="tag">Game Dev</span><span class="tag">Algorithms</span></div>
+          </div>
+        </div>
       </div>
     </section>
-    <!-- F. Business & Entrepreneurship -->
-    <section class="section" id="business">
+
+    <!-- 6. PHILOSOPHY & FUTURE VISION -->
+    <section class="section">
       <div class="container">
-        <h2>Business &amp; Entrepreneurial Involvement</h2>
-        <p>Co‑founder and Technical Systems Lead at <a href="namaste-suman.html">Namaste Suman Communication</a>, a local digital service provider that automates visa documentation workflows for the Gaindakot municipality.</p>
+        <div class="about-sections-grid">
+          <article class="about-card reveal-up" id="philosophy">
+            <div class="card-eyebrow">ENGINEERING VALUES</div>
+            <h2>Engineering Philosophy</h2>
+            <p>Learning by building, solving practical problems, writing maintainable code, testing thoroughly, and focusing on user experience.</p>
+            <p>Code is a vehicle for empowering real people. Balancing performance, accessibility, and clean architecture ensures tools remain dependable over years of use.</p>
+          </article>
+
+          <article class="about-card reveal-up" id="future-vision">
+            <div class="card-eyebrow">LOOKING FORWARD</div>
+            <h2>Future Vision</h2>
+            <p>Continue deepening expertise in full‑stack development, AI/ML, automation, and entrepreneurship to create digital products that solve real‑world problems.</p>
+            <p>Expanding civic technology initiatives and digital documentation tooling to make administrative workflows seamless across Nepal and beyond.</p>
+          </article>
+        </div>
       </div>
     </section>
-    <!-- G. Engineering Philosophy -->
-    <section class="section" id="philosophy">
-      <div class="container">
-        <h2>Engineering Philosophy</h2>
-        <p>Learning by building, solving practical problems, writing maintainable code, testing thoroughly, and focusing on user experience.</p>
-      </div>
-    </section>
-    <!-- H. Future Vision -->
-    <section class="section" id="future-vision">
-      <div class="container">
-        <h2>Future Vision</h2>
-        <p>Continue deepening expertise in full‑stack development, AI/ML, automation, and entrepreneurship to create digital products that solve real‑world problems.</p>
-      </div>
-    </section>
-    <!-- I. Find Me Across the Web -->
+
+    <!-- 7. FIND ME ACROSS THE WEB -->
     <section class="section" id="find-me">
       <div class="container">
-        <h2>Find Me Across the Web</h2>
-        <ul class="social-links">
-          <li><a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-          <li><a href="https://about.me/aayam.paudel" target="_blank" rel="noopener noreferrer">About.me</a></li>
-          <li><a href="https://gravatar.com/glitterymortally47bbbaaf4c" target="_blank" rel="noopener noreferrer">Gravatar</a></li>
-          <li><a href="https://medium.com/@aayampaudel200" target="_blank" rel="noopener noreferrer">Medium</a></li>
-          <li><a href="https://orcid.org/0009-0000-1874-6060" target="_blank" rel="noopener noreferrer">ORCID</a></li>
-          <li><a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
-          <li><a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-          <li>Wikidata – pending verification</li>
-        </ul>
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">PROFILES &amp; SOCIALS</p>
+            <h2 class="section-title">Find Me Across the Web</h2>
+            <p class="page-lede">Connect, explore source repositories, read research notes, or follow technical updates across verified profiles.</p>
+          </div>
+        </div>
+
+        <div class="social-cards-grid reveal-up">
+          <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>GitHub</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://about.me/aayam.paudel" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>About.me</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://gravatar.com/glitterymortally47bbbaaf4c" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>Gravatar</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://medium.com/@aayampaudel200" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>Medium</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://orcid.org/0009-0000-1874-6060" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>ORCID</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>X / Twitter</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer" class="social-card-item">
+            <span>LinkedIn</span>
+            <span class="social-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="social-card-item social-pending">
+            <span>Wikidata – pending verification</span>
+          </div>
+        </div>
       </div>
     </section>
-    <!-- J. FAQ -->
+
+    <!-- 8. FAQ ACCORDION -->
     <section class="section" id="faq">
       <div class="container">
-        <h2>FAQ</h2>
-        <dl>
-          <dt>Who is Aayam Paudel?</dt><dd>A Nepalese developer, B.Sc. CSIT student and tech entrepreneur.</dd>
-          <dt>What does Aayam Paudel study?</dt><dd>B.Sc. Computer Science and Information Technology at Lumbini I.C.T. Campus.</dd>
-          <dt>Where is Aayam Paudel from?</dt><dd>Gaindakot, Nawalparasi East, Gandaki Province, Nepal.</dd>
-          <dt>Which university is he affiliated with?</dt><dd>Tribhuvan University (through Lumbini I.C.T. Campus).</dd>
-          <dt>What technologies does he use?</dt><dd>C, C++, Python, JavaScript, PHP, HTML, CSS, FastAPI, Node.js, Git, Vercel, AI/ML tools, etc.</dd>
-          <dt>Which projects has he developed?</dt><dd>Portfolio site, Haat Bazzar marketplace, Municipal Citizenship Recommendation Portal, Namaste Suman AI Automation (planned), Python Portfolio Audit, Playground experiments.</dd>
-          <dt>What is Haat Bazzar?</dt><dd>A farm‑to‑consumer marketplace prototype for Nepal.</dd>
-          <dt>What is his professional involvement with Namaste Suman Communication?</dt><dd>Co‑founder and Technical Systems Lead, building an AI‑enabled documentation automation platform.</dd>
-          <dt>Where can his portfolio be visited?</dt><dd><a href="https://aayampaudel.com.np/" target="_blank" rel="noopener noreferrer">https://aayampaudel.com.np/</a></dd>
-          <dt>Where can his professional profiles be found?</dt><dd>See “Find Me Across the Web” section above.</dd>
-          <dt>What are his future interests?</dt><dd>Full‑stack development, AI/ML, automation, digital entrepreneurship and building useful products.</dd>
-        </dl>
+        <div class="section-head reveal-up">
+          <div>
+            <p class="eyebrow">FREQUENTLY ASKED QUESTIONS</p>
+            <h2 class="section-title">FAQ</h2>
+            <p class="page-lede">Everything you need to know about Aayam Paudel, studies, skills, projects, and entrepreneurship.</p>
+          </div>
+        </div>
+
+        <div class="faq-accordion-list reveal-up">
+          <details class="faq-accordion-item" open>
+            <summary class="faq-summary">
+              <span>Who is Aayam Paudel?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>A Nepalese developer, B.Sc. CSIT student and tech entrepreneur.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>What does Aayam Paudel study?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>B.Sc. Computer Science and Information Technology at Lumbini I.C.T. Campus.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>Where is Aayam Paudel from?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>Gaindakot, Nawalparasi East, Gandaki Province, Nepal.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>Which university is he affiliated with?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>Tribhuvan University (through Lumbini I.C.T. Campus).</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>What technologies does he use?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>C, C++, Python, JavaScript, PHP, HTML, CSS, FastAPI, Node.js, Git, Vercel, AI/ML tools, etc.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>Which projects has he developed?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>Portfolio site, Haat Bazzar marketplace, Municipal Citizenship Recommendation Portal, Namaste Suman AI Automation (planned), Python Portfolio Audit, Playground experiments.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>What is Haat Bazzar?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>A farm‑to‑consumer marketplace prototype for Nepal.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>What is his professional involvement with Namaste Suman Communication?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>Co‑founder and Technical Systems Lead, building an AI‑enabled documentation automation platform.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>Where can his portfolio be visited?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p><a href="https://aayampaudel.com.np/" target="_blank" rel="noopener noreferrer" class="text-link">https://aayampaudel.com.np/ ↗</a></p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>Where can his professional profiles be found?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>See “Find Me Across the Web” section above.</p>
+            </div>
+          </details>
+
+          <details class="faq-accordion-item">
+            <summary class="faq-summary">
+              <span>What are his future interests?</span>
+              <span class="faq-chevron" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-content">
+              <p>Full‑stack development, AI/ML, automation, digital entrepreneurship and building useful products.</p>
+            </div>
+          </details>
+        </div>
       </div>
     </section>
   </main>
+
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
@@ -278,6 +653,23 @@
       <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
     </div>
   </footer>
+
+  <!-- Dynamic Age Calculator (DOB: 2007-12-04) -->
+  <script>
+    (() => {
+      const ageEl = document.getElementById('aayamAge');
+      if (ageEl) {
+        const dob = new Date(2007, 11, 4); // December 4, 2007
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+          age--;
+        }
+        ageEl.textContent = age;
+      }
+    })();
+  </script>
   <script src="js/main.js?v=site-refresh-2" defer></script>
   <script src="/js/chatbot.js" defer></script>
 </body>

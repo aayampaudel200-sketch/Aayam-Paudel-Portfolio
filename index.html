@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +26,7 @@
   <meta name="twitter:description" content="Official portfolio of Aayam Paudel: developer, B.Sc. CSIT student, and Co-Founder &amp; Technical Systems Lead at Namaste Suman Communication in Gaindakot, Nepal.">
   <meta name="twitter:image" content="https://aayampaudel.com.np/assets/images/aayam-paudel-social-preview.jpg">
   <link rel="canonical" href="https://aayampaudel.com.np/">
-  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
+  <script>try { const theme = localStorage.getItem('site-theme') === 'light' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; document.documentElement.style.colorScheme = theme; } catch { document.documentElement.dataset.theme = 'dark'; document.documentElement.style.colorScheme = 'dark'; }</script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
