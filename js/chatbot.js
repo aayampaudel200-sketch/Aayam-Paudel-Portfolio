@@ -22,7 +22,7 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .aayam-ai-trigger{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:1100;display:inline-flex;align-items:center;gap:.55rem;border:1px solid rgba(125,211,252,.75);border-radius:999px;padding:.8rem 1.1rem;background:linear-gradient(135deg,#0284c7,#4f46e5);box-shadow:0 12px 34px rgba(2,132,199,.38),0 0 0 5px rgba(56,189,248,.12);color:#fff;font:700 .9rem/1 Inter,system-ui,sans-serif;cursor:pointer;transition:transform .2s,box-shadow .2s;animation:aayam-ai-pulse 2.6s ease-in-out infinite}.aayam-ai-trigger:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(2,132,199,.48),0 0 0 7px rgba(56,189,248,.16)}.aayam-ai-trigger:focus-visible,.aayam-ai-close:focus-visible,.aayam-ai-chip:focus-visible,.aayam-ai-send:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}@keyframes aayam-ai-pulse{50%{box-shadow:0 12px 34px rgba(2,132,199,.38),0 0 0 9px rgba(56,189,248,.04)}}.aayam-ai-drawer[hidden]{display:none}.aayam-ai-drawer{position:fixed;inset:0;z-index:1200;background:rgba(2,6,23,.64);display:flex;justify-content:flex-end}.aayam-ai-panel{display:flex;flex-direction:column;width:min(440px,100%);height:100%;background:#0b1220;color:#e5eefb;border-left:1px solid rgba(125,211,252,.3);box-shadow:-18px 0 50px rgba(0,0,0,.36)}.aayam-ai-header{display:flex;align-items:center;justify-content:space-between;padding:1.15rem 1.2rem;border-bottom:1px solid rgba(148,163,184,.18);background:linear-gradient(120deg,rgba(14,165,233,.16),rgba(99,102,241,.12))}.aayam-ai-title{margin:0;font-size:1.05rem}.aayam-ai-subtitle{margin:.2rem 0 0;color:#9fb2cc;font-size:.78rem}.aayam-ai-close{border:0;border-radius:.55rem;padding:.35rem .55rem;background:rgba(148,163,184,.14);color:#e5eefb;font-size:1.35rem;line-height:1;cursor:pointer}.aayam-ai-messages{flex:1;overflow:auto;padding:1rem 1rem .5rem;display:flex;flex-direction:column;gap:.75rem}.aayam-ai-message{max-width:88%;padding:.72rem .85rem;border-radius:.85rem;font:400 .9rem/1.5 Inter,system-ui,sans-serif;white-space:pre-wrap}.aayam-ai-message--assistant{align-self:flex-start;background:rgba(30,41,59,.82);border:1px solid rgba(148,163,184,.18)}.aayam-ai-message--user{align-self:flex-end;background:linear-gradient(135deg,#0369a1,#4338ca);color:#fff}.aayam-ai-quick{padding:.65rem 1rem;border-top:1px solid rgba(148,163,184,.15)}.aayam-ai-quick-label{display:block;margin-bottom:.45rem;color:#9fb2cc;font-size:.73rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.aayam-ai-chips{display:flex;flex-wrap:wrap;gap:.45rem}.aayam-ai-chip{border:1px solid rgba(56,189,248,.36);border-radius:999px;padding:.42rem .65rem;background:rgba(14,165,233,.09);color:#bde9ff;font:600 .76rem/1.2 Inter,system-ui,sans-serif;cursor:pointer}.aayam-ai-composer{display:flex;gap:.55rem;padding:1rem;border-top:1px solid rgba(148,163,184,.18);background:#0a101c}.aayam-ai-input{min-width:0;flex:1;border:1px solid rgba(148,163,184,.28);border-radius:.7rem;padding:.72rem .8rem;background:#111c2e;color:#f8fafc;font:400 .9rem Inter,system-ui,sans-serif}.aayam-ai-input::placeholder{color:#94a3b8}.aayam-ai-send{border:0;border-radius:.7rem;padding:.7rem .9rem;background:#38bdf8;color:#082f49;font-weight:800;cursor:pointer}.aayam-ai-send:disabled{opacity:.6;cursor:wait}.aayam-ai-contact-highlight{outline:3px solid #38bdf8!important;outline-offset:6px;border-radius:.5rem;transition:outline-color .3s}@media(max-width:520px){.aayam-ai-panel{width:100%;border-left:0}.aayam-ai-trigger{padding:.72rem .9rem;font-size:.82rem}}@media(prefers-reduced-motion:reduce){.aayam-ai-trigger{animation:none;transition:none}.aayam-ai-trigger:hover{transform:none}}
+    .aayam-ai-trigger{position:fixed;right:max(1rem,env(safe-area-inset-right));bottom:max(1rem,env(safe-area-inset-bottom));z-index:1100;display:inline-flex;align-items:center;gap:.55rem;border:1px solid rgba(125,211,252,.75);border-radius:999px;padding:.8rem 1.1rem;background:linear-gradient(135deg,#0284c7,#4f46e5);box-shadow:0 12px 34px rgba(2,132,199,.38),0 0 0 5px rgba(56,189,248,.12);color:#fff;font:700 .9rem/1 Inter,system-ui,sans-serif;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:box-shadow .2s,opacity .15s;animation:aayam-ai-pulse 2.6s ease-in-out infinite}.aayam-ai-trigger:active{cursor:grabbing}.aayam-ai-trigger.is-dragging{animation:none;opacity:.88;box-shadow:0 20px 48px rgba(2,132,199,.55),0 0 0 7px rgba(56,189,248,.2);transition:none}.aayam-ai-trigger:hover:not(.is-dragging){box-shadow:0 16px 40px rgba(2,132,199,.48),0 0 0 7px rgba(56,189,248,.16)}.aayam-ai-trigger:focus-visible,.aayam-ai-close:focus-visible,.aayam-ai-chip:focus-visible,.aayam-ai-send:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}@keyframes aayam-ai-pulse{50%{box-shadow:0 12px 34px rgba(2,132,199,.38),0 0 0 9px rgba(56,189,248,.04)}}.aayam-ai-drawer[hidden]{display:none}.aayam-ai-drawer{position:fixed;inset:0;z-index:1200;background:rgba(2,6,23,.64);display:flex;justify-content:flex-end}.aayam-ai-panel{display:flex;flex-direction:column;width:min(440px,100%);height:100%;background:#0b1220;color:#e5eefb;border-left:1px solid rgba(125,211,252,.3);box-shadow:-18px 0 50px rgba(0,0,0,.36)}.aayam-ai-header{display:flex;align-items:center;justify-content:space-between;padding:1.15rem 1.2rem;border-bottom:1px solid rgba(148,163,184,.18);background:linear-gradient(120deg,rgba(14,165,233,.16),rgba(99,102,241,.12))}.aayam-ai-title{margin:0;font-size:1.05rem}.aayam-ai-subtitle{margin:.2rem 0 0;color:#9fb2cc;font-size:.78rem}.aayam-ai-close{border:0;border-radius:.55rem;padding:.35rem .55rem;background:rgba(148,163,184,.14);color:#e5eefb;font-size:1.35rem;line-height:1;cursor:pointer}.aayam-ai-messages{flex:1;overflow:auto;padding:1rem 1rem .5rem;display:flex;flex-direction:column;gap:.75rem}.aayam-ai-message{max-width:88%;padding:.72rem .85rem;border-radius:.85rem;font:400 .9rem/1.5 Inter,system-ui,sans-serif;white-space:pre-wrap}.aayam-ai-message--assistant{align-self:flex-start;background:rgba(30,41,59,.82);border:1px solid rgba(148,163,184,.18)}.aayam-ai-message--user{align-self:flex-end;background:linear-gradient(135deg,#0369a1,#4338ca);color:#fff}.aayam-ai-quick{padding:.65rem 1rem;border-top:1px solid rgba(148,163,184,.15)}.aayam-ai-quick-label{display:block;margin-bottom:.45rem;color:#9fb2cc;font-size:.73rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.aayam-ai-chips{display:flex;flex-wrap:wrap;gap:.45rem}.aayam-ai-chip{border:1px solid rgba(56,189,248,.36);border-radius:999px;padding:.42rem .65rem;background:rgba(14,165,233,.09);color:#bde9ff;font:600 .76rem/1.2 Inter,system-ui,sans-serif;cursor:pointer}.aayam-ai-composer{display:flex;gap:.55rem;padding:1rem;border-top:1px solid rgba(148,163,184,.18);background:#0a101c}.aayam-ai-input{min-width:0;flex:1;border:1px solid rgba(148,163,184,.28);border-radius:.7rem;padding:.72rem .8rem;background:#111c2e;color:#f8fafc;font:400 .9rem Inter,system-ui,sans-serif}.aayam-ai-input::placeholder{color:#94a3b8}.aayam-ai-send{border:0;border-radius:.7rem;padding:.7rem .9rem;background:#38bdf8;color:#082f49;font-weight:800;cursor:pointer}.aayam-ai-send:disabled{opacity:.6;cursor:wait}.aayam-ai-contact-highlight{outline:3px solid #38bdf8!important;outline-offset:6px;border-radius:.5rem;transition:outline-color .3s}@media(max-width:520px){.aayam-ai-panel{width:100%;border-left:0}.aayam-ai-trigger{padding:.72rem .9rem;font-size:.82rem}}@media(prefers-reduced-motion:reduce){.aayam-ai-trigger{animation:none}.aayam-ai-trigger:hover:not(.is-dragging){transform:none}}
   `;
   document.head.appendChild(style);
 
@@ -45,6 +45,117 @@
       <form class="aayam-ai-composer"><label class="visually-hidden" for="aayamAiInput">Ask ${assistantName}</label><input class="aayam-ai-input" id="aayamAiInput" maxlength="800" autocomplete="off" placeholder="Search site or ask AI…"><button class="aayam-ai-send" type="submit">Send</button></form>
     </section>`;
   document.body.append(trigger, drawer);
+
+  // ── Draggable FAB ─────────────────────────────────────────────────────────
+  // Restores position from localStorage so it stays where the user left it.
+  (function makeDraggable() {
+    const STORAGE_KEY = 'aayam-ai-fab-pos';
+    let isDragging = false;
+    let dragStarted = false;
+    let startX = 0, startY = 0;
+    let originRight = 0, originBottom = 0;
+
+    function clampPos(right, bottom) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const rect = trigger.getBoundingClientRect();
+      const w = rect.width || 140;
+      const h = rect.height || 48;
+      return {
+        right: Math.max(8, Math.min(right, vw - w - 8)),
+        bottom: Math.max(8, Math.min(bottom, vh - h - 8)),
+      };
+    }
+
+    function applyPos(right, bottom, animate) {
+      trigger.style.transition = animate ? 'right .25s,bottom .25s' : 'none';
+      trigger.style.right = right + 'px';
+      trigger.style.bottom = bottom + 'px';
+      trigger.style.left = 'auto';
+      trigger.style.top = 'auto';
+    }
+
+    function savePos(right, bottom) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ right, bottom })); } catch (_) {}
+    }
+
+    // Restore saved position
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (saved && typeof saved.right === 'number' && typeof saved.bottom === 'number') {
+        const clamped = clampPos(saved.right, saved.bottom);
+        applyPos(clamped.right, clamped.bottom, false);
+      }
+    } catch (_) {}
+
+    function onDragStart(e) {
+      if (e.type === 'mousedown' && e.button !== 0) return;
+      isDragging = true;
+      dragStarted = false;
+      const point = e.touches ? e.touches[0] : e;
+      startX = point.clientX;
+      startY = point.clientY;
+      const rect = trigger.getBoundingClientRect();
+      originRight = window.innerWidth - rect.right;
+      originBottom = window.innerHeight - rect.bottom;
+      trigger.setPointerCapture && trigger.setPointerCapture(e.pointerId);
+    }
+
+    function onDragMove(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const point = e.touches ? e.touches[0] : e;
+      const dx = point.clientX - startX;
+      const dy = point.clientY - startY;
+      if (!dragStarted && Math.hypot(dx, dy) > 6) {
+        dragStarted = true;
+        trigger.classList.add('is-dragging');
+        trigger.style.animation = 'none';
+      }
+      if (!dragStarted) return;
+      const { right, bottom } = clampPos(originRight - dx, originBottom + dy);
+      applyPos(right, bottom, false);
+    }
+
+    function onDragEnd(e) {
+      if (!isDragging) return;
+      isDragging = false;
+      if (dragStarted) {
+        trigger.classList.remove('is-dragging');
+        trigger.style.animation = '';
+        const rect = trigger.getBoundingClientRect();
+        const right = window.innerWidth - rect.right;
+        const bottom = window.innerHeight - rect.bottom;
+        savePos(right, bottom);
+        // Snap to nearest edge for clean UX
+        const snapRight = rect.left < window.innerWidth / 2 ? window.innerWidth - rect.right : rect.left;
+        const finalRight = rect.left < window.innerWidth / 2
+          ? window.innerWidth - rect.width - 12
+          : 12;
+        applyPos(finalRight, bottom, true);
+        savePos(finalRight, bottom);
+      }
+    }
+
+    // Pointer events (covers mouse + touch + pen)
+    trigger.addEventListener('pointerdown', (e) => {
+      onDragStart(e);
+    }, { passive: false });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      onDragMove(e);
+    }, { passive: false });
+
+    window.addEventListener('pointerup', onDragEnd);
+    window.addEventListener('pointercancel', onDragEnd);
+
+    // Prevent opening the drawer on a drag (only on a clean tap/click)
+    trigger.addEventListener('click', (e) => {
+      if (dragStarted) { e.stopImmediatePropagation(); dragStarted = false; }
+    }, true);
+  })();
+  // ─────────────────────────────────────────────────────────────────────────
 
   const panel = drawer.querySelector('.aayam-ai-panel');
   const closeButton = drawer.querySelector('.aayam-ai-close');

@@ -289,16 +289,21 @@
     if (!grid || !resetBtn || !movesEl || !timeEl || !bestEl || !status) return;
 
     const symbols = [
-      { icon: '✦', label: 'star' },
-      { icon: '⌘', label: 'command' },
+      { icon: '🚀', label: 'rocket' },
       { icon: '⚡', label: 'lightning bolt' },
-      { icon: '◈', label: 'diamond' },
-      { icon: '☼', label: 'sun' },
-      { icon: '✿', label: 'flower' },
-      { icon: '▲', label: 'triangle' },
-      { icon: '♥', label: 'heart' },
+      { icon: '🔥', label: 'fire flame' },
+      { icon: '💎', label: 'cyan diamond' },
+      { icon: '🛸', label: 'alien flying saucer' },
+      { icon: '👾', label: 'retro arcade monster' },
+      { icon: '🪐', label: 'ringed planet' },
+      { icon: '⭐', label: 'golden star' },
+      { icon: '🎯', label: 'bullseye target' },
+      { icon: '💻', label: 'laptop computer' },
+      { icon: '🛡️', label: 'defense shield' },
+      { icon: '🏆', label: 'gold victory trophy' },
     ];
-    const pairCounts = { easy: 4, medium: 6, hard: 8 };
+    const pairCounts = { easy: 6, medium: 8, hard: 10, veryhard: 12 };
+    const mismatchTimes = { easy: 700, medium: 600, hard: 500, veryhard: 420 };
     let difficulty = 'medium';
     function memoryScoreKey() { return `memory-match-best:${difficulty}`; }
     let cards = [];
@@ -341,6 +346,7 @@
     }
 
     function render() {
+      grid.dataset.count = String(cards.length);
       grid.replaceChildren();
       cards.forEach((card, index) => {
         const button = document.createElement('button');
@@ -349,7 +355,10 @@
         button.className = 'memory-card';
         button.classList.toggle('is-revealed', card.revealed && !card.matched);
         button.classList.toggle('is-matched', card.matched);
-        button.textContent = card.icon;
+        button.classList.toggle('is-mismatch', Boolean(card.mismatch));
+        button.innerHTML = isVisible
+          ? `<span class="card-symbol" aria-hidden="true">${card.icon}</span>`
+          : `<span class="card-back-icon" aria-hidden="true">✦</span>`;
         button.setAttribute('aria-label', isVisible ? `${card.label}, ${card.matched ? 'matched' : 'revealed'}` : 'Hidden memory card');
         button.setAttribute('aria-pressed', String(isVisible));
         button.disabled = locked || card.matched;
@@ -404,28 +413,35 @@
       }
 
       locked = true;
-      status.textContent = 'Not a match — take another look.';
+      firstCard.mismatch = true;
+      secondCard.mismatch = true;
+      status.textContent = 'Not a match — memorizing positions!';
       render();
+      const delay = mismatchTimes[difficulty] || 600;
       revealTimer = window.setTimeout(() => {
         firstCard.revealed = false;
         secondCard.revealed = false;
+        firstCard.mismatch = false;
+        secondCard.mismatch = false;
         firstIndex = null;
         locked = false;
         revealTimer = null;
         status.textContent = 'Choose two cards to find a match.';
         render();
-      }, 720);
+      }, delay);
     }
 
     function newGame() {
       window.clearInterval(timerId);
       window.clearTimeout(revealTimer);
-      const deck = symbols.slice(0, pairCounts[difficulty] || 6);
+      const count = pairCounts[difficulty] || 8;
+      const deck = symbols.slice(0, count);
       cards = shuffle([...deck, ...deck].map((symbol, index) => ({
         ...symbol,
         id: `${symbol.label}-${index}`,
         revealed: false,
         matched: false,
+        mismatch: false,
       })));
       firstIndex = null;
       locked = false;
@@ -435,7 +451,7 @@
       movesEl.textContent = '0';
       timeEl.textContent = '0:00';
       bestEl.textContent = bestMoves ? String(bestMoves) : '—';
-      status.textContent = `Find all ${pairCounts[difficulty]} pairs on ${difficulty}. The timer starts on your first reveal.`;
+      status.textContent = `Find all ${count} pairs on ${difficulty.toUpperCase()}. Timer starts on first reveal.`;
       render();
     }
 

@@ -3284,40 +3284,95 @@ ul { list-style: none; }
 .memory-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(0.35rem, 1.2vw, 0.6rem);
+  gap: clamp(0.45rem, 1.4vw, 0.85rem);
   width: 100%;
+  perspective: 900px;
+}
+/* Medium: 16 cards (4x4) */
+.memory-grid[data-count="16"] {
+  grid-template-columns: repeat(4, 1fr);
+}
+/* Hard: 20 cards (5x4) */
+.memory-grid[data-count="20"] {
+  grid-template-columns: repeat(5, 1fr);
+}
+/* Very Hard (Master): 24 cards (6x4) */
+.memory-grid[data-count="24"] {
+  grid-template-columns: repeat(6, 1fr);
+}
+/* Easy: 12 cards (4x3) */
+.memory-grid[data-count="12"] {
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 640px) {
+  .memory-grid[data-count="20"],
+  .memory-grid[data-count="24"] {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 .memory-card {
   display: grid;
   place-items: center;
   aspect-ratio: 1;
-  min-height: 44px;
-  max-height: 82px;
-  border: 1px solid var(--surface-border-strong);
-  border-radius: var(--radius-sm);
-  background: linear-gradient(145deg, rgba(56, 189, 248, 0.11), rgba(129, 140, 248, 0.1));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.035);
-  color: transparent;
-  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
-  transition: color 0.16s, background 0.16s, border-color 0.16s, transform 0.16s;
+  min-height: 52px;
+  max-height: 96px;
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  border-radius: var(--radius-md, 12px);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.7));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  font-size: clamp(1.75rem, 4.2vw, 2.5rem);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.2s, box-shadow 0.2s, background 0.2s;
   touch-action: manipulation;
 }
-.memory-card:hover {
-  border-color: rgba(56, 189, 248, 0.65);
-  transform: translateY(-2px);
+.memory-card .card-back-icon {
+  color: rgba(56, 189, 248, 0.4);
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.25));
+  transition: transform 0.2s;
+}
+.memory-card:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.8);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+}
+.memory-card:hover:not(:disabled) .card-back-icon {
+  transform: scale(1.2) rotate(15deg);
+  color: #38bdf8;
 }
 .memory-card:focus-visible {
-  outline: 3px solid rgba(56, 189, 248, 0.45);
+  outline: 3px solid rgba(56, 189, 248, 0.65);
   outline-offset: 2px;
 }
 .memory-card.is-revealed {
-  color: var(--text);
-  background: rgba(8, 11, 18, 0.75);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+  border-color: #38bdf8;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.45);
+  transform: scale(1.04);
 }
 .memory-card.is-matched {
-  color: #042f2e;
-  border-color: transparent;
-  background: linear-gradient(135deg, #5eead4, #67e8f9);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.3));
+  border-color: #10b981;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.5), inset 0 0 12px rgba(16, 185, 129, 0.2);
+  animation: cardMatchBounce 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.memory-card.is-mismatch {
+  border-color: #ef4444;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.5);
+  animation: cardMismatchShake 0.4s ease-in-out;
+}
+@keyframes cardMatchBounce {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+@keyframes cardMismatchShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
 }
 
 /* Type Blaster & Retro Arcade Labs */
@@ -3353,7 +3408,7 @@ ul { list-style: none; }
 
 .typing-shooter-stage {
   width: 100%;
-  max-width: 960px;
+  max-width: 1140px;
   margin-inline: auto;
   overflow: hidden;
   border: 1px solid rgba(56, 189, 248, 0.38);
@@ -3366,18 +3421,9 @@ ul { list-style: none; }
   width: 100%;
   height: auto;
   aspect-ratio: 960 / 640;
+  max-height: min(78vh, 720px);
+  object-fit: contain;
   touch-action: none;
-}
-
-@supports (height: 100dvh) {
-  .typing-shooter-stage {
-    max-height: min(72vh, calc(var(--visual-vh, 100dvh) - 150px));
-  }
-  .typing-shooter-stage canvas {
-    max-height: min(72vh, calc(var(--visual-vh, 100dvh) - 150px));
-    width: auto;
-    margin-inline: auto;
-  }
 }
 
 .typing-mobile-input-wrap {
@@ -3432,16 +3478,16 @@ ul { list-style: none; }
 
 /* Nokia Snake Layout */
 .snake-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 480px) minmax(180px, 1fr);
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: clamp(1rem, 4vw, 2.5rem);
+  gap: clamp(1rem, 3vw, 2rem);
 }
 .snake-screen-wrap {
   overflow: hidden;
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
+  margin-inline: auto;
   border: 12px solid #24313b;
   border-radius: 1.5rem;
   background: #9caf88;
@@ -3456,9 +3502,14 @@ ul { list-style: none; }
   touch-action: none;
 }
 .snake-side {
-  display: grid;
-  justify-items: start;
-  gap: 1.2rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 420px;
 }
 .snake-stats {
   display: flex;
@@ -3536,19 +3587,32 @@ ul { list-style: none; }
   .memory-scoreboard { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem; }
   .memory-scoreboard div { padding: 0.5rem; }
   .memory-scoreboard strong { font-size: 0.95rem; }
-  .memory-grid { gap: 0.35rem; }
-  .memory-card { min-height: 48px; font-size: 1.25rem; }
-  .tb-hud { font-size: 0.65rem; padding: 0.35rem 0.45rem; gap: 0.2rem; }
-  .tb-hud b { font-size: 0.8rem; }
-  .typing-shooter-stage { max-width: 100%; }
-  .typing-shooter-stage canvas { aspect-ratio: 960 / 640; }
+  /* Mobile: extra-large game canvases — taller/wider to fill the screen properly */
+  .lab-panel { padding: 0.75rem 0.4rem; }
+  .memory-grid { gap: 0.4rem; }
+  .memory-card { min-height: 56px; font-size: 2rem; }
+  .tb-hud { font-size: 0.62rem; padding: 0.3rem 0.4rem; gap: 0.15rem; flex-wrap: wrap; }
+  .tb-hud b { font-size: 0.78rem; }
+  /* Type Blaster: full viewport width, taller aspect ratio for mobile */
+  .typing-shooter-stage { max-width: 100%; border-radius: 0; border-left: 0; border-right: 0; }
+  .typing-shooter-stage canvas {
+    width: 100%;
+    height: auto;
+    /* Taller on mobile so more vertical play area is visible */
+    aspect-ratio: 3 / 4;
+    max-height: 72dvh;
+  }
   .typing-mobile-input-wrap { align-items: stretch; flex-direction: column; }
-  .typing-mobile-input-wrap input { width: 100%; min-height: 42px; font-size: 16px; }
-  .snake-layout { grid-template-columns: 1fr; justify-items: center; }
-  .snake-side { width: 100%; justify-items: center; }
+  .typing-mobile-input-wrap input { width: 100%; min-height: 50px; font-size: 20px; letter-spacing: 0.1em; }
+  /* Cyber Defender: edge-to-edge on mobile */
+  .shooter-canvas-wrapper { max-width: 100%; border-radius: 0; border-left: 0; border-right: 0; }
+  .shooter-canvas { width: 100%; height: auto; aspect-ratio: 4 / 3; max-height: 68dvh; }
+  /* Snake: centered column layout on mobile */
+  .snake-layout { flex-direction: column; align-items: center; }
+  .snake-screen-wrap { max-width: 94vw; border-width: 8px; border-radius: 1rem; }
+  .snake-side { flex-direction: row; justify-content: center; width: 94vw; }
   .snake-stats { justify-content: center; width: auto; }
-  .snake-side .lab-status { text-align: center; }
-  .snake-screen-wrap { max-width: 100%; border-width: 8px; }
+  .snake-side .lab-status { text-align: center; width: 100%; }
 
   .modal-tabs { gap: 0.3rem; }
   .modal-tab { font-size: 0.72rem; padding: 0.4rem 0.65rem; }
@@ -4409,7 +4473,7 @@ ul { list-style: none; }
 .shooter-canvas-wrapper {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  max-width: 1100px;
   margin: 0 auto;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -4424,19 +4488,10 @@ ul { list-style: none; }
   width: 100%;
   height: auto;
   aspect-ratio: 800 / 600;
+  max-height: min(78vh, 720px);
+  object-fit: contain;
   cursor: crosshair;
   touch-action: none;
-}
-
-@supports (height: 100dvh) {
-  .shooter-canvas-wrapper {
-    max-height: min(72vh, calc(var(--visual-vh, 100dvh) - 150px));
-  }
-  .shooter-canvas {
-    max-height: min(72vh, calc(var(--visual-vh, 100dvh) - 150px));
-    width: auto;
-    margin-inline: auto;
-  }
 }
 
 /* Mobile Controls */
