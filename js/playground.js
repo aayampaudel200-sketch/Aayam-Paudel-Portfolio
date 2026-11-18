@@ -3,7 +3,7 @@
  * plus two touch-friendly browser games.
  */
 (() => {
-  const DIFFICULTIES = ['easy', 'medium', 'hard', 'veryhard'];
+  const DIFFICULTIES = ['easy', 'medium', 'hard', 'veryhard', 'expert'];
 
   function readScore(key) {
     try {
@@ -303,7 +303,7 @@
       { icon: '🏆', label: 'gold victory trophy' },
     ];
     const pairCounts = { easy: 6, medium: 8, hard: 10, veryhard: 12 };
-    const mismatchTimes = { easy: 700, medium: 600, hard: 500, veryhard: 420 };
+    const mismatchTimes = { easy: 580, medium: 450, hard: 340, veryhard: 240 };
     let difficulty = 'medium';
     function memoryScoreKey() { return `memory-match-best:${difficulty}`; }
     let cards = [];
@@ -1209,6 +1209,7 @@
         window.NokiaSnakeGame?.setup?.();
         window.NokiaSnakeGame?.activate?.();
       },
+      'tic-tac-toe': () => window.TicTacToeGame?.init?.(),
       'arcade-hub': () => window.ArcadeHub?.init?.(),
     };
     const started = Object.create(null);

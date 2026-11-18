@@ -139,6 +139,7 @@
           <button type="button" class="playground-tab" role="tab" data-lab="memory" aria-selected="false">Memory Match</button>
           <button type="button" class="playground-tab" role="tab" data-lab="type-blaster" aria-selected="false">⌨️ Type Blaster</button>
           <button type="button" class="playground-tab" role="tab" data-lab="nokia-snake" aria-selected="false">🐍 Nokia Snake</button>
+          <button type="button" class="playground-tab" role="tab" data-lab="tic-tac-toe" aria-selected="false">❌⭕ Tic Tac Toe</button>
         </div>
 
         <article class="lab-panel reveal-up" data-lab-panel="shooter" id="lab-shooter" hidden>
@@ -158,6 +159,7 @@
               <button type="button" class="btn btn-ghost" id="shooterPauseBtn">Pause</button>
               <button type="button" class="btn btn-ghost" id="shooterQuitBtn">Quit Game</button>
               <button type="button" class="btn btn-ghost" id="shooterSoundBtn" aria-label="Toggle Sound">🔊 Sound</button>
+              <button type="button" class="btn btn-ghost" id="shooterFullscreenBtn" aria-label="Toggle Fullscreen">⛶ Fullscreen</button>
             </div>
           </div>
 
@@ -272,18 +274,19 @@
             <div>
               <p class="eyebrow">TYPING ARCADE · MOBILE &amp; DESKTOP</p>
               <h2 class="section-title">Type Blaster</h2>
-              <p class="lab-lede">Blast incoming rocks with targeted keystrokes. Protect the base for 45 seconds!</p>
+              <p class="lab-lede">Blast incoming rocks by typing any letter in any order! Protect the base or test your speed in Expert sprint.</p>
             </div>
             <div class="lab-controls">
               <div class="difficulty-toggle" role="group" aria-label="Difficulty" data-difficulty-for="typing-shooter">
                 <button type="button" data-difficulty="easy" aria-pressed="true">Easy</button>
                 <button type="button" data-difficulty="medium">Medium</button>
                 <button type="button" data-difficulty="hard">Hard</button>
-                <button type="button" data-difficulty="veryhard">Very Hard</button>
+                <button type="button" data-difficulty="expert">⚡ Expert (Speed Test)</button>
               </div>
               <button type="button" class="btn btn-primary" id="typingStartBtn">Start round</button>
               <button type="button" class="btn btn-ghost" id="typingPauseBtn">Pause</button>
               <button type="button" class="btn btn-ghost btn-icon" id="typingSoundBtn" aria-label="Toggle sound">🔊</button>
+              <button type="button" class="btn btn-ghost" id="typingFullscreenBtn" aria-label="Toggle Fullscreen">⛶ Fullscreen</button>
             </div>
           </div>
           <div class="tb-hud" aria-live="polite">
@@ -295,13 +298,13 @@
             <span>TOP <b id="typingBest">0</b></span>
           </div>
           <div class="typing-shooter-stage">
-            <canvas id="typingShooterCanvas" width="960" height="640" role="img" aria-label="Typing game where letters fire bullets at incoming rocks"></canvas>
+            <canvas id="typingShooterCanvas" width="1200" height="650" role="img" aria-label="Typing game where letters fire bullets at incoming rocks in any order"></canvas>
           </div>
           <div class="typing-mobile-input-wrap">
-            <label for="typingShooterInput">Mobile typing input</label>
-            <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap here, then type the rock letter" aria-describedby="typingStatus">
+            <label for="typingShooterInput">Mobile typing input (or tap rocks directly on screen)</label>
+            <input id="typingShooterInput" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="1" placeholder="Tap rock on screen or type here" aria-describedby="typingStatus">
           </div>
-          <p class="lab-status" id="typingStatus" role="status">Press Start round, then type the letters on the rocks. On mobile, use the input above.</p>
+          <p class="lab-status" id="typingStatus" role="status">Press Start round, then shoot any falling letter in any order. On mobile, tap rocks directly or use input.</p>
         </article>
 
         <!-- Nokia Snake (standalone top-level tab) -->
@@ -337,6 +340,64 @@
               <p class="lab-status" id="snakeStatus" role="status">Press Start game to begin.</p>
             </div>
           </div>
+        </article>
+
+        <!-- Tic Tac Toe (standalone top-level tab) -->
+        <article class="lab-panel reveal-up" data-lab-panel="tic-tac-toe" id="lab-tic-tac-toe" hidden>
+          <div class="lab-header">
+            <div>
+              <p class="eyebrow">STRATEGY ARCADE · MOBILE &amp; DESKTOP</p>
+              <h2 class="section-title">Tic Tac Toe — Cyber Matrix</h2>
+              <p class="lab-lede">Challenge the unbeatable Minimax AI or pass &amp; play with a friend. Features glowing cyber graphics, win animations, and touch controls.</p>
+            </div>
+            <div class="lab-controls">
+              <div class="difficulty-toggle" role="group" aria-label="Game Mode" id="tttModeToggle">
+                <button type="button" data-ttt-mode="ai" aria-pressed="true">VS AI</button>
+                <button type="button" data-ttt-mode="pvp">Pass &amp; Play (2P)</button>
+              </div>
+              <div class="difficulty-toggle" role="group" aria-label="AI Difficulty" id="tttDiffToggle">
+                <button type="button" data-difficulty="easy">Easy</button>
+                <button type="button" data-difficulty="medium">Medium</button>
+                <button type="button" data-difficulty="hard" aria-pressed="true">Master (AI)</button>
+              </div>
+              <button type="button" class="btn btn-primary" id="tttResetBtn">New Round</button>
+              <button type="button" class="btn btn-ghost" id="tttSoundBtn" aria-label="Toggle sound">🔊 Sound</button>
+              <button type="button" class="btn btn-ghost" id="tttFullscreenBtn" aria-label="Toggle Fullscreen">⛶ Fullscreen</button>
+            </div>
+          </div>
+
+          <!-- Scoreboard -->
+          <div class="ttt-scoreboard" aria-live="polite">
+            <div class="ttt-score-card ttt-score-x active-turn" id="tttCardX">
+              <span class="ttt-player-label">PLAYER X</span>
+              <strong class="ttt-player-score" id="tttScoreX">0</strong>
+            </div>
+            <div class="ttt-score-card ttt-score-draw">
+              <span class="ttt-player-label">DRAWS</span>
+              <strong class="ttt-player-score" id="tttScoreDraw">0</strong>
+            </div>
+            <div class="ttt-score-card ttt-score-o" id="tttCardO">
+              <span class="ttt-player-label" id="tttLabelO">AI (O)</span>
+              <strong class="ttt-player-score" id="tttScoreO">0</strong>
+            </div>
+          </div>
+
+          <!-- Board Stage -->
+          <div class="ttt-stage" id="tttStage">
+            <div class="ttt-board" id="tttBoard" role="grid" aria-label="Tic Tac Toe 3x3 board">
+              <button type="button" class="ttt-cell" data-index="0" role="gridcell" aria-label="Cell 1, empty"></button>
+              <button type="button" class="ttt-cell" data-index="1" role="gridcell" aria-label="Cell 2, empty"></button>
+              <button type="button" class="ttt-cell" data-index="2" role="gridcell" aria-label="Cell 3, empty"></button>
+              <button type="button" class="ttt-cell" data-index="3" role="gridcell" aria-label="Cell 4, empty"></button>
+              <button type="button" class="ttt-cell" data-index="4" role="gridcell" aria-label="Cell 5, empty"></button>
+              <button type="button" class="ttt-cell" data-index="5" role="gridcell" aria-label="Cell 6, empty"></button>
+              <button type="button" class="ttt-cell" data-index="6" role="gridcell" aria-label="Cell 7, empty"></button>
+              <button type="button" class="ttt-cell" data-index="7" role="gridcell" aria-label="Cell 8, empty"></button>
+              <button type="button" class="ttt-cell" data-index="8" role="gridcell" aria-label="Cell 9, empty"></button>
+              <svg class="ttt-win-line" id="tttWinLine" viewBox="0 0 300 300" aria-hidden="true"></svg>
+            </div>
+          </div>
+          <p class="lab-status" id="tttStatus" role="status">Your turn! Tap any empty square to place X.</p>
         </article>
       </div>
     </section>
@@ -378,6 +439,7 @@
   <script src="js/main.js?v=site-refresh-2" defer></script>
   <script src="js/arcade-hub.js" defer></script>
   <script src="js/cyber-defender.js" defer></script>
+  <script src="js/tic-tac-toe.js" defer></script>
   <script src="js/playground.js?v=difficulty-1" defer></script>
   <script src="/js/chatbot.js" defer></script>
 </body>

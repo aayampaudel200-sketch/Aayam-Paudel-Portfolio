@@ -3408,7 +3408,7 @@ ul { list-style: none; }
 
 .typing-shooter-stage {
   width: 100%;
-  max-width: 1140px;
+  max-width: 1320px;
   margin-inline: auto;
   overflow: hidden;
   border: 1px solid rgba(56, 189, 248, 0.38);
@@ -3420,8 +3420,8 @@ ul { list-style: none; }
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 960 / 640;
-  max-height: min(78vh, 720px);
+  aspect-ratio: 1200 / 650;
+  max-height: min(80vh, 760px);
   object-fit: contain;
   touch-action: none;
 }
@@ -3458,7 +3458,23 @@ ul { list-style: none; }
   background: #020617;
 }
 
-/* Very Hard difficulty button */
+/* Expert & Very Hard difficulty buttons */
+.difficulty-toggle button[data-difficulty="expert"] {
+  color: #c084fc;
+  border-color: rgba(192, 132, 252, 0.4);
+  background: rgba(168, 85, 247, 0.1);
+}
+.difficulty-toggle button[data-difficulty="expert"]:hover {
+  border-color: #a855f7;
+  color: #e9d5ff;
+  background: rgba(168, 85, 247, 0.2);
+}
+.difficulty-toggle button[data-difficulty="expert"][aria-pressed="true"] {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 2px 14px rgba(168, 85, 247, 0.5);
+}
 .difficulty-toggle button[data-difficulty="veryhard"] {
   color: #f87171;
   border-color: rgba(239, 68, 68, 0.35);
@@ -4582,6 +4598,198 @@ ul { list-style: none; }
 :root[data-theme="light"] .shooter-canvas-wrapper {
   border-color: rgba(14, 165, 233, 0.35);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ── FULLSCREEN GAMING MODES (Space Defender, Type Blaster, Tic Tac Toe) ── */
+.is-fullscreen-fallback,
+:fullscreen.shooter-canvas-wrapper,
+:fullscreen.typing-shooter-stage,
+:fullscreen.ttt-stage {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  z-index: 99999 !important;
+  background: #020617 !important;
+  padding: 0.75rem !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.is-fullscreen-fallback canvas,
+:fullscreen.shooter-canvas-wrapper canvas,
+:fullscreen.typing-shooter-stage canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100vw !important;
+  max-height: calc(100vh - 40px) !important;
+  object-fit: contain !important;
+}
+
+.is-fullscreen-fallback .shooter-mobile-controls,
+:fullscreen.shooter-canvas-wrapper .shooter-mobile-controls {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── TIC TAC TOE — CYBER MATRIX ── */
+.ttt-scoreboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.5rem, 2.5vw, 1.4rem);
+  width: 100%;
+  max-width: 500px;
+  margin: 0.8rem auto 1.3rem;
+}
+.ttt-score-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.ttt-score-card.active-turn {
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+  transform: translateY(-2px);
+}
+.ttt-score-o.active-turn {
+  border-color: #f43f5e;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.4);
+}
+.ttt-player-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+.ttt-score-x .ttt-player-label { color: #38bdf8; }
+.ttt-score-o .ttt-player-label { color: #f43f5e; }
+.ttt-player-score {
+  font-size: 1.45rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text);
+  margin-top: 0.2rem;
+}
+
+.ttt-stage {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ttt-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  width: clamp(280px, 86vw, 380px);
+  aspect-ratio: 1 / 1;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  background: #030a16;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 0 30px rgba(56, 189, 248, 0.08);
+}
+.ttt-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  background: rgba(15, 23, 42, 0.65);
+  font-family: 'Arial Black', var(--font-mono), monospace;
+  font-size: clamp(2.4rem, 8.5vw, 3.6rem);
+  font-weight: 900;
+  color: transparent;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+.ttt-cell:hover:not(:disabled) {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.14);
+  transform: scale(1.02);
+}
+.ttt-cell:active:not(:disabled) {
+  transform: scale(0.96);
+}
+.ttt-cell.is-x {
+  color: #38bdf8;
+  text-shadow: 0 0 18px rgba(56, 189, 248, 0.8), 0 0 35px rgba(56, 189, 248, 0.4);
+  background: rgba(56, 189, 248, 0.08);
+}
+.ttt-cell.is-o {
+  color: #f43f5e;
+  text-shadow: 0 0 18px rgba(244, 63, 94, 0.8), 0 0 35px rgba(244, 63, 94, 0.4);
+  background: rgba(244, 63, 94, 0.08);
+}
+.ttt-cell.is-winning {
+  animation: tttPulseWin 0.9s infinite alternate ease-in-out;
+  border-color: #facc15 !important;
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.5) !important;
+}
+@keyframes tttPulseWin {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.04); filter: brightness(1.3); }
+}
+
+.ttt-win-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+.ttt-strike-line {
+  stroke: #facc15;
+  stroke-width: 8;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 10px #facc15) drop-shadow(0 0 20px #eab308);
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: tttDrawStrike 0.35s ease-out forwards;
+}
+@keyframes tttDrawStrike {
+  to { stroke-dashoffset: 0; }
+}
+
+:root[data-theme="light"] .ttt-board {
+  background: #f1f5f9;
+  border-color: rgba(14, 165, 233, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+:root[data-theme="light"] .ttt-cell {
+  background: #ffffff;
+  border-color: #cbd5e1;
 }
 
 

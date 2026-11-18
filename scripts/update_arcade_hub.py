@@ -1,96 +1,311 @@
-# Helper script to update js/arcade-hub.js with premium sentence typing, larger letters, hard mode, and enlarged snake
+# -*- coding: utf-8 -*-
 from pathlib import Path
 
-arcade_hub_path = Path('js') / 'arcade-hub.js'
-code = arcade_hub_path.read_text(encoding='utf-8')
+content = '''/**
+ * Arcade Hub: Premium Retro Gaming Shell for Type Blaster & Nokia Snake
+ * 
+ * Features:
+ * - High-contrast futuristic typing arcade with directed laser targeting & particle physics.
+ *   Free-form shooting: shoot any letter in any order!
+ *   Difficulty modes: Easy, Medium, Hard (intense), and Expert (60s speed sprint without getting out).
+ *   Wider battlefield (1200px) with dynamic rock sizing (enlarged on mobile for easy readability and tapping).
+ *   Fullscreen mode and mobile touch-to-blast support.
+ * - Authentic Nokia monochrome LCD snake with input buffer, directional eye graphics, and swipe controls.
+ * - Built-in zero-dependency Web Audio API retro sound synthesizer with user mute toggle.
+ * - Strict lifecycle management: 0% CPU when idle, paused, tab-switched, or window minimized.
+ * - Type Blaster & Nokia Snake are independent playground tabs.
+ */
 
-# Let's inspect boundaries around TypeBlasterGame and NokiaSnakeGame
-start_tb = code.find('  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE')
-end_tb = code.find('  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE')
-start_hub = code.find('  // ─── UNIFIED ARCADE HUB SHELL CONTROLLER')
+(() => {
+  'use strict';
 
-if start_tb == -1 or end_tb == -1 or start_hub == -1:
-    print("Error: Could not locate section markers in js/arcade-hub.js!")
-    exit(1)
+  // ─── SHARED STORAGE ──────────────────────────────────────────────────────────
+  const ArcadeStorage = {
+    read(key, fallback = 0) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? Number.parseInt(val, 10) || 0 : fallback;
+      } catch {
+        return fallback;
+      }
+    },
+    write(key, value) {
+      try {
+        localStorage.setItem(key, String(value));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    getDifficulty(key, fallback = 'medium', valid = ['easy', 'medium', 'hard', 'expert']) {
+      try {
+        const val = localStorage.getItem(key);
+        return valid.includes(val) ? val : fallback;
+      } catch {
+        return fallback;
+      }
+    },
+    setDifficulty(key, val) {
+      try {
+        localStorage.setItem(key, val);
+      } catch {}
+    },
+    isSoundEnabled() {
+      try {
+        return localStorage.getItem('arcadeSoundEnabled') !== 'false';
+      } catch {
+        return true;
+      }
+    },
+    setSoundEnabled(enabled) {
+      try {
+        localStorage.setItem('arcadeSoundEnabled', enabled ? 'true' : 'false');
+      } catch {}
+    }
+  };
 
-print(f"Found markers: TypeBlaster at {start_tb}, Snake at {end_tb}, Hub at {start_hub}")
 
-tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ─────────────────────────────
+  // ─── PURE WEB AUDIO SYNTHESIZER (ZERO EXTERNAL ASSETS) ─────────────────────
+  const ArcadeAudio = (() => {
+    let ctx = null;
+    let enabled = ArcadeStorage.isSoundEnabled();
+
+    function getContext() {
+      if (!enabled) return null;
+      if (!ctx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) {
+          ctx = new AudioClass();
+        }
+      }
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      return ctx;
+    }
+
+    function toggle() {
+      enabled = !enabled;
+      ArcadeStorage.setSoundEnabled(enabled);
+      if (enabled) {
+        getContext();
+        playClick();
+      }
+      return enabled;
+    }
+
+    function isEnabled() {
+      return enabled;
+    }
+
+    function playLaser() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.09);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playExplosion() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    }
+
+    function playMiss() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(90, now + 0.08);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    }
+
+    function playCombo(streak) {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      const pitch = Math.min(440 + streak * 45, 1200);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(pitch, now);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 1.25, now + 0.12);
+
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    }
+
+    function playSnakeBite() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(587, now);
+      osc.frequency.setValueAtTime(880, now + 0.04);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+    }
+
+    function playSnakeDie() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.28);
+
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+
+    function playClick() {
+      const a = getContext();
+      if (!a) return;
+      const now = a.currentTime;
+      const osc = a.createOscillator();
+      const gain = a.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(700, now);
+
+      gain.gain.setValueAtTime(0.05, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+      osc.connect(gain);
+      gain.connect(a.destination);
+      osc.start(now);
+      osc.stop(now + 0.03);
+    }
+
+    return {
+      toggle,
+      isEnabled,
+      playLaser,
+      playExplosion,
+      playMiss,
+      playCombo,
+      playSnakeBite,
+      playSnakeDie,
+      playClick
+    };
+  })();
+
+
+  // ─── MOBILE DETECTION ────────────────────────────────────────────────────────
+  const isMobile = window.matchMedia('(pointer: coarse)').matches;
+  const MAX_PARTICLES = isMobile ? 120 : 500;
+
+  function isMobileMode() {
+    return isMobile || (typeof window !== 'undefined' && window.innerWidth <= 768);
+  }
+
+
+  // ─── TYPE BLASTER: SPEED TYPING ARCADE MODULE ────────────────────────────────
   const TypeBlasterGame = (() => {
     let container, canvas, ctx;
-    let startBtn, pauseBtn, restartBtn, soundBtn, mobileInput;
+    let startBtn, pauseBtn, soundBtn, fullscreenBtn, mobileInput;
     let scoreEl, comboEl, wpmEl, accuracyEl, timeEl, bestEl, statusEl;
     let diffContainer;
-    let phraseDoneEl, phraseCurrentEl, phraseUpcomingEl;
-    let typingStreamKeysEl, typingLastKeyBadgeEl, typingModeTagEl;
 
-    // Meaningful Developer Sentence Pools by Difficulty
-    const SENTENCE_POOLS = {
-      easy: [
-        'CODE IS ART',
-        'CLEAN CODE',
-        'SHIP FAST',
-        'LEARN DAILY',
-        'STAY CALM',
-        'BUILD WEB APPS',
-        'THINK FIRST',
-        'FOCUS AND WIN',
-        'GIT PUSH ORIGIN',
-        'SOLVE PROBLEMS'
-      ],
-      medium: [
-        'VANILLA JAVASCRIPT IS FAST',
-        'CLEAN ARCHITECTURE SCALES',
-        'RESPONSIVE DESIGN FOR LAPTOP AND MOBILE',
-        'SOLVE PROBLEMS WITH CLEAN LOGIC',
-        'MASTER THE FUNDAMENTALS FIRST',
-        'BUILD TESTS BEFORE DEPLOYING',
-        'OPTIMIZE PERFORMANCE AND LATENCY',
-        'ALWAYS HANDLE ERRORS GRACEFULLY'
-      ],
-      hard: [
-        'CONST [STATE, SETSTATE] = USESTATE(0);',
-        'ASYNC FUNCTION DEPLOY() { AWAIT SHIP(); }',
-        'WHILE (CODING) { DRINKCOFFEE(); }',
-        'GIT COMMIT -M "SHIP FEATURES"',
-        'IF (BUGS === 0) LAUNCHAPP();',
-        'ITEMS.FILTER(X => X.ACTIVE);',
-        'FETCH("/API/STATUS").THEN(RES => RES.JSON());',
-        'EXPORT DEFAULT FUNCTION HANDLER(REQ, RES) {}'
-      ]
-    };
-
-    // Difficulty Settings:
-    // Easy: ~3.6s spawn, 36-46 px/s speed, max 3 rocks, 8 integrity
-    // Medium: ~2.2s spawn, 78-96 px/s speed, max 4 rocks, 6 integrity
-    // Hard: ~0.95s spawn, 140-175 px/s speed, max 6 rocks, 3 integrity (genuinely hard speed test!)
+    // Difficulty Settings: Balanced, practical, and highly engaging
     const settings = {
       easy: {
         duration: 45000,
-        spawn: 3.6,
-        speedMin: 36,
-        speedMax: 46,
-        maxRocks: 3,
-        integrity: 8,
+        spawn: 1.8,
+        speedMin: 55,
+        speedMax: 85,
+        maxRocks: 6,
+        integrity: 6,
         letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       },
       medium: {
         duration: 45000,
-        spawn: 2.2,
-        speedMin: 78,
-        speedMax: 96,
-        maxRocks: 4,
-        integrity: 6,
+        spawn: 1.1,
+        speedMin: 95,
+        speedMax: 135,
+        maxRocks: 8,
+        integrity: 5,
         letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       },
       hard: {
         duration: 45000,
-        spawn: 0.95,
-        speedMin: 140,
-        speedMax: 175,
-        maxRocks: 6,
-        integrity: 3,
-        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ{};()=><_!+-."'
+        spawn: 0.85,
+        speedMin: 120,
+        speedMax: 160,
+        maxRocks: 10,
+        integrity: 4,
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      },
+      expert: {
+        duration: 60000, // 60-second Speed Sprint!
+        spawn: 0.48,     // Practical and steady stream
+        speedMin: 135,
+        speedMax: 180,
+        maxRocks: 14,    // Ample targets without overwhelming clutter
+        integrity: Infinity, // User plays WITHOUT being out to test true typing speed!
+        isSpeedTest: true,
+        letterPool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
       }
     };
 
@@ -121,18 +336,21 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
     let isKeyActive = false;
     let isSetupDone = false;
 
-    // Sentence progression state
-    let currentSentence = '';
-    let sentenceIndex = 0;
-    let sentencePoolIndex = 0;
-    let recentKeystrokes = [];
+    // WPM/Accuracy tracking
+    let keypressTimes = [];
+    let firstKeypressTime = 0;
 
-    // Starfield particles (cached)
-    const stars = Array.from({ length: 42 }, () => ({
+    // Cached backdrop gradient
+    let cachedBackdropGrad = null;
+    let cachedBackdropW = 0;
+    let cachedBackdropH = 0;
+
+    // Starfield particles
+    const stars = Array.from({ length: 60 }, () => ({
       x: Math.random(),
       y: Math.random(),
-      r: Math.random() * 1.5 + 0.5,
-      alpha: Math.random() * 0.6 + 0.2
+      r: Math.random() * 1.6 + 0.4,
+      alpha: Math.random() * 0.6 + 0.25
     }));
 
     function storageKey() {
@@ -150,9 +368,6 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         const active = btn.dataset.difficulty === difficulty;
         btn.setAttribute('aria-pressed', String(active));
       });
-      if (typingModeTagEl) {
-        typingModeTagEl.textContent = `🎯 TARGET SENTENCE (${difficulty.toUpperCase()})`;
-      }
     }
 
     function syncSoundUI() {
@@ -162,84 +377,50 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       soundBtn.setAttribute('aria-pressed', String(on));
     }
 
-    function initSentence() {
-      const pool = SENTENCE_POOLS[difficulty] || SENTENCE_POOLS.easy;
-      currentSentence = pool[sentencePoolIndex % pool.length];
-      sentenceIndex = 0;
-      syncSentenceHUD();
+    function toggleFullscreen() {
+      const stage = container?.querySelector('.typing-shooter-stage') || container;
+      if (!stage) return;
+      const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || stage.classList.contains('is-fullscreen-fallback'));
+      if (!isFs) {
+        if (stage.requestFullscreen) {
+          stage.requestFullscreen().catch(() => stage.classList.toggle('is-fullscreen-fallback'));
+        } else if (stage.webkitRequestFullscreen) {
+          stage.webkitRequestFullscreen();
+        } else {
+          stage.classList.toggle('is-fullscreen-fallback');
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        stage.classList.remove('is-fullscreen-fallback');
+      }
+      syncFullscreenBtn();
     }
 
-    function advanceToNextSentence() {
-      const pool = SENTENCE_POOLS[difficulty] || SENTENCE_POOLS.easy;
-      sentencePoolIndex = (sentencePoolIndex + 1) % pool.length;
-      currentSentence = pool[sentencePoolIndex];
-      sentenceIndex = 0;
-      syncSentenceHUD();
-    }
-
-    function getActiveTargetChar() {
-      if (!currentSentence) return null;
-      // Auto-skip spaces so typing flows naturally across words
-      while (sentenceIndex < currentSentence.length && currentSentence[sentenceIndex] === ' ') {
-        sentenceIndex++;
-      }
-      if (sentenceIndex >= currentSentence.length) return null;
-      return currentSentence[sentenceIndex].toUpperCase();
-    }
-
-    function syncSentenceHUD() {
-      if (!currentSentence) {
-        if (phraseDoneEl) phraseDoneEl.textContent = '';
-        if (phraseCurrentEl) phraseCurrentEl.textContent = '_';
-        if (phraseUpcomingEl) phraseUpcomingEl.textContent = 'Press Start round to begin';
-        return;
-      }
-
-      // If at space, advance
-      while (sentenceIndex < currentSentence.length && currentSentence[sentenceIndex] === ' ') {
-        sentenceIndex++;
-      }
-
-      const done = currentSentence.slice(0, sentenceIndex);
-      const current = sentenceIndex < currentSentence.length ? currentSentence[sentenceIndex] : '✓';
-      const upcoming = sentenceIndex < currentSentence.length ? currentSentence.slice(sentenceIndex + 1) : '';
-
-      if (phraseDoneEl) phraseDoneEl.textContent = done;
-      if (phraseCurrentEl) {
-        phraseCurrentEl.textContent = current === ' ' ? '␣' : current;
-      }
-      if (phraseUpcomingEl) phraseUpcomingEl.textContent = upcoming;
-    }
-
-    function addKeystrokeLog(char, isHit) {
-      const displayChar = char === ' ' ? 'SPACE' : String(char).toUpperCase();
-      recentKeystrokes.push({ char: displayChar, isHit, id: Date.now() + Math.random() });
-      if (recentKeystrokes.length > 8) {
-        recentKeystrokes.shift();
-      }
-
-      if (typingLastKeyBadgeEl) {
-        typingLastKeyBadgeEl.className = `typing-last-key-badge ${isHit ? 'badge-hit' : 'badge-miss'}`;
-        typingLastKeyBadgeEl.textContent = `${isHit ? 'HIT' : 'MISS'} [${displayChar}]`;
-      }
-
-      if (typingStreamKeysEl) {
-        typingStreamKeysEl.replaceChildren();
-        recentKeystrokes.forEach((k) => {
-          const pill = document.createElement('span');
-          pill.className = `key-pill ${k.isHit ? 'key-hit' : 'key-miss'}`;
-          pill.textContent = `${k.char} ${k.isHit ? '✓' : '✗'}`;
-          typingStreamKeysEl.appendChild(pill);
-        });
-      }
+    function syncFullscreenBtn() {
+      if (!fullscreenBtn) return;
+      const stage = container?.querySelector('.typing-shooter-stage');
+      const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || stage?.classList.contains('is-fullscreen-fallback'));
+      fullscreenBtn.textContent = isFs ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+      fullscreenBtn.setAttribute('aria-pressed', String(isFs));
     }
 
     function updateMetrics(now = performance.now()) {
       const elapsed = isPlaying ? elapsedBeforePause + (now - roundStartedAt) : elapsedBeforePause;
       const duration = settings[difficulty].duration;
-      const minutes = Math.max(elapsed / 60000, 1 / 60);
-      const wpm = Math.round((totalHits / 5) / minutes);
-      const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
+
+      let wpm = 0;
+      let cpm = 0;
+      const elapsedMinutes = (elapsed || 1) / 60000;
+      if (elapsedMinutes > 0 && totalHits > 0) {
+        wpm = Math.round((totalHits / 5) / elapsedMinutes);
+        cpm = Math.round(totalHits / elapsedMinutes);
+      }
+
+      const accuracy = totalTyped > 0 ? Math.round((totalHits / totalTyped) * 100) : 100;
 
       if (scoreEl) scoreEl.textContent = String(score);
       if (comboEl) comboEl.textContent = `${combo}x`;
@@ -268,61 +449,40 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       const cfg = settings[difficulty];
       if (rocks.length >= cfg.maxRocks) return;
 
-      const activeTarget = getActiveTargetChar();
       const currentLetters = new Set(rocks.map((r) => r.letter.toUpperCase()));
+      const pool = cfg.letterPool;
+      let available = pool.split('').filter((c) => !currentLetters.has(c.toUpperCase()));
+      if (!available.length) available = pool.split('');
+      const chosenLetter = available[Math.floor(Math.random() * available.length)].toUpperCase();
 
-      // Prioritize spawning the active sentence target letter if not yet present on screen
-      let chosenLetter = '';
-      if (activeTarget && !currentLetters.has(activeTarget)) {
-        chosenLetter = activeTarget;
-      } else {
-        // Look ahead in sentence for upcoming characters
-        let lookAheadChar = '';
-        if (currentSentence) {
-          for (let i = sentenceIndex + 1; i < currentSentence.length; i++) {
-            const cand = currentSentence[i].toUpperCase();
-            if (cand !== ' ' && !currentLetters.has(cand)) {
-              lookAheadChar = cand;
-              break;
-            }
-          }
-        }
-        if (lookAheadChar) {
-          chosenLetter = lookAheadChar;
-        } else {
-          const pool = cfg.letterPool;
-          let available = pool.split('').filter((c) => !currentLetters.has(c.toUpperCase()));
-          if (!available.length) available = pool.split('');
-          chosenLetter = available[Math.floor(Math.random() * available.length)].toUpperCase();
-        }
-      }
+      // Rock radius: noticeably bigger on mobile (35px) for clear visibility & easy touch, compact (26px) on desktop
+      const radius = isMobileMode() ? 35 : 26;
 
-      // Large 44px radius (88px diameter) ensures giant letters and crystal-clear visibility
-      const radius = 44;
-
-      // Distribute lanes with safe spacing
-      const occupied = rocks.map((r) => r.x);
-      let lane = canvas.width / 2;
+      const occupied = rocks.filter((r) => r.y < 130).map((r) => r.x);
+      let lane = 60 + Math.random() * (canvas.width - 120);
       for (let attempts = 0; attempts < 16; attempts++) {
-        const cand = 72 + Math.random() * (canvas.width - 144);
-        if (occupied.every((x) => Math.abs(x - cand) > 96)) {
+        const cand = 60 + Math.random() * (canvas.width - 120);
+        if (occupied.every((x) => Math.abs(x - cand) > (radius * 2.4))) {
           lane = cand;
           break;
         }
       }
 
       const id = nextRockId++;
-      rocks.push({
+      const rock = {
         id,
         x: lane,
-        y: -44,
+        y: -35,
         radius,
         letter: chosenLetter,
         speed: cfg.speedMin + Math.random() * (cfg.speedMax - cfg.speedMin),
         rot: Math.random() * Math.PI * 2,
         rotSpeed: (Math.random() - 0.5) * 0.35,
-        polygon: createRockPolygon(id, radius)
-      });
+        polygon: createRockPolygon(id, radius),
+        drift: (Math.random() - 0.5) * (difficulty === 'expert' || difficulty === 'hard' ? 35 : 15)
+      };
+
+      rocks.push(rock);
     }
 
     function fireLetter(char) {
@@ -332,17 +492,13 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       totalTyped++;
 
-      const activeTarget = getActiveTargetChar();
-      if (!activeTarget || upper !== activeTarget) {
-        combo = 0;
-        ArcadeAudio.playMiss();
-        addKeystrokeLog(upper, false);
-        if (statusEl) statusEl.textContent = `Type ${activeTarget || 'the highlighted character'} next to continue the sentence.`;
-        updateMetrics();
-        return;
+      const now = performance.now();
+      if (firstKeypressTime === 0) {
+        firstKeypressTime = now;
       }
 
-      // Only the next sentence character counts toward typing speed and accuracy.
+      // Free-form typing: user can blast ANY letter in ANY order!
+      // Find matching rocks on screen, prioritize lowest (closest to base)
       const matchingRocks = rocks
         .filter((r) => r.letter.toUpperCase() === upper)
         .sort((a, b) => b.y - a.y);
@@ -350,21 +506,23 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       const target = matchingRocks[0];
 
       if (target) {
-        // Successful hit
         combo++;
         if (combo > maxCombo) maxCombo = combo;
         ArcadeAudio.playLaser();
         if (combo > 1) ArcadeAudio.playCombo(combo);
 
-        // Aim defense turret directly at target rock
+        keypressTimes.push({ time: now, correct: true });
+        totalHits++;
+
+        // Aim turret directly at target rock
         const turretX = canvas.width / 2;
-        const turretY = canvas.height - 32;
+        const turretY = canvas.height - 42;
         const dx = target.x - turretX;
         const dy = target.y - turretY;
         turretTargetAngle = Math.atan2(dy, dx);
 
         const dist = Math.hypot(dx, dy) || 1;
-        const bulletSpeed = 1200;
+        const bulletSpeed = 1500;
 
         bullets.push({
           x: turretX,
@@ -377,86 +535,62 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
           maxDist: dist
         });
 
-        addKeystrokeLog(upper, true);
-        totalHits++;
-
-        // Advance sentence if matched active character
-        if (activeTarget && target.letter.toUpperCase() === activeTarget) {
-          sentenceIndex++;
-          // Auto-skip spaces
-          while (sentenceIndex < currentSentence.length && currentSentence[sentenceIndex] === ' ') {
-            sentenceIndex++;
-          }
-
-          // Check if sentence complete
-          if (sentenceIndex >= currentSentence.length) {
-            score += 500;
-            ArcadeAudio.playCombo(6);
-            popups.push({
-              x: canvas.width / 2,
-              y: canvas.height / 2 - 20,
-              text: '🎉 SENTENCE CLEARED! +500 PTS',
-              color: '#34d399',
-              life: 1.5,
-              maxLife: 1.5
-            });
-            advanceToNextSentence();
-            if (statusEl) {
-              statusEl.textContent = '🎉 Sentence completed! +500 Bonus Points! Next sentence loaded.';
-            }
-          } else {
-            syncSentenceHUD();
-            if (statusEl) {
-              statusEl.textContent = combo > 2 ? `🔥 Streak! Combo ${combo}x!` : `Blasted rock ${upper}! Keep typing!`;
-            }
-          }
-        } else {
-          if (statusEl) {
-            statusEl.textContent = `Blasted perimeter rock ${upper}! Defend the base!`;
-          }
+        if (statusEl) {
+          statusEl.textContent = combo > 2 ? `🔥 Streak! Combo ${combo}x!` : `Blasted rock [${upper}]! Keep firing!`;
         }
       } else {
-        // The right character was typed before its matching asteroid entered range.
         combo = 0;
         ArcadeAudio.playMiss();
-        addKeystrokeLog(upper, false);
+        keypressTimes.push({ time: now, correct: false });
         if (statusEl) {
-          statusEl.textContent = `No incoming rock has '${upper}' — check the target phrase below!`;
+          statusEl.textContent = `Miss! No rock has [${upper}] — scan incoming rocks!`;
         }
       }
 
-      updateMetrics();
+      updateMetrics(now);
     }
 
-    function createExplosion(x, y, letter, pointsEarned) {
+    function createExplosion(x, y, letter, pointsEarned, customColor = null) {
       ArcadeAudio.playExplosion();
       screenShake = 6;
 
-      const count = 18;
+      const count = 16;
       for (let i = 0; i < count; i++) {
+        if (particles.length >= MAX_PARTICLES) break;
         const angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
-        const speed = 80 + Math.random() * 180;
+        const speed = 70 + Math.random() * 190;
         const isNeon = i % 2 === 0;
         particles.push({
           x,
           y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          life: 0.5 + Math.random() * 0.35,
-          maxLife: 0.85,
-          radius: isNeon ? 2.8 : 3.8,
-          color: isNeon ? '#38bdf8' : (Math.random() > 0.5 ? '#f59e0b' : '#ffffff')
+          life: 0.45 + Math.random() * 0.35,
+          maxLife: 0.8,
+          radius: isNeon ? 2.5 : 3.5,
+          color: customColor || (isNeon ? '#38bdf8' : (Math.random() > 0.5 ? '#f59e0b' : '#ffffff'))
         });
       }
 
-      popups.push({
-        x,
-        y: y - 10,
-        text: combo > 1 ? `+${pointsEarned} (${combo}x)` : `+${pointsEarned}`,
-        color: combo > 2 ? '#facc15' : '#7dd3fc',
-        life: 0.8,
-        maxLife: 0.8
-      });
+      if (pointsEarned > 0) {
+        popups.push({
+          x,
+          y: y - 10,
+          text: combo > 1 ? `+${pointsEarned} (${combo}x)` : `+${pointsEarned}`,
+          color: combo > 2 ? '#facc15' : '#7dd3fc',
+          life: 0.8,
+          maxLife: 0.8
+        });
+      }
+    }
+
+    function getSpeedRank(wpm) {
+      if (wpm >= 100) return '⚡ Cyberspace Legend';
+      if (wpm >= 80) return '🔥 Hyper Typist';
+      if (wpm >= 60) return '🚀 Elite Typist';
+      if (wpm >= 40) return '💻 Pro Coder';
+      if (wpm >= 25) return '🎯 Swift Striker';
+      return '🌱 Novice Typist';
     }
 
     function endRound(msg, isVictory = false) {
@@ -472,15 +606,14 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         animFrameId = 0;
       }
 
-      const elapsed = updateMetrics();
-      const wpm = Math.round((totalHits / 5) / Math.max(elapsed / 60000, 1 / 60));
-      const accuracy = totalTyped ? Math.round((totalHits / totalTyped) * 100) : 100;
+      const now = performance.now();
+      updateMetrics(now);
 
-      let rank = 'Novice Typist';
-      if (wpm >= 80) rank = 'Master Typist 🔥';
-      else if (wpm >= 60) rank = 'Pro Developer ⚡';
-      else if (wpm >= 40) rank = 'Fast Typist 🚀';
-      else if (wpm >= 20) rank = 'Intermediate ⌨️';
+      const elapsedMinutes = (elapsedBeforePause || 1) / 60000;
+      const wpm = elapsedMinutes > 0 && totalHits > 0 ? Math.round((totalHits / 5) / elapsedMinutes) : 0;
+      const cpm = elapsedMinutes > 0 && totalHits > 0 ? Math.round(totalHits / elapsedMinutes) : 0;
+      const accuracy = totalTyped > 0 ? Math.round((totalHits / totalTyped) * 100) : 100;
+      const rank = getSpeedRank(wpm);
 
       let isNewRecord = false;
       if (score > bestScore) {
@@ -492,12 +625,25 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       if (statusEl) {
         const recordNote = isNewRecord ? ' 🏆 NEW HIGH SCORE!' : '';
-        statusEl.textContent = `${msg} Speed: ${wpm} WPM · Accuracy: ${accuracy}% · Rank: ${rank}.${recordNote}`;
+        statusEl.textContent = `${msg} Speed: ${wpm} WPM (${cpm} CPM) · Accuracy: ${accuracy}% · Rank: ${rank}.${recordNote}`;
       }
 
       if (startBtn) startBtn.textContent = 'Play again';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
       draw();
+    }
+
+    function getBackdropGradient(w, h) {
+      if (cachedBackdropW === w && cachedBackdropH === h && cachedBackdropGrad) {
+        return cachedBackdropGrad;
+      }
+      cachedBackdropGrad = ctx.createLinearGradient(0, 0, 0, h);
+      cachedBackdropGrad.addColorStop(0, '#040b17');
+      cachedBackdropGrad.addColorStop(0.55, '#07152b');
+      cachedBackdropGrad.addColorStop(1, '#0b1b36');
+      cachedBackdropW = w;
+      cachedBackdropH = h;
+      return cachedBackdropGrad;
     }
 
     function draw(now = performance.now()) {
@@ -515,11 +661,7 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       }
 
       // 1. Sci-Fi Space Backdrop
-      const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, '#040b17');
-      grad.addColorStop(0.55, '#07152b');
-      grad.addColorStop(1, '#0b1b36');
-      ctx.fillStyle = grad;
+      ctx.fillStyle = getBackdropGradient(w, h);
       ctx.fillRect(0, 0, w, h);
 
       // 2. Starfield
@@ -533,14 +675,14 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       // 3. Cyber Defense Tactical Grid
       ctx.strokeStyle = 'rgba(56, 189, 248, 0.07)';
       ctx.lineWidth = 1;
-      const gridStep = 44;
+      const gridStep = 48;
       for (let x = 0; x <= w; x += gridStep) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, h - 38);
+        ctx.lineTo(x, h - 48);
         ctx.stroke();
       }
-      for (let y = 0; y <= h - 38; y += gridStep) {
+      for (let y = 0; y <= h - 48; y += gridStep) {
         ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(w, y);
@@ -549,19 +691,20 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       // 4. Perimeter Defense Line & Shield Bar
       const maxIntegrity = settings[difficulty].integrity;
-      const currentIntegrity = Math.max(0, maxIntegrity - escapedRocks);
-      const integrityRatio = currentIntegrity / maxIntegrity;
+      const isExpert = difficulty === 'expert';
+      const currentIntegrity = isExpert ? 999 : Math.max(0, maxIntegrity - escapedRocks);
+      const integrityRatio = isExpert ? 1 : (currentIntegrity / maxIntegrity);
 
-      const shieldY = h - 38;
+      const shieldY = h - 48;
       const shieldGlow = ctx.createLinearGradient(0, shieldY - 4, 0, shieldY + 4);
       shieldGlow.addColorStop(0, 'rgba(56, 189, 248, 0)');
-      shieldGlow.addColorStop(0.5, integrityRatio > 0.35 ? 'rgba(56, 189, 248, 0.8)' : 'rgba(239, 68, 68, 0.85)');
+      shieldGlow.addColorStop(0.5, isExpert ? 'rgba(168, 85, 247, 0.85)' : (integrityRatio > 0.35 ? 'rgba(56, 189, 248, 0.8)' : 'rgba(239, 68, 68, 0.85)'));
       shieldGlow.addColorStop(1, 'rgba(56, 189, 248, 0)');
       ctx.fillStyle = shieldGlow;
       ctx.fillRect(0, shieldY - 4, w, 8);
 
-      ctx.strokeStyle = integrityRatio > 0.35 ? '#38bdf8' : '#f87171';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isExpert ? '#a855f7' : (integrityRatio > 0.35 ? '#38bdf8' : '#f87171');
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
       ctx.moveTo(0, shieldY);
       ctx.lineTo(w, shieldY);
@@ -571,15 +714,18 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       ctx.fillRect(0, shieldY, w, h - shieldY);
 
       // Integrity gauge indicator
-      ctx.fillStyle = integrityRatio > 0.4 ? '#38bdf8' : '#ef4444';
+      ctx.fillStyle = isExpert ? '#c084fc' : (integrityRatio > 0.4 ? '#38bdf8' : '#ef4444');
       ctx.font = '700 12px var(--font-mono, monospace)';
       ctx.textAlign = 'left';
-      ctx.fillText(`PERIMETER SHIELD: ${currentIntegrity} / ${maxIntegrity} [${difficulty.toUpperCase()}]`, 18, h - 14);
+      const shieldLabel = isExpert
+        ? '⚡ SPEED SPRINT [EXPERT]: UNLIMITED INTEGRITY — NEVER OUT!'
+        : `PERIMETER SHIELD: ${currentIntegrity} / ${maxIntegrity} [${difficulty.toUpperCase()}]`;
+      ctx.fillText(shieldLabel, 20, h - 20);
 
       if (combo > 1) {
         ctx.fillStyle = '#facc15';
         ctx.textAlign = 'right';
-        ctx.fillText(`COMBO x${combo} 🔥`, w - 18, h - 14);
+        ctx.fillText(`COMBO x${combo} 🔥`, w - 20, h - 20);
       }
 
       // 5. Directed Laser Projectiles
@@ -606,18 +752,22 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         ctx.restore();
       });
 
-      // 6. Incoming Asteroids with GIGANTIC High-Contrast Target Badges
-      const activeTargetChar = getActiveTargetChar();
+      // 6. Incoming Asteroid Rocks (Dynamic size: bigger on mobile for optimal tapping & visibility)
+      const isMob = isMobileMode();
+      const badgeRadius = isMob ? 24 : 18;
+      const fontGlyph = isMob ? '900 28px "Arial Black", "JetBrains Mono", monospace' : '900 22px "Arial Black", "JetBrains Mono", monospace';
 
       rocks.forEach((r) => {
         ctx.save();
         ctx.translate(r.x, r.y);
         ctx.rotate(r.rot);
 
-        // A. Shaded Organic Asteroid Body
-        const rGrad = ctx.createRadialGradient(-8, -10, 4, 0, 0, r.radius);
+        const isDanger = r.y > h * 0.70;
+
+        // Rock asteroid body
+        const rGrad = ctx.createRadialGradient(-6, -7, 2, 0, 0, r.radius);
         rGrad.addColorStop(0, '#94a3b8');
-        rGrad.addColorStop(0.35, '#475569');
+        rGrad.addColorStop(0.4, '#475569');
         rGrad.addColorStop(0.85, '#1e293b');
         rGrad.addColorStop(1, '#0f172a');
         ctx.fillStyle = rGrad;
@@ -628,74 +778,42 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
           else ctx.lineTo(pt.x, pt.y);
         });
         ctx.closePath();
+
+        if (isDanger) {
+          ctx.shadowColor = '#ef4444';
+          ctx.shadowBlur = 10;
+        } else {
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 4;
+        }
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.45)';
-        ctx.lineWidth = 1.8;
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = isDanger ? 'rgba(239, 68, 68, 0.9)' : 'rgba(56, 189, 248, 0.65)';
+        ctx.lineWidth = isMob ? 2.2 : 1.6;
         ctx.stroke();
 
-        ctx.restore(); // Undo rotation so letter ALWAYS stays 100% upright
+        ctx.restore(); // Undo rotation for upright letter badge
 
-        // B. Large High-Contrast Target Letter Badge
+        // Badge & Letter
         ctx.save();
         ctx.translate(r.x, r.y);
 
-        const isDanger = r.y > h * 0.65;
-        const isCurrentSentenceTarget = (activeTargetChar && r.letter.toUpperCase() === activeTargetChar);
-        const badgeRadius = 32; // 64px high-contrast badge keeps similar letters distinct
-
-        // Outer Target Ring / Reticle
-        ctx.beginPath();
-        ctx.arc(0, 0, badgeRadius + 4, 0, Math.PI * 2);
-        ctx.strokeStyle = isDanger
-          ? 'rgba(239, 68, 68, 0.85)'
-          : (isCurrentSentenceTarget ? 'rgba(56, 189, 248, 0.95)' : 'rgba(148, 163, 184, 0.6)');
-        ctx.lineWidth = isCurrentSentenceTarget ? 3 : 2;
-        if (isCurrentSentenceTarget) {
-          ctx.shadowColor = '#38bdf8';
-          ctx.shadowBlur = 12;
-        }
-        ctx.stroke();
-
-        // Solid Obsidian Badge Background for 100% MAXIMUM Letter Contrast
+        // Circular badge background
         ctx.beginPath();
         ctx.arc(0, 0, badgeRadius, 0, Math.PI * 2);
         ctx.fillStyle = '#020617';
         ctx.fill();
 
-        // Inner Badge Accent Ring
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = isDanger ? '#ef4444' : (isCurrentSentenceTarget ? '#38bdf8' : '#475569');
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = isDanger ? '#ef4444' : '#38bdf8';
+        ctx.lineWidth = isMob ? 2.4 : 1.8;
         ctx.stroke();
 
-        // Target Reticle Corner Ticks
-        ctx.strokeStyle = isDanger ? '#f87171' : (isCurrentSentenceTarget ? '#7dd3fc' : '#94a3b8');
-        ctx.lineWidth = 2;
-        const tickDist = badgeRadius + 3;
-        [-1, 1].forEach((dirX) => {
-          [-1, 1].forEach((dirY) => {
-            ctx.beginPath();
-            ctx.moveTo(dirX * tickDist, dirY * (tickDist - 6));
-            ctx.lineTo(dirX * tickDist, dirY * tickDist);
-            ctx.lineTo(dirX * (tickDist - 6), dirY * tickDist);
-            ctx.stroke();
-          });
-        });
-
-        // Target Lock Tag for active sentence character
-        if (isCurrentSentenceTarget) {
-          ctx.fillStyle = '#38bdf8';
-          ctx.font = '700 9px var(--font-mono, monospace)';
-          ctx.textAlign = 'center';
-          ctx.fillText('TARGET LOCK', 0, -badgeRadius - 8);
-        }
-
-        // Extra-large upright glyph, isolated from the rotating asteroid body.
+        // High contrast glyph
         ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = isDanger ? '#ef4444' : (isCurrentSentenceTarget ? '#38bdf8' : 'rgba(0, 0, 0, 0.8)');
-        ctx.shadowBlur = isCurrentSentenceTarget ? 10 : 4;
-        ctx.font = '900 42px "Arial Black", "JetBrains Mono", monospace';
+        ctx.shadowColor = isDanger ? '#ef4444' : '#38bdf8';
+        ctx.shadowBlur = 6;
+        ctx.font = fontGlyph;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(r.letter, 0, 1);
@@ -705,14 +823,14 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       // 7. Defense Turret Cannon at Base
       const turretX = w / 2;
-      const turretY = shieldY + 6;
+      const turretY = shieldY + 8;
 
       ctx.fillStyle = '#0f2744';
       ctx.beginPath();
-      ctx.arc(turretX, turretY + 6, 24, Math.PI, 0);
+      ctx.arc(turretX, turretY + 6, 26, Math.PI, 0);
       ctx.fill();
       ctx.strokeStyle = '#38bdf8';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
 
       ctx.save();
@@ -720,9 +838,9 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       ctx.rotate(turretAngle + Math.PI / 2);
 
       ctx.fillStyle = '#38bdf8';
-      ctx.fillRect(-5, -28, 10, 28);
+      ctx.fillRect(-6, -30, 12, 30);
       ctx.fillStyle = '#e0f2fe';
-      ctx.fillRect(-2, -30, 4, 30);
+      ctx.fillRect(-2, -32, 4, 32);
       ctx.restore();
 
       // 8. Explosion Particles
@@ -749,65 +867,93 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       // 10. Idle Overlay
       if (!isPlaying && !isPaused && !isFinished) {
-        ctx.fillStyle = 'rgba(4, 11, 23, 0.78)';
+        ctx.fillStyle = 'rgba(4, 11, 23, 0.82)';
         ctx.fillRect(0, 0, w, h);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = '800 28px var(--font-mono, monospace)';
+        ctx.font = '800 30px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
-        ctx.fillText('TYPE BLASTER: SPEED TYPING ARCADE', w / 2, h / 2 - 34);
+        ctx.fillText('TYPE BLASTER: SPEED TYPING ARCADE', w / 2, h / 2 - 48);
 
         ctx.fillStyle = '#e2e8f0';
-        ctx.font = '600 15px var(--font-sans, sans-serif)';
-        ctx.fillText('Blast falling letter asteroids by typing meaningful dev sentences!', w / 2, h / 2);
+        ctx.font = '600 16px var(--font-sans, sans-serif)';
+        ctx.fillText('Shoot ANY falling letter in ANY order — blast rocks to defend base!', w / 2, h / 2 - 12);
 
         ctx.fillStyle = '#94a3b8';
-        ctx.font = '13px var(--font-mono, monospace)';
-        ctx.fillText('Desktop: Type keys directly · Live keystrokes stream below', w / 2, h / 2 + 24);
+        ctx.font = '14px var(--font-mono, monospace)';
+        ctx.fillText('Desktop: Type keys directly · Mobile: Tap falling rocks or use input', w / 2, h / 2 + 18);
 
         ctx.fillStyle = '#38bdf8';
-        ctx.font = '700 14px var(--font-mono, monospace)';
-        ctx.fillText('Click "Start round" to initialize speed mission', w / 2, h / 2 + 56);
+        ctx.font = '700 15px var(--font-mono, monospace)';
+        ctx.fillText('Click "Start round" or tap Fullscreen to launch mission', w / 2, h / 2 + 56);
       }
 
       // 11. Paused Overlay
       if (isPaused) {
-        ctx.fillStyle = 'rgba(4, 11, 23, 0.8)';
+        ctx.fillStyle = 'rgba(4, 11, 23, 0.82)';
         ctx.fillRect(0, 0, w, h);
 
         ctx.fillStyle = '#e0f2fe';
-        ctx.font = '700 26px var(--font-mono, monospace)';
+        ctx.font = '700 28px var(--font-mono, monospace)';
         ctx.textAlign = 'center';
-        ctx.fillText('MISSION PAUSED', w / 2, h / 2 - 10);
+        ctx.fillText('COMBAT PAUSED', w / 2, h / 2 - 10);
 
         ctx.fillStyle = '#94a3b8';
         ctx.font = '14px var(--font-sans, sans-serif)';
-        ctx.fillText('Press Resume to return to combat', w / 2, h / 2 + 22);
+        ctx.fillText('Press Resume to return to combat', w / 2, h / 2 + 24);
       }
 
       // 12. Finished Overlay
       if (isFinished) {
-        ctx.fillStyle = 'rgba(3, 8, 18, 0.9)';
+        ctx.fillStyle = 'rgba(3, 8, 18, 0.92)';
         ctx.fillRect(0, 0, w, h);
 
-        ctx.fillStyle = currentIntegrity > 0 ? '#38bdf8' : '#f87171';
-        ctx.font = '800 28px var(--font-mono, monospace)';
-        ctx.textAlign = 'center';
-        ctx.fillText(currentIntegrity > 0 ? 'MISSION ACCOMPLISHED' : 'DEFENSE BREACHED', w / 2, h / 2 - 46);
+        const elapsedMinutes = (elapsedBeforePause || 1) / 60000;
+        const finalWpm = elapsedMinutes > 0 && totalHits > 0 ? Math.round((totalHits / 5) / elapsedMinutes) : 0;
+        const finalCpm = elapsedMinutes > 0 && totalHits > 0 ? Math.round(totalHits / elapsedMinutes) : 0;
+        const finalAcc = totalTyped > 0 ? Math.round((totalHits / totalTyped) * 100) : 100;
+        const rank = getSpeedRank(finalWpm);
 
-        ctx.fillStyle = '#f8fafc';
-        ctx.font = '600 16px var(--font-sans, sans-serif)';
-        ctx.fillText(`Final Score: ${score} · High Score: ${bestScore} (${difficulty})`, w / 2, h / 2 - 12);
+        if (difficulty === 'expert') {
+          // SPEED TEST REPORT CARD
+          ctx.fillStyle = '#c084fc';
+          ctx.font = '800 32px var(--font-mono, monospace)';
+          ctx.textAlign = 'center';
+          ctx.fillText('⚡ TYPING SPEED SPRINT COMPLETED ⚡', w / 2, h / 2 - 80);
 
-        ctx.fillStyle = '#34d399';
-        ctx.font = '700 15px var(--font-mono, monospace)';
-        const finalWpm = wpmEl ? wpmEl.textContent : '0 WPM';
-        const finalAcc = accuracyEl ? accuracyEl.textContent : '100%';
-        ctx.fillText(`Typing Speed: ${finalWpm} · Accuracy: ${finalAcc} · Streak: ${maxCombo}x`, w / 2, h / 2 + 18);
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = '700 24px var(--font-mono, monospace)';
+          ctx.fillText(`${finalWpm} WPM · ${finalCpm} CPM`, w / 2, h / 2 - 36);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = '600 16px var(--font-sans, sans-serif)';
+          ctx.fillText(`Accuracy: ${finalAcc}% · Blasted: ${totalHits} rocks · Max Streak: ${maxCombo}x`, w / 2, h / 2);
+
+          ctx.fillStyle = '#facc15';
+          ctx.font = '800 18px var(--font-mono, monospace)';
+          ctx.fillText(`Rank Tier: ${rank}`, w / 2, h / 2 + 34);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '600 14px var(--font-sans, sans-serif)';
+          ctx.fillText(`Final Score: ${score} · High Score: ${bestScore}`, w / 2, h / 2 + 66);
+        } else {
+          ctx.fillStyle = currentIntegrity > 0 ? '#38bdf8' : '#f87171';
+          ctx.font = '800 28px var(--font-mono, monospace)';
+          ctx.textAlign = 'center';
+          ctx.fillText(currentIntegrity > 0 ? 'MISSION ACCOMPLISHED' : 'DEFENSE BREACHED', w / 2, h / 2 - 56);
+
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = '600 16px var(--font-sans, sans-serif)';
+          ctx.fillText(`Final Score: ${score} · High Score: ${bestScore} (${difficulty.toUpperCase()})`, w / 2, h / 2 - 20);
+
+          ctx.fillStyle = '#34d399';
+          ctx.font = '700 15px var(--font-mono, monospace)';
+          ctx.fillText(`Typing Speed: ${finalWpm} WPM · Accuracy: ${finalAcc}% · Streak: ${maxCombo}x`, w / 2, h / 2 + 12);
+        }
 
         ctx.fillStyle = '#fef08a';
         ctx.font = '700 14px var(--font-sans, sans-serif)';
-        ctx.fillText('Click "Play again" to launch another speed run', w / 2, h / 2 + 54);
+        ctx.fillText('Click "Play again" to launch another run', w / 2, h / 2 + 96);
       }
 
       ctx.restore();
@@ -825,7 +971,7 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       turretAngle += (turretTargetAngle - turretAngle) * Math.min(delta * 14, 1);
 
       if (updateMetrics(now) >= settings[difficulty].duration) {
-        return endRound('Mission complete! Base perimeter secured.', true);
+        return endRound(difficulty === 'expert' ? 'Speed sprint complete! Final typing metrics computed.' : 'Mission complete! Base perimeter secured.', true);
       }
 
       spawnTimer += delta;
@@ -837,6 +983,10 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       rocks.forEach((r) => {
         r.y += r.speed * delta;
         r.rot += r.rotSpeed * delta;
+        if (r.drift) {
+          r.x += r.drift * Math.sin(now * 0.003 + r.id) * delta;
+          r.x = Math.max(r.radius + 10, Math.min(canvas.width - r.radius - 10, r.x));
+        }
       });
 
       bullets.forEach((b) => {
@@ -849,10 +999,15 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         const target = rocks.find((r) => r.id === b.targetId);
         if (target) {
           const distToTarget = Math.hypot(b.x - target.x, b.y - target.y);
-          if (distToTarget <= target.radius + 10 || b.progress >= b.maxDist) {
+          if (distToTarget <= target.radius + 12 || b.progress >= b.maxDist) {
             rocks = rocks.filter((r) => r.id !== target.id);
             const pointsEarned = 100 * Math.min(combo, 5);
             score += pointsEarned;
+            if (score > bestScore) {
+              bestScore = score;
+              ArcadeStorage.write(storageKey(), bestScore);
+              if (bestEl) bestEl.textContent = String(bestScore);
+            }
             createExplosion(target.x, target.y, target.letter, pointsEarned);
             return false;
           }
@@ -862,18 +1017,20 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       const remaining = [];
       rocks.forEach((r) => {
-        if (r.y > canvas.height - 44) {
+        if (r.y > canvas.height - 48) {
           escapedRocks++;
           combo = 0;
-          screenShake = 8;
+          screenShake = 7;
           ArcadeAudio.playExplosion();
+          createExplosion(r.x, canvas.height - 48, r.letter, 0, '#ef4444');
         } else {
           remaining.push(r);
         }
       });
       rocks = remaining;
 
-      if (escapedRocks >= settings[difficulty].integrity) {
+      // In Expert mode, player NEVER gets out (plays full duration to know speed!)
+      if (difficulty !== 'expert' && escapedRocks >= settings[difficulty].integrity) {
         return endRound('Base integrity breached! Rocks penetrated defense shield.');
       }
 
@@ -901,7 +1058,8 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         bullets = [];
         particles = [];
         popups = [];
-        recentKeystrokes = [];
+        keypressTimes = [];
+        firstKeypressTime = 0;
         score = 0;
         combo = 0;
         maxCombo = 0;
@@ -914,19 +1072,7 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         isFinished = false;
         turretAngle = -Math.PI / 2;
         turretTargetAngle = -Math.PI / 2;
-        initSentence();
         spawnRock();
-        if (typingStreamKeysEl) {
-          typingStreamKeysEl.replaceChildren();
-          const idlePill = document.createElement('span');
-          idlePill.className = 'key-pill key-idle';
-          idlePill.textContent = 'Awaiting first keystroke…';
-          typingStreamKeysEl.appendChild(idlePill);
-        }
-        if (typingLastKeyBadgeEl) {
-          typingLastKeyBadgeEl.className = 'typing-last-key-badge';
-          typingLastKeyBadgeEl.textContent = 'Last key: None';
-        }
       }
 
       isPlaying = true;
@@ -936,9 +1082,13 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
       if (startBtn) startBtn.textContent = 'Playing…';
       if (pauseBtn) pauseBtn.textContent = 'Pause';
-      if (statusEl) statusEl.textContent = 'Type the falling rock letters to complete the target sentence!';
+      if (statusEl) {
+        statusEl.textContent = difficulty === 'expert'
+          ? '⚡ EXPERT SPEED TEST: Type as fast as you can without stopping!'
+          : 'Type the letter on ANY falling rock to blast it!';
+      }
 
-      if (window.matchMedia('(pointer: coarse)').matches && mobileInput) {
+      if (isMobile && mobileInput) {
         try { mobileInput.focus(); } catch {}
       }
 
@@ -957,8 +1107,8 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
         animFrameId = 0;
       }
 
-      if (startBtn) startBtn.textContent = 'Resume round';
       if (pauseBtn) pauseBtn.textContent = 'Resume';
+      if (startBtn) startBtn.textContent = 'Resume round';
       if (statusEl) statusEl.textContent = reason;
       updateMetrics();
       draw();
@@ -988,7 +1138,6 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
     function activate() {
       isKeyActive = true;
       window.addEventListener('keydown', handleKeyDown);
-      syncSentenceHUD();
       draw();
     }
 
@@ -1000,15 +1149,19 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
 
     function setup() {
       if (isSetupDone) return;
-      container = document.getElementById('arcadeGameTyping');
+      container = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
       canvas = document.getElementById('typingShooterCanvas');
       if (!container || !canvas) return;
+
+      // Set canvas coordinate dimensions to wide 1200x650
+      canvas.width = 1200;
+      canvas.height = 650;
 
       ctx = canvas.getContext('2d', { alpha: false });
       startBtn = document.getElementById('typingStartBtn');
       pauseBtn = document.getElementById('typingPauseBtn');
-      restartBtn = document.getElementById('typingRestartBtn');
       soundBtn = document.getElementById('typingSoundBtn');
+      fullscreenBtn = document.getElementById('typingFullscreenBtn');
       mobileInput = document.getElementById('typingShooterInput');
       scoreEl = document.getElementById('typingScore');
       comboEl = document.getElementById('typingCombo');
@@ -1019,18 +1172,11 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       statusEl = document.getElementById('typingStatus');
       diffContainer = container.querySelector('[data-difficulty-for]');
 
-      phraseDoneEl = document.getElementById('phraseDone');
-      phraseCurrentEl = document.getElementById('phraseCurrent');
-      phraseUpcomingEl = document.getElementById('phraseUpcoming');
-      typingStreamKeysEl = document.getElementById('typingStreamKeys');
-      typingLastKeyBadgeEl = document.getElementById('typingLastKeyBadge');
-      typingModeTagEl = document.getElementById('typingModeTag');
-
       difficulty = ArcadeStorage.getDifficulty('typeBlasterDifficulty', 'easy');
       syncDifficultyUI();
       syncSoundUI();
+      syncFullscreenBtn();
       loadBest();
-      initSentence();
 
       if (timeEl) timeEl.textContent = `${Math.ceil(settings[difficulty].duration / 1000)}s`;
 
@@ -1043,7 +1189,6 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
             ArcadeStorage.setDifficulty('typeBlasterDifficulty', difficulty);
             syncDifficultyUI();
             loadBest();
-            initSentence();
             if (isPlaying || isPaused) {
               pause('Difficulty updated. Start new round.');
             }
@@ -1058,20 +1203,25 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
           else start(isFinished);
         });
       }
-      if (restartBtn) {
-        restartBtn.addEventListener('click', () => start(true));
-      }
+
       if (pauseBtn) {
         pauseBtn.addEventListener('click', () => {
           if (isPlaying) pause();
           else if (isPaused) start(false);
         });
       }
+
       if (soundBtn) {
         soundBtn.addEventListener('click', () => {
           ArcadeAudio.toggle();
           syncSoundUI();
         });
+      }
+
+      if (fullscreenBtn) {
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        document.addEventListener('fullscreenchange', syncFullscreenBtn);
+        document.addEventListener('webkitfullscreenchange', syncFullscreenBtn);
       }
 
       if (mobileInput) {
@@ -1084,6 +1234,26 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
           }
         });
       }
+
+      // Mobile touch-to-blast on canvas: clicking/tapping directly on a rock shoots it!
+      canvas.addEventListener('pointerdown', (e) => {
+        if (!isPlaying && !isPaused) {
+          start(false);
+          return;
+        }
+        if (!isPlaying || isPaused) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        // Generous touch tolerance on mobile (radius + 26px) for effortless tapping
+        const hitTol = isMobileMode() ? 26 : 14;
+        const clickedRock = rocks.find((r) => Math.hypot(r.x - clickX, r.y - clickY) <= r.radius + hitTol);
+        if (clickedRock) {
+          fireLetter(clickedRock.letter);
+        }
+      });
 
       isSetupDone = true;
       draw();
@@ -1099,23 +1269,20 @@ tb_code = '''  // ─── TYPE BLASTER: PREMIUM TYPING ARCADE MODULE ───
       drawIdle: draw
     };
   })();
-'''
 
-snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ────────────────────────────────
+
+  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ─────────────────────────────────
   const NokiaSnakeGame = (() => {
     let container, canvas, ctx;
     let startBtn, pauseBtn, restartBtn, soundBtn;
     let scoreEl, bestEl, statusEl;
     let diffContainer;
 
-    // 20x20 Grid with 24px units on 480x480 canvas for enlarged, crisp Nokia LCD display
     const cells = 20;
     let unit = 24;
+    let boardOffsetX = 0;
+    let boardOffsetY = 0;
 
-    // Difficulty Speeds:
-    // Easy: 160ms tick (beginner-friendly)
-    // Medium: 110ms tick (classic authentic Nokia pace)
-    // Hard: 68ms tick (fast arcade challenge)
     const speeds = { easy: 160, medium: 110, hard: 68 };
 
     let difficulty = 'medium';
@@ -1131,7 +1298,6 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
     let touchStartCoord = null;
     let isKeyActive = false;
     let isSetupDone = false;
-    let foodBlinkState = true;
 
     function storageKey() {
       return `nokia-snake-best:${difficulty}`;
@@ -1160,6 +1326,15 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
       soundBtn.setAttribute('aria-pressed', String(on));
     }
 
+    function computeLayout() {
+      if (!canvas) return;
+      unit = Math.min(canvas.width, canvas.height) / cells;
+      const boardW = unit * cells;
+      const boardH = unit * cells;
+      boardOffsetX = Math.floor((canvas.width - boardW) / 2);
+      boardOffsetY = Math.floor((canvas.height - boardH) / 2);
+    }
+
     function placeFood() {
       const occupied = new Set(snake.map((p) => `${p.x},${p.y}`));
       const emptyCells = [];
@@ -1184,37 +1359,37 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
       const w = canvas.width;
       const h = canvas.height;
 
-      // Authentic retro Nokia monochrome green LCD screen
-      ctx.fillStyle = '#9caf88';
+      ctx.fillStyle = '#6b7a60';
       ctx.fillRect(0, 0, w, h);
 
-      // LCD Pixel Matrix Texture
+      const boardW = unit * cells;
+      const boardH = unit * cells;
+      ctx.fillStyle = '#9caf88';
+      ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
+
       ctx.fillStyle = 'rgba(47, 62, 45, 0.08)';
       for (let i = 0; i <= cells; i++) {
-        ctx.fillRect(i * unit, 0, 1, h);
-        ctx.fillRect(0, i * unit, w, 1);
+        ctx.fillRect(boardOffsetX + i * unit, boardOffsetY, 1, boardH);
+        ctx.fillRect(boardOffsetX, boardOffsetY + i * unit, boardW, 1);
       }
 
-      // Food (Retro LCD Apple with subtle blink)
       if (food) {
-        const fx = food.x * unit;
-        const fy = food.y * unit;
+        const fx = boardOffsetX + food.x * unit;
+        const fy = boardOffsetY + food.y * unit;
         ctx.fillStyle = '#183b25';
         ctx.fillRect(fx + 3, fy + 3, unit - 6, unit - 6);
         ctx.fillStyle = '#9caf88';
         ctx.fillRect(fx + 6, fy + 6, 3, 3);
       }
 
-      // Snake Body & Head
       snake.forEach((part, index) => {
-        const px = part.x * unit;
-        const py = part.y * unit;
+        const px = boardOffsetX + part.x * unit;
+        const py = boardOffsetY + part.y * unit;
 
         if (index === 0) {
           ctx.fillStyle = '#122618';
           ctx.fillRect(px + 1, py + 1, unit - 2, unit - 2);
 
-          // Expressive Pixel Eyes pointing in direction of movement
           ctx.fillStyle = '#9caf88';
           if (direction.x === 1) {
             ctx.fillRect(px + unit - 6, py + 4, 3, 3);
@@ -1237,10 +1412,9 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
         }
       });
 
-      // Overlay: Idle
       if (!isRunning && !isPaused && !snake.length) {
         ctx.fillStyle = 'rgba(156, 175, 136, 0.88)';
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
 
         ctx.fillStyle = '#122618';
         ctx.font = '700 24px monospace';
@@ -1252,10 +1426,9 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
         ctx.fillText('Press "Start game" to Play', w / 2, h / 2 + 32);
       }
 
-      // Overlay: Paused
       if (isPaused) {
         ctx.fillStyle = 'rgba(156, 175, 136, 0.85)';
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(boardOffsetX, boardOffsetY, boardW, boardH);
 
         ctx.fillStyle = '#122618';
         ctx.font = '700 22px monospace';
@@ -1279,13 +1452,11 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
         y: snake[0].y + direction.y
       };
 
-      // Wall collision
       if (head.x < 0 || head.x >= cells || head.y < 0 || head.y >= cells) {
         ArcadeAudio.playSnakeDie();
-        return stop('Snake crashed into the perimeter wall!');
+        return stop('Snake crashed into perimeter wall!');
       }
 
-      // Self collision
       if (snake.some((part) => part.x === head.x && part.y === head.y)) {
         ArcadeAudio.playSnakeDie();
         return stop('Snake collided with its own tail!');
@@ -1293,7 +1464,6 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
 
       snake.unshift(head);
 
-      // Check food eaten
       if (food && head.x === food.x && head.y === food.y) {
         score += 10;
         ArcadeAudio.playSnakeBite();
@@ -1305,7 +1475,6 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
           if (bestEl) bestEl.textContent = String(bestScore);
         }
 
-        // Slight speed acceleration in Hard mode
         if (difficulty === 'hard' && snake.length % 4 === 0) {
           clearInterval(timerId);
           const dynamicSpeed = Math.max(45, speeds.hard - Math.floor(snake.length / 4) * 2);
@@ -1322,7 +1491,6 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
 
     function queueDirection(nextDir) {
       const last = inputQueue.length > 0 ? inputQueue[inputQueue.length - 1] : direction;
-      // Prevent 180-degree instant reversal into own neck
       if (last.x + nextDir.x === 0 && last.y + nextDir.y === 0) return;
       if (last.x === nextDir.x && last.y === nextDir.y) return;
       if (inputQueue.length < 3) {
@@ -1427,11 +1595,6 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
           queueDirection({ x: 1, y: 0 });
           handled = true;
           break;
-        case ' ':
-          if (isRunning) pause();
-          else if (isPaused || snake.length) start(false);
-          handled = true;
-          break;
       }
       if (handled) e.preventDefault();
     }
@@ -1439,6 +1602,7 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
     function activate() {
       isKeyActive = true;
       window.addEventListener('keydown', handleKeyDown);
+      computeLayout();
       draw();
     }
 
@@ -1450,13 +1614,14 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
 
     function setup() {
       if (isSetupDone) return;
-      container = document.getElementById('arcadeGameSnake');
+      container = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
       canvas = document.getElementById('snakeCanvas');
       if (!container || !canvas) return;
 
-      ctx = canvas.getContext('2d', { alpha: false });
-      unit = canvas.width / cells;
+      canvas.width = 480;
+      canvas.height = 640;
 
+      ctx = canvas.getContext('2d', { alpha: false });
       startBtn = document.getElementById('snakeStartBtn');
       pauseBtn = document.getElementById('snakePauseBtn');
       restartBtn = document.getElementById('snakeRestartBtn');
@@ -1470,6 +1635,7 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
       syncDifficultyUI();
       syncSoundUI();
       loadBest();
+      computeLayout();
 
       if (diffContainer) {
         diffContainer.querySelectorAll('[data-difficulty]').forEach((btn) => {
@@ -1480,10 +1646,8 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
             ArcadeStorage.setDifficulty('nokiaSnakeDifficulty', difficulty);
             syncDifficultyUI();
             loadBest();
-            if (isRunning) {
-              clearInterval(timerId);
-              timerId = setInterval(step, speeds[difficulty]);
-              if (statusEl) statusEl.textContent = `Speed set to ${difficulty}.`;
+            if (isRunning || isPaused) {
+              pause('Difficulty changed. Press Resume to play.');
             }
           });
         });
@@ -1559,10 +1723,121 @@ snake_code = '''  // ─── NOKIA SNAKE: AUTHENTIC RETRO LCD MODULE ───
       drawIdle: draw
     };
   })();
+
+
+  // ─── INDEPENDENT TAB CONTROLLERS ─────────────────────────────────────────────
+  let typeBlasterInitialized = false;
+  let nokiaSnakeInitialized = false;
+
+  function initTypeBlaster() {
+    if (typeBlasterInitialized) return;
+    const panel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+    if (!panel) return;
+    TypeBlasterGame.setup();
+    TypeBlasterGame.activate();
+    typeBlasterInitialized = true;
+  }
+
+  function initNokiaSnake() {
+    if (nokiaSnakeInitialized) return;
+    const panel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+    if (!panel) return;
+    NokiaSnakeGame.setup();
+    NokiaSnakeGame.activate();
+    nokiaSnakeInitialized = true;
+  }
+
+  document.addEventListener('playground:tabchange', (e) => {
+    const labId = e.detail?.labId;
+
+    if (labId === 'type-blaster') {
+      initTypeBlaster();
+      TypeBlasterGame.activate();
+      TypeBlasterGame.drawIdle();
+    } else {
+      if (typeBlasterInitialized) {
+        TypeBlasterGame.deactivate();
+      }
+    }
+
+    if (labId === 'nokia-snake') {
+      initNokiaSnake();
+      NokiaSnakeGame.activate();
+      NokiaSnakeGame.drawIdle();
+    } else {
+      if (nokiaSnakeInitialized) {
+        NokiaSnakeGame.deactivate();
+      }
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (typeBlasterInitialized) TypeBlasterGame.pause('Game paused while window was hidden.');
+      if (nokiaSnakeInitialized) NokiaSnakeGame.pause('Game paused while window was hidden.');
+    }
+  });
+
+  if (window.visualViewport) {
+    const updateVisualViewport = () => {
+      const vh = window.visualViewport.height;
+      document.documentElement.style.setProperty('--visual-vh', `${vh}px`);
+    };
+    window.visualViewport.addEventListener('resize', updateVisualViewport, { passive: true });
+    window.visualViewport.addEventListener('scroll', updateVisualViewport, { passive: true });
+    updateVisualViewport();
+  }
+
+  window.TypeBlasterGame = TypeBlasterGame;
+  window.NokiaSnakeGame = NokiaSnakeGame;
+
+  const ArcadeHub = {
+    activeGame: 'typing',
+    switchGame(gameId) {
+      const typePanel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+      const snakePanel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+      if (gameId === 'typing' || gameId === 'type-blaster') {
+        if (snakePanel) snakePanel.hidden = true;
+        if (typePanel) typePanel.hidden = false;
+        NokiaSnakeGame.deactivate();
+        initTypeBlaster();
+        TypeBlasterGame.activate();
+        this.activeGame = 'typing';
+      } else if (gameId === 'snake' || gameId === 'nokia-snake') {
+        if (typePanel) typePanel.hidden = true;
+        if (snakePanel) snakePanel.hidden = false;
+        TypeBlasterGame.deactivate();
+        initNokiaSnake();
+        NokiaSnakeGame.activate();
+        this.activeGame = 'snake';
+      }
+    },
+    init() {
+      initTypeBlaster();
+      initNokiaSnake();
+    }
+  };
+  window.ArcadeHub = ArcadeHub;
+
+  function autoInit() {
+    const typingPanel = document.getElementById('lab-type-blaster') || document.getElementById('arcadeGameTyping');
+    const snakePanel = document.getElementById('lab-nokia-snake') || document.getElementById('arcadeGameSnake');
+
+    if (typingPanel && !typingPanel.hidden) {
+      initTypeBlaster();
+    }
+    if (snakePanel && !snakePanel.hidden) {
+      initNokiaSnake();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInit);
+  } else {
+    autoInit();
+  }
+})();
 '''
 
-new_full_code = code[:start_tb] + tb_code + '\n\n' + snake_code + '\n\n' + code[start_hub:]
-
-arcade_hub_path.write_text(new_full_code, encoding='utf-8')
-
-print("js/arcade-hub.js successfully updated!")
+Path('js/arcade-hub.js').write_text(content, encoding='utf-8')
+print("Successfully updated js/arcade-hub.js with mobile rock sizes and balanced Expert mode!")
