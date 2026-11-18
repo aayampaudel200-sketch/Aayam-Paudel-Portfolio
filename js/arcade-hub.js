@@ -1150,7 +1150,14 @@
       canvas = document.getElementById('typingShooterCanvas');
       if (!container || !canvas) return;
 
-      // Set canvas coordinate dimensions to wide 1200x650
+      // Set canvas dimensions: portrait on mobile, landscape otherwise
+      if (isMobileMode()) {
+        canvas.width = 720; // portrait width
+        canvas.height = 1280; // portrait height
+      } else {
+        canvas.width = 1200;
+        canvas.height = 650;
+      }
       canvas.width = 1200;
       canvas.height = 650;
 

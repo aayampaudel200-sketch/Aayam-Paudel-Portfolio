@@ -3615,7 +3615,7 @@ ul { list-style: none; }
     width: 100%;
     height: auto;
     /* Taller on mobile so more vertical play area is visible */
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 9 / 16;
     max-height: 72dvh;
   }
   .typing-mobile-input-wrap { align-items: stretch; flex-direction: column; }
