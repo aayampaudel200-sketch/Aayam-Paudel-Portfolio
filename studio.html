@@ -130,25 +130,22 @@
             <h2 id="requestAccessTitle">Request an approved invitation.</h2>
             <p>Send your name, your email address, and a short note about how you plan to use the studio.</p>
           </div>
-          <form id="studio-access-form" class="studio-request-form" action="https://api.web3forms.com/submit" method="POST" data-no-intercept="true">
-            <input type="hidden" name="access_key" value="1f8f5541-48e5-40ab-b71b-a89f0fd3cf72">
-            <input type="hidden" name="subject" value="Access Request: Namaste Suman Studio">
-            <input type="checkbox" name="botcheck" style="display:none;">
+          <div id="studio-access-form" class="studio-request-form">
             <div class="form-group">
               <label for="fullName">Full Name</label>
-              <input type="text" id="fullName" name="name" placeholder="Your Full Name" required autocomplete="name">
+              <input type="text" id="fullName" placeholder="Your Full Name" required autocomplete="name">
             </div>
             <div class="form-group">
               <label for="email">Your Email Address</label>
-              <input type="email" id="email" name="email" placeholder="you@gmail.com" required autocomplete="email">
+              <input type="email" id="email" placeholder="you@gmail.com" required autocomplete="email">
             </div>
             <div class="form-group">
               <label for="message">Why do you need access / organization?</label>
-              <textarea id="message" name="message" placeholder="Briefly describe how you plan to use Namaste Suman Studio..." required rows="3"></textarea>
+              <textarea id="message" placeholder="Briefly describe how you plan to use Namaste Suman Studio..." required rows="3"></textarea>
             </div>
-            <button type="submit" id="requestSubmitBtn" class="btn btn-primary">Request Access</button>
+            <button type="button" id="requestSubmitBtn" class="btn btn-primary" onclick="submitStudioRequest()">Request Access</button>
             <p id="formMessage" role="status" aria-live="polite" style="display:none;"></p>
-          </form>
+          </div>
         </section>
         <p class="studio-back"><a class="text-link" href="namaste-suman.html">← Back to Namaste Suman Communication</a></p>
       </div>
@@ -162,58 +159,61 @@
   </footer>
   <script src="js/main.js" defer></script>
   <script>
-    window.addEventListener('load', function () {
-      var oldForm = document.getElementById('studio-access-form');
-      if (!oldForm) return;
-      // Clone node to strip any competing event listeners attached by js/main.js
-      var form = oldForm.cloneNode(true);
-      oldForm.parentNode.replaceChild(form, oldForm);
-
+    async function submitStudioRequest() {
+      var name = document.getElementById('fullName').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var message = document.getElementById('message').value.trim();
       var result = document.getElementById('formMessage');
       var btn = document.getElementById('requestSubmitBtn');
 
-      form.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+      result.style.display = 'block';
 
-        btn.disabled = true;
-        btn.textContent = 'Sending...';
-        result.style.display = 'block';
-        result.style.color = '#38bdf8';
-        result.textContent = 'Submitting your request...';
+      if (!name || !email || !message) {
+        result.style.color = '#f87171';
+        result.textContent = 'Please fill in all required fields.';
+        return;
+      }
 
-        try {
-          var formData = new FormData(form);
-          var object = Object.fromEntries(formData);
-          var jsonBody = JSON.stringify(object);
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      result.style.color = '#38bdf8';
+      result.textContent = 'Submitting your request...';
 
-          var response = await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: jsonBody
-          });
+      try {
+        var response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: '1f8f5541-48e5-40ab-b71b-a89f0fd3cf72',
+            subject: 'Access Request: Namaste Suman Studio',
+            name: name,
+            email: email,
+            message: message
+          })
+        });
 
-          var json = await response.json();
-          if (response.status === 200 && json.success) {
-            result.style.color = '#34d399';
-            result.textContent = 'Request sent! Aayam will review and email your private access link.';
-            form.reset();
-          } else {
-            result.style.color = '#f87171';
-            result.textContent = json.message || 'Submission failed. Please try again.';
-          }
-        } catch (err) {
+        var json = await response.json();
+        if (response.status === 200 && json.success) {
+          result.style.color = '#34d399';
+          result.textContent = 'Request sent! Aayam will review and email your private access link.';
+          document.getElementById('fullName').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('message').value = '';
+        } else {
           result.style.color = '#f87171';
-          result.textContent = 'Network error. Please check your connection and try again.';
-        } finally {
-          btn.disabled = false;
-          btn.textContent = 'Request Access';
+          result.textContent = json.message || 'Submission failed. Please try again.';
         }
-      });
-    });
+      } catch (err) {
+        result.style.color = '#f87171';
+        result.textContent = 'Network error. Please check your connection and try again.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Request Access';
+      }
+    }
   </script>
 </body>
 </html>
