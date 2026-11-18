@@ -754,8 +754,8 @@ content = '''/**
 
       // 6. Incoming Asteroid Rocks (Dynamic size: bigger on mobile for optimal tapping & visibility)
       const isMob = isMobileMode();
-      const badgeRadius = isMob ? 24 : 18;
-      const fontGlyph = isMob ? '900 28px "Arial Black", "JetBrains Mono", monospace' : '900 22px "Arial Black", "JetBrains Mono", monospace';
+      const badgeRadius = isMob ? 25 : 20;
+      const fontGlyph = isMob ? '900 32px "Arial Black", "JetBrains Mono", monospace' : '900 27px "Arial Black", "JetBrains Mono", monospace';
 
       rocks.forEach((r) => {
         ctx.save();
