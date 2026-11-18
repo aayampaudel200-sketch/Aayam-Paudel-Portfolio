@@ -43,7 +43,7 @@
         "alternateName": ["Aayam Poudel", "Ayam Paudel", "आयम पौडेल"],
         "url": "https://aayampaudel.com.np/",
         "image": "https://aayampaudel.com.np/assets/images/aayam-paudel-web-developer-nepal.jpg",
-        "jobTitle": "Developer &amp; Technology Professional",
+        "jobTitle": "Developer & Technology Professional",
         "description": "B.Sc. CSIT student at Lumbini I.C.T. Campus (Tribhuvan University), co‑founder and Technical Systems Lead of Namaste Suman Communication, building software that solves real problems.",
         "sameAs": [
           "https://github.com/aayampaudel200-sketch",
@@ -67,6 +67,7 @@
     ]
   }
   </script>
+  <script>try { const theme = localStorage.getItem('site-theme'); if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme; } catch {}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -74,11 +75,11 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" aria-hidden="true"></div>
   <header class="site-header" id="siteHeader">
     <div class="header-inner">
       <a class="wordmark logo-link" href="index.html" aria-label="Aayam Paudel — Home">
-        <img src="logo.png" alt="Aayam Paudel (Aayam Poudel) - Web Developer Logo" class="nav-logo" style="height:40px;width:auto;" loading="lazy" decoding="async" width="40" height="40">
-        <span class="logo-name"><span aria-hidden="true"><</span>Aayam Paudel<span aria-hidden="true"> /></span>
+        <img src="logo.png" alt="Aayam Paudel (Aayam Poudel) - Web Developer Logo" class="nav-logo" style="height:40px;width:auto;" fetchpriority="high" decoding="async" width="40" height="40"><span class="logo-name"><span aria-hidden="true">&lt;</span>Aayam Paudel<span aria-hidden="true"> /&gt;</span></span>
       </a>
       <nav class="desktop-nav" aria-label="Primary">
         <a href="index.html" class="nav-link">Home</a>
@@ -88,12 +89,39 @@
         <a href="playground.html" class="nav-link">Playground</a>
         <a href="index.html#contact" class="nav-link">Contact</a>
       </nav>
+      <form class="site-search site-search--desktop" role="search">
+        <label class="visually-hidden" for="siteSearchDesktop">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchDesktop" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchDesktopResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
+        </div>
+        <div class="site-search-results" id="siteSearchDesktopResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
       <a href="index.html#contact" class="btn btn-primary btn-sm header-cta">Let’s Talk</a>
       <button type="button" class="theme-toggle" aria-label="Switch to light theme" title="Switch to light theme">
-        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/></svg>
-        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg>
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"></path></svg>
       </button>
       <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <form class="site-search site-search--mobile" role="search">
+        <label class="visually-hidden" for="siteSearchMobile">Search the site</label>
+        <div class="site-search-control">
+          <input id="siteSearchMobile" type="search" name="q" placeholder="Search the site" autocomplete="off" aria-controls="siteSearchMobileResults" aria-expanded="false">
+          <button type="submit" class="site-search-submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
+        </div>
+        <div class="site-search-results" id="siteSearchMobileResults" role="listbox" aria-label="Search suggestions" hidden></div>
+        <p class="site-search-status visually-hidden" role="status" aria-live="polite"></p>
+      </form>
+      <a href="index.html" class="mobile-link">Home</a>
+      <a href="about.html" class="mobile-link active">About</a>
+      <a href="projects.html" class="mobile-link">Projects</a>
+      <a href="experience.html" class="mobile-link">Experience</a>
+      <a href="playground.html" class="mobile-link">Playground</a>
+      <a href="index.html#contact" class="mobile-link">Contact</a>
+      <a href="index.html#contact" class="btn btn-primary mobile-cta">Let’s Talk</a>
     </div>
   </header>
   <main id="main">
@@ -192,7 +220,7 @@
           <li><a href="https://medium.com/@aayampaudel200" target="_blank" rel="noopener noreferrer">Medium</a></li>
           <li><a href="https://orcid.org/0009-0000-1874-6060" target="_blank" rel="noopener noreferrer">ORCID</a></li>
           <li><a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
-          <li>LinkedIn – pending verification</li>
+          <li><a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
           <li>Wikidata – pending verification</li>
         </ul>
       </div>
@@ -218,10 +246,39 @@
     </section>
   </main>
   <footer class="site-footer">
-    <div class="container">
-      <p>&copy; 2024 Aayam Paudel. All rights reserved.</p>
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-name">Aayam Paudel</p>
+        <p class="footer-location">Gaindakot, Nawalparasi East, Gandaki Province, Nepal</p>
+      </div>
+      <nav aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="projects.html">Projects</a>
+        <a href="experience.html">Experience</a>
+        <a href="playground.html">Playground</a>
+        <a href="mailto:aayampaudel200@gmail.com">Email</a>
+      </nav>
+      <div class="footer-social">
+        <a href="https://github.com/aayampaudel200-sketch" target="_blank" rel="noopener noreferrer" aria-label="GitHub">GitHub</a>
+        <a href="https://www.linkedin.com/in/aayam-paudel-885a78371" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
+        <a href="https://www.instagram.com/aayam.paudel" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Instagram</a>
+        <a href="https://x.com/APaudel75350" target="_blank" rel="noopener noreferrer" aria-label="X / Twitter">X</a>
+        <a href="https://www.facebook.com/aayam.paudel07" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div class="footer-meta-left">
+        <span>© <span id="year"></span> Aayam Paudel. All rights reserved.</span>
+        <span class="footer-status-badge status--operational" id="systemStatusBadge" title="Site services and API endpoints are fully operational">
+          <span class="status-pulse-dot" aria-hidden="true"></span>
+          <span class="status-text">All Systems Operational</span>
+        </span>
+      </div>
+      <span class="footer-note">Built with HTML, CSS &amp; vanilla JavaScript.</span>
     </div>
   </footer>
-  <script>try{const theme=localStorage.getItem('site-theme');if(theme==='light'||theme==='dark')document.documentElement.dataset.theme=theme;}catch(e){}</script>
+  <script src="js/main.js?v=site-refresh-2" defer></script>
+  <script src="/js/chatbot.js" defer></script>
 </body>
 </html>
