@@ -1222,6 +1222,37 @@
         });
       }
 
+      // ── Snake Fullscreen ──
+      const snakeFullscreenBtn = document.getElementById('snakeFullscreenBtn');
+      const snakeWrapper = container.querySelector('.snake-screen-wrap');
+      if (snakeFullscreenBtn && snakeWrapper) {
+        function toggleSnakeFullscreen() {
+          const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || snakeWrapper.classList.contains('is-fullscreen-fallback'));
+          if (!isFs) {
+            if (snakeWrapper.requestFullscreen) {
+              snakeWrapper.requestFullscreen().catch(() => snakeWrapper.classList.add('is-fullscreen-fallback'));
+            } else if (snakeWrapper.webkitRequestFullscreen) {
+              snakeWrapper.webkitRequestFullscreen();
+            } else {
+              snakeWrapper.classList.add('is-fullscreen-fallback');
+            }
+          } else {
+            if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            snakeWrapper.classList.remove('is-fullscreen-fallback');
+          }
+          syncSnakeFsBtn();
+        }
+        function syncSnakeFsBtn() {
+          const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || snakeWrapper.classList.contains('is-fullscreen-fallback'));
+          snakeFullscreenBtn.textContent = isFs ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+          snakeFullscreenBtn.setAttribute('aria-pressed', String(isFs));
+        }
+        snakeFullscreenBtn.addEventListener('click', toggleSnakeFullscreen);
+        document.addEventListener('fullscreenchange', syncSnakeFsBtn);
+        document.addEventListener('webkitfullscreenchange', syncSnakeFsBtn);
+      }
+
       if (fullscreenBtn) {
         fullscreenBtn.addEventListener('click', toggleFullscreen);
         document.addEventListener('fullscreenchange', syncFullscreenBtn);
@@ -1677,6 +1708,37 @@
           ArcadeAudio.toggle();
           syncSoundUI();
         });
+      }
+
+      // ── Snake Fullscreen ──
+      const snakeFullscreenBtn = document.getElementById('snakeFullscreenBtn');
+      const snakeWrapper = container.querySelector('.snake-screen-wrap');
+      if (snakeFullscreenBtn && snakeWrapper) {
+        function toggleSnakeFullscreen() {
+          const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || snakeWrapper.classList.contains('is-fullscreen-fallback'));
+          if (!isFs) {
+            if (snakeWrapper.requestFullscreen) {
+              snakeWrapper.requestFullscreen().catch(() => snakeWrapper.classList.add('is-fullscreen-fallback'));
+            } else if (snakeWrapper.webkitRequestFullscreen) {
+              snakeWrapper.webkitRequestFullscreen();
+            } else {
+              snakeWrapper.classList.add('is-fullscreen-fallback');
+            }
+          } else {
+            if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            snakeWrapper.classList.remove('is-fullscreen-fallback');
+          }
+          syncSnakeFsBtn();
+        }
+        function syncSnakeFsBtn() {
+          const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement || snakeWrapper.classList.contains('is-fullscreen-fallback'));
+          snakeFullscreenBtn.textContent = isFs ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+          snakeFullscreenBtn.setAttribute('aria-pressed', String(isFs));
+        }
+        snakeFullscreenBtn.addEventListener('click', toggleSnakeFullscreen);
+        document.addEventListener('fullscreenchange', syncSnakeFsBtn);
+        document.addEventListener('webkitfullscreenchange', syncSnakeFsBtn);
       }
 
       const dirMap = {
