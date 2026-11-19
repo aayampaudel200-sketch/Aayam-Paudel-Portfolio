@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20261119-studio-resend">
+  <link rel="stylesheet" href="css/style.css?v=20261119-studio-resend-2">
   <style>
     .studio-request-form {
       background: rgba(15, 23, 42, 0.75);
@@ -190,8 +190,13 @@
         statusEl.textContent = text;
       }
 
-      form.addEventListener('submit', async function (event) {
-        event.preventDefault();
+      async function handleStudioSubmit(event) {
+        if (event) {
+          event.preventDefault();
+          if (typeof event.stopImmediatePropagation === 'function') {
+            event.stopImmediatePropagation();
+          }
+        }
 
         const name = nameInput ? nameInput.value.trim() : '';
         const email = emailInput ? emailInput.value.trim() : '';
@@ -200,7 +205,7 @@
 
         if (!name || !email || !message) {
           showStatus('Please complete your name, email address, and reason for access.', '#f87171');
-          return;
+          return false;
         }
 
         if (submitBtn) {
@@ -241,7 +246,17 @@
             submitBtn.textContent = 'Request Access';
           }
         }
-      });
+
+        return false;
+      }
+
+      form.addEventListener('submit', handleStudioSubmit, true);
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function (event) {
+          event.preventDefault();
+          handleStudioSubmit(event);
+        }, true);
+      }
     })();
   </script>
 </body>

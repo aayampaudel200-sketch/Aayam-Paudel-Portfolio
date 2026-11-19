@@ -39,8 +39,22 @@ function isRateLimited(key, now = Date.now()) {
 }
 
 function parseBody(body) {
-  if (typeof body !== 'string') return body || {};
-  try { return JSON.parse(body); } catch { return null; }
+  if (!body) return {};
+  if (typeof body === 'object') return body;
+  if (typeof body === 'string') {
+    const trimmed = body.trim();
+    if (!trimmed) return {};
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      const params = new URLSearchParams(trimmed);
+      if ([...params.keys()].length > 0) {
+        return Object.fromEntries(params.entries());
+      }
+      return null;
+    }
+  }
+  return null;
 }
 
 module.exports = async (req, res) => {
@@ -72,7 +86,7 @@ module.exports = async (req, res) => {
   const fields = ['name', 'email', 'subject', 'message', 'website', 'source'];
   const values = Object.fromEntries(fields.map((field) => [field, typeof body[field] === 'string' ? body[field].trim() : '']));
   const isStudioRequest = values.source === 'studio';
-  const subject = isStudioRequest ? STUDIO_FIXED_SUBJECT : values.subject;
+  const subject = isStudioRequest ? STUDIO_FIXED_SUBJECT : (values.subject || '');
   const { name, email, message, website } = values;
 
   if (website) return res.status(200).json({ success: true });
