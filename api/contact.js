@@ -1,8 +1,9 @@
-/** Vercel Function for validated portfolio contact submissions. */
+/** Vercel Function for validated portfolio contact and studio access submissions. */
 
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 5;
-const MAX_LENGTHS = { name: 100, email: 254, subject: 160, message: 5000, website: 200 };
+const MAX_LENGTHS = { name: 100, email: 254, subject: 160, message: 5000, website: 200, source: 40 };
+const STUDIO_FIXED_SUBJECT = 'Access Request: Namaste Suman Studio';
 const requestBuckets = new Map();
 
 function escapeHtml(value) {
@@ -68,15 +69,17 @@ module.exports = async (req, res) => {
     return res.status(400).json({ success: false, error: 'Please submit a valid form payload.' });
   }
 
-  const fields = ['name', 'email', 'subject', 'message', 'website'];
+  const fields = ['name', 'email', 'subject', 'message', 'website', 'source'];
   const values = Object.fromEntries(fields.map((field) => [field, typeof body[field] === 'string' ? body[field].trim() : '']));
-  const { name, email, subject, message, website } = values;
+  const isStudioRequest = values.source === 'studio';
+  const subject = isStudioRequest ? STUDIO_FIXED_SUBJECT : values.subject;
+  const { name, email, message, website } = values;
 
   if (website) return res.status(200).json({ success: true });
   if (!name || !email || !subject || !message) {
     return res.status(400).json({ success: false, error: 'Please complete your name, email, subject, and message.' });
   }
-  if (Object.entries(MAX_LENGTHS).some(([field, maximum]) => values[field].length > maximum)) {
+  if (Object.entries(MAX_LENGTHS).some(([field, maximum]) => (values[field] || '').length > maximum)) {
     return res.status(400).json({ success: false, error: 'One or more fields are too long. Please shorten your message and try again.' });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -89,6 +92,9 @@ module.exports = async (req, res) => {
   }
 
   const sender = process.env.RESEND_FROM_EMAIL || 'Portfolio Contact Form <onboarding@resend.dev>';
+  const emailSubject = isStudioRequest ? `${STUDIO_FIXED_SUBJECT} — ${name}` : `[Portfolio Contact] ${subject} — ${name}`;
+  const headingLine = isStudioRequest ? `<p><strong>Portal:</strong> Namaste Suman Studio Access Request</p>` : '';
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -97,8 +103,8 @@ module.exports = async (req, res) => {
         from: sender,
         to: ['aayampaudel200@gmail.com'],
         reply_to: email,
-        subject: `[Portfolio Contact] ${subject} — ${name}`,
-        html: `<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong></p><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
+        subject: emailSubject,
+        html: `${headingLine}<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong></p><p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
       }),
     });
     if (!response.ok) {
