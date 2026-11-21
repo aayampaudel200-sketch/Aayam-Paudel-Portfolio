@@ -1,17 +1,47 @@
-/* Unified portfolio search, voice agent, and Gemini assistant. No credentials are stored in the browser. */
+/* Unified bilingual (English + Nepali) portfolio search, voice agent, and Gemini assistant. */
 (() => {
   const page = window.location.pathname.toLowerCase();
   const isBusinessPage = page.endsWith('/namaste-suman.html') || page === '/namaste-suman.html';
   const assistantName = isBusinessPage ? 'Namaste AI' : 'Aayam AI';
-  const assistantSubtitle = isBusinessPage
-    ? 'Namaste Suman Communication voice & text guide'
-    : 'Voice & text portfolio assistant';
-  const assistantGreeting = isBusinessPage
-    ? 'Namaste! I’m Namaste AI. Ask by voice or text about our documentation, visa support, printing, photography, online forms, location, or send a message.'
-    : 'Hi! Ask by voice or text about Aayam’s projects, skills, Namaste Suman Communication, open any page, or send him an email.';
-  const chips = isBusinessPage
-    ? ['What services do you offer?', 'Where is the shop located?', 'Send a message']
-    : ['Why hire Aayam?', 'Open Projects page', 'Send email to Aayam'];
+
+  const copy = {
+    en: {
+      subtitle: isBusinessPage ? 'Namaste Suman Communication voice & text guide' : 'Voice & text portfolio assistant',
+      greeting: isBusinessPage
+        ? 'Namaste! I’m Namaste AI. Ask in English or Nepali by voice or text about documentation, visa support, printing, photography, or send a message.'
+        : 'Hi! Ask in English or Nepali by voice or text about Aayam’s projects, skills, Namaste Suman Communication, open any page, or send him an email.',
+      chips: isBusinessPage
+        ? ['What services do you offer?', 'नेपालीमा सेवाहरू बताउनुहोस्', 'Send a message']
+        : ['Why hire Aayam?', 'आयामका प्रोजेक्टहरू देखाऊ', 'Send email to Aayam'],
+      placeholder: 'Ask in English or नेपाली…',
+      quickLabel: 'Try asking',
+      send: 'Send',
+      listening: 'Listening… speak now',
+      speaking: 'Speaking response…',
+      stopSpeaking: 'Stop speaking',
+      thinking: 'Thinking…',
+      micBlocked: 'Microphone unavailable — text assistant is active.',
+      noSpeech: 'No speech detected. Tap mic to retry or type below.',
+    },
+    ne: {
+      subtitle: isBusinessPage ? 'नमस्ते सुमन कम्युनिकेसन आवाज र टेक्स्ट सहायक' : 'आवाज र टेक्स्ट पोर्टफोलियो सहायक',
+      greeting: isBusinessPage
+        ? 'नमस्ते! म नमस्ते एआई हुँ। तपाईं नेपाली वा अंग्रेजीमा बोलेर वा लेखेर कागजात, भिसा सहयोग, प्रिन्टिङ, फोटोग्राफीबारे सोध्न वा सन्देश पठाउन सक्नुहुन्छ।'
+        : 'नमस्ते! म आयाम एआई हुँ। तपाईं नेपाली वा अंग्रेजीमा बोलेर वा लेखेर आयामका प्रोजेक्ट, सीप, नमस्ते सुमन कम्युनिकेसनबारे सोध्न, कुनै पेज खोल्न वा इमेल पठाउन सक्नुहुन्छ।',
+      chips: isBusinessPage
+        ? ['कस्ता सेवाहरू उपलब्ध छन्?', 'पसल कहाँ छ?', 'सन्देश पठाउनुहोस्']
+        : ['आयाम को हुन्?', 'प्रोजेक्ट पेज खोल', 'आयामलाई इमेल पठाउ'],
+      placeholder: 'नेपाली वा English मा सोध्नुहोस्…',
+      quickLabel: 'सोधेर हेर्नुहोस्',
+      send: 'पठाउनुहोस्',
+      listening: 'सुन्दैछु… अब बोल्नुहोस्',
+      speaking: 'जवाफ सुनाउँदैछु…',
+      stopSpeaking: 'रोक्नुहोस्',
+      thinking: 'सोच्दैछु…',
+      micBlocked: 'माइक्रोफोन उपलब्ध छैन — लेखेर सोध्न सक्नुहुन्छ।',
+      noSpeech: 'आवाज सुनिएन। फेरि माइक थिच्नुहोस् वा लेख्नुहोस्।',
+    },
+  };
 
   const actionRoutes = {
     OPEN_HOME: '/index.html',
@@ -27,10 +57,13 @@
   const speechSynth = 'speechSynthesis' in window ? window.speechSynthesis : null;
 
   const TTS_PREF_KEY = 'aayam-ai-voice-reply';
+  const LANG_PREF_KEY = 'aayam-ai-lang';
+
   let voiceRepliesEnabled = true;
+  let preferredLang = 'en';
   try {
-    const storedPref = localStorage.getItem(TTS_PREF_KEY);
-    if (storedPref === 'false') voiceRepliesEnabled = false;
+    if (localStorage.getItem(TTS_PREF_KEY) === 'false') voiceRepliesEnabled = false;
+    if (localStorage.getItem(LANG_PREF_KEY) === 'ne') preferredLang = 'ne';
   } catch (_) {}
 
   let recognition = null;
@@ -38,6 +71,24 @@
   let micAvailable = Boolean(SpeechRecognitionAPI);
   let lastInputWasVoice = false;
   let activeEmailDraft = null;
+  let cachedVoices = [];
+
+  function refreshVoices() {
+    if (!speechSynth || !speechSynth.getVoices) return;
+    const list = speechSynth.getVoices();
+    if (list && list.length) cachedVoices = list;
+  }
+  refreshVoices();
+  if (speechSynth && 'onvoiceschanged' in speechSynth) {
+    speechSynth.onvoiceschanged = refreshVoices;
+  }
+
+  function detectNepaliText(text) {
+    const raw = String(text || '');
+    if (/[\u0900-\u097F]/.test(raw)) return true;
+    const q = raw.toLowerCase();
+    return /\b(namaste|kasto|kaha|kata|khola|kholnus|dekhau|dekhaunus|pathau|pathaunus|bhana|bhannus|timi|tapai|mero|aayamko|samparka|griha|anubhav|khel|parichay|ke ho|ko ho|kati|kasari)\b/.test(q);
+  }
 
   const style = document.createElement('style');
   style.textContent = `
@@ -45,25 +96,26 @@
     .aayam-ai-trigger:active{cursor:grabbing}
     .aayam-ai-trigger.is-dragging{animation:none;opacity:.9;box-shadow:0 20px 48px rgba(2,132,199,.55),0 0 0 7px rgba(56,189,248,.22);transition:none}
     .aayam-ai-trigger:hover:not(.is-dragging){box-shadow:0 16px 40px rgba(2,132,199,.48),0 0 0 7px rgba(56,189,248,.16)}
-    .aayam-ai-trigger:focus-visible,.aayam-ai-close:focus-visible,.aayam-ai-chip:focus-visible,.aayam-ai-send:focus-visible,.aayam-ai-mic:focus-visible,.aayam-ai-tts-toggle:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}
+    .aayam-ai-trigger:focus-visible,.aayam-ai-close:focus-visible,.aayam-ai-chip:focus-visible,.aayam-ai-send:focus-visible,.aayam-ai-mic:focus-visible,.aayam-ai-tts-toggle:focus-visible,.aayam-ai-lang-toggle:focus-visible{outline:3px solid #7dd3fc;outline-offset:3px}
     @keyframes aayam-ai-pulse{50%{box-shadow:0 12px 34px rgba(2,132,199,.38),0 0 0 9px rgba(56,189,248,.04)}}
     @keyframes aayam-ai-mic-pulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.55)}50%{box-shadow:0 0 0 8px rgba(244,63,94,0)}}
     .aayam-ai-drawer[hidden]{display:none}
     .aayam-ai-drawer{position:fixed;inset:0;z-index:1200;background:rgba(2,6,23,.64);display:flex;justify-content:flex-end}
     .aayam-ai-panel{display:flex;flex-direction:column;width:min(440px,100%);height:100%;background:#0b1220;color:#e5eefb;border-left:1px solid rgba(125,211,252,.3);box-shadow:-18px 0 50px rgba(0,0,0,.36)}
-    .aayam-ai-header{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:1.05rem 1.15rem;border-bottom:1px solid rgba(148,163,184,.18);background:linear-gradient(120deg,rgba(14,165,233,.16),rgba(99,102,241,.12))}
-    .aayam-ai-title{margin:0;font-size:1.05rem}
-    .aayam-ai-subtitle{margin:.2rem 0 0;color:#9fb2cc;font-size:.78rem}
-    .aayam-ai-header-actions{display:flex;align-items:center;gap:.45rem}
-    .aayam-ai-tts-toggle{border:1px solid rgba(125,211,252,.35);border-radius:.55rem;padding:.4rem .6rem;background:rgba(14,165,233,.14);color:#bde9ff;font:600 .76rem/1 Inter,system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+    .aayam-ai-header{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:1rem 1.05rem;border-bottom:1px solid rgba(148,163,184,.18);background:linear-gradient(120deg,rgba(14,165,233,.16),rgba(99,102,241,.12))}
+    .aayam-ai-title{margin:0;font-size:1.02rem}
+    .aayam-ai-subtitle{margin:.2rem 0 0;color:#9fb2cc;font-size:.76rem}
+    .aayam-ai-header-actions{display:flex;align-items:center;gap:.38rem;flex-shrink:0}
+    .aayam-ai-lang-toggle,.aayam-ai-tts-toggle{border:1px solid rgba(125,211,252,.35);border-radius:.55rem;padding:.38rem .55rem;background:rgba(14,165,233,.14);color:#bde9ff;font:700 .74rem/1 Inter,system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+    .aayam-ai-lang-toggle[data-lang="ne"]{background:rgba(16,185,129,.18);border-color:rgba(52,211,153,.45);color:#a7f3d0}
     .aayam-ai-tts-toggle[aria-pressed="false"]{background:rgba(148,163,184,.12);border-color:rgba(148,163,184,.25);color:#94a3b8}
-    .aayam-ai-close{border:0;border-radius:.55rem;padding:.35rem .55rem;background:rgba(148,163,184,.14);color:#e5eefb;font-size:1.35rem;line-height:1;cursor:pointer}
+    .aayam-ai-close{border:0;border-radius:.55rem;padding:.32rem .52rem;background:rgba(148,163,184,.14);color:#e5eefb;font-size:1.3rem;line-height:1;cursor:pointer}
     .aayam-ai-voice-bar{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.48rem 1rem;background:rgba(15,23,42,.92);border-bottom:1px solid rgba(148,163,184,.14);font-size:.76rem;color:#9fb2cc}
     .aayam-ai-voice-bar[hidden]{display:none}
     .aayam-ai-stop-speech{border:1px solid rgba(125,211,252,.35);border-radius:999px;padding:.22rem .58rem;background:rgba(56,189,248,.14);color:#bae6fd;font:600 .72rem/1.1 Inter,system-ui,sans-serif;cursor:pointer}
     .aayam-ai-stop-speech[hidden]{display:none}
     .aayam-ai-messages{flex:1;overflow:auto;padding:1rem 1rem .5rem;display:flex;flex-direction:column;gap:.75rem}
-    .aayam-ai-message{max-width:88%;padding:.72rem .85rem;border-radius:.85rem;font:400 .9rem/1.5 Inter,system-ui,sans-serif;white-space:pre-wrap}
+    .aayam-ai-message{max-width:88%;padding:.72rem .85rem;border-radius:.85rem;font:400 .9rem/1.55 Inter,system-ui,sans-serif;white-space:pre-wrap}
     .aayam-ai-message--assistant{align-self:flex-start;background:rgba(30,41,59,.82);border:1px solid rgba(148,163,184,.18)}
     .aayam-ai-message--user{align-self:flex-end;background:linear-gradient(135deg,#0369a1,#4338ca);color:#fff}
     .aayam-ai-email-card{align-self:stretch;background:rgba(15,23,42,.95);border:1px solid rgba(56,189,248,.38);border-radius:.85rem;padding:.85rem;display:flex;flex-direction:column;gap:.55rem;font:400 .84rem/1.4 Inter,system-ui,sans-serif}
@@ -84,7 +136,7 @@
     .aayam-ai-mic{border:1px solid rgba(56,189,248,.4);border-radius:.7rem;padding:.68rem .78rem;background:rgba(14,165,233,.14);color:#7dd3fc;font:700 .9rem/1 Inter,system-ui,sans-serif;cursor:pointer;flex-shrink:0}
     .aayam-ai-mic.is-listening{background:#e11d48;border-color:#fda4af;color:#fff;animation:aayam-ai-mic-pulse 1.3s infinite}
     .aayam-ai-mic[disabled]{opacity:.45;cursor:not-allowed}
-    .aayam-ai-send{border:0;border-radius:.7rem;padding:.7rem .9rem;background:#38bdf8;color:#082f49;font-weight:800;cursor:pointer;flex-shrink:0}
+    .aayam-ai-send{border:0;border-radius:.7rem;padding:.7rem .85rem;background:#38bdf8;color:#082f49;font-weight:800;cursor:pointer;flex-shrink:0}
     .aayam-ai-send:disabled{opacity:.6;cursor:wait}
     .aayam-ai-contact-highlight{outline:3px solid #38bdf8!important;outline-offset:6px;border-radius:.5rem;transition:outline-color .3s}
     @media(max-width:520px){.aayam-ai-panel{width:100%;border-left:0}.aayam-ai-trigger{padding:.62rem .85rem;font-size:.78rem;max-width:calc(100vw - 1.5rem)}}
@@ -109,24 +161,25 @@
       <header class="aayam-ai-header">
         <div>
           <h2 class="aayam-ai-title" id="aayamAiTitle">Ask ${assistantName} ✨</h2>
-          <p class="aayam-ai-subtitle">${assistantSubtitle}</p>
+          <p class="aayam-ai-subtitle">${copy[preferredLang].subtitle}</p>
         </div>
         <div class="aayam-ai-header-actions">
-          <button class="aayam-ai-tts-toggle" type="button" aria-pressed="${voiceRepliesEnabled ? 'true' : 'false'}" title="Toggle spoken voice replies">${voiceRepliesEnabled ? '🔊 Voice On' : '🔇 Voice Off'}</button>
+          <button class="aayam-ai-lang-toggle" type="button" data-lang="${preferredLang}" title="Switch voice & reply language (English / Nepali)">${preferredLang === 'ne' ? 'नेपाली' : 'EN'}</button>
+          <button class="aayam-ai-tts-toggle" type="button" aria-pressed="${voiceRepliesEnabled ? 'true' : 'false'}" title="Toggle spoken voice replies">${voiceRepliesEnabled ? '🔊' : '🔇'}</button>
           <button class="aayam-ai-close" type="button" aria-label="Close assistant">×</button>
         </div>
       </header>
       <div class="aayam-ai-voice-bar" hidden>
         <span class="aayam-ai-voice-status">Ready</span>
-        <button class="aayam-ai-stop-speech" type="button" hidden>Stop speaking</button>
+        <button class="aayam-ai-stop-speech" type="button" hidden>${copy[preferredLang].stopSpeaking}</button>
       </div>
-      <div class="aayam-ai-messages" aria-live="polite"><div class="aayam-ai-message aayam-ai-message--assistant">${assistantGreeting}</div></div>
-      <div class="aayam-ai-quick"><span class="aayam-ai-quick-label">Try asking</span><div class="aayam-ai-chips"></div></div>
+      <div class="aayam-ai-messages" aria-live="polite"><div class="aayam-ai-message aayam-ai-message--assistant">${copy[preferredLang].greeting}</div></div>
+      <div class="aayam-ai-quick"><span class="aayam-ai-quick-label">${copy[preferredLang].quickLabel}</span><div class="aayam-ai-chips"></div></div>
       <form class="aayam-ai-composer">
         <label class="visually-hidden" for="aayamAiInput">Ask ${assistantName}</label>
-        <input class="aayam-ai-input" id="aayamAiInput" maxlength="800" autocomplete="off" placeholder="Ask by typing or tap mic…">
-        <button class="aayam-ai-mic" type="button" aria-label="Speak your question" title="Speak your question">🎙️</button>
-        <button class="aayam-ai-send" type="submit">Send</button>
+        <input class="aayam-ai-input" id="aayamAiInput" maxlength="800" autocomplete="off" placeholder="${copy[preferredLang].placeholder}">
+        <button class="aayam-ai-mic" type="button" aria-label="Speak your question" title="Speak in English or Nepali">🎙️</button>
+        <button class="aayam-ai-send" type="submit">${copy[preferredLang].send}</button>
       </form>
     </section>`;
   document.body.append(trigger, drawer);
@@ -254,18 +307,66 @@
   })();
 
   const panel = drawer.querySelector('.aayam-ai-panel');
-  const closeButton = drawer.querySelector('.aayam-ai-close');
+  const subtitleEl = drawer.querySelector('.aayam-ai-subtitle');
+  const langToggle = drawer.querySelector('.aayam-ai-lang-toggle');
   const ttsToggle = drawer.querySelector('.aayam-ai-tts-toggle');
+  const closeButton = drawer.querySelector('.aayam-ai-close');
   const voiceBar = drawer.querySelector('.aayam-ai-voice-bar');
   const voiceStatus = drawer.querySelector('.aayam-ai-voice-status');
   const stopSpeechButton = drawer.querySelector('.aayam-ai-stop-speech');
   const messageList = drawer.querySelector('.aayam-ai-messages');
+  const quickLabel = drawer.querySelector('.aayam-ai-quick-label');
+  const chipList = drawer.querySelector('.aayam-ai-chips');
   const form = drawer.querySelector('.aayam-ai-composer');
   const input = drawer.querySelector('.aayam-ai-input');
   const micButton = drawer.querySelector('.aayam-ai-mic');
   const sendButton = drawer.querySelector('.aayam-ai-send');
-  const chipList = drawer.querySelector('.aayam-ai-chips');
   let lastFocus = null;
+
+  function renderChips() {
+    chipList.innerHTML = '';
+    copy[preferredLang].chips.forEach((label) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'aayam-ai-chip';
+      chip.textContent = label;
+      chip.addEventListener('click', () => {
+        lastInputWasVoice = false;
+        submitQuestion(label, false);
+      });
+      chipList.appendChild(chip);
+    });
+  }
+
+  function applyLanguageUI(lang, persist = true) {
+    preferredLang = lang === 'ne' ? 'ne' : 'en';
+    if (persist) {
+      try { localStorage.setItem(LANG_PREF_KEY, preferredLang); } catch (_) {}
+    }
+    langToggle.dataset.lang = preferredLang;
+    langToggle.textContent = preferredLang === 'ne' ? 'नेपाली' : 'EN';
+    subtitleEl.textContent = copy[preferredLang].subtitle;
+    quickLabel.textContent = copy[preferredLang].quickLabel;
+    input.placeholder = copy[preferredLang].placeholder;
+    sendButton.textContent = copy[preferredLang].send;
+    stopSpeechButton.textContent = copy[preferredLang].stopSpeaking;
+    if (recognition) {
+      recognition.lang = preferredLang === 'ne' ? 'ne-NP' : 'en-US';
+    }
+    renderChips();
+  }
+
+  renderChips();
+
+  langToggle.addEventListener('click', () => {
+    const next = preferredLang === 'ne' ? 'en' : 'ne';
+    applyLanguageUI(next, true);
+    const notice = next === 'ne'
+      ? 'नेपाली भाषा सक्रिय भयो। अब तपाईं नेपालीमा बोल्न वा लेख्न सक्नुहुन्छ।'
+      : 'Switched to English mode. You can speak or type in English.';
+    addMessage(notice, 'assistant');
+    speakText(notice, next);
+  });
 
   function setVoiceStatus(text, speaking = false) {
     if (!text) {
@@ -282,7 +383,7 @@
       try { speechSynth.cancel(); } catch (_) {}
     }
     stopSpeechButton.hidden = true;
-    if (!isListening && !voiceBar.hidden && voiceStatus.textContent.startsWith('Speaking')) {
+    if (!isListening && !voiceBar.hidden && (voiceStatus.textContent === copy.en.speaking || voiceStatus.textContent === copy.ne.speaking)) {
       setVoiceStatus('');
     }
   }
@@ -295,11 +396,39 @@
       .trim();
   }
 
-  function speakText(text, onDone) {
+  function pickVoiceForLanguage(lang) {
+    refreshVoices();
+    const voices = cachedVoices;
+    if (!voices.length) return null;
+    if (lang === 'ne') {
+      return (
+        voices.find((v) => /^ne(-|_|$)/i.test(v.lang) || /nepali/i.test(v.name))
+        || voices.find((v) => /^hi(-|_)IN/i.test(v.lang) || /hindi/i.test(v.name))
+        || null
+      );
+    }
+    return (
+      voices.find((v) => /en(-|_)(US|GB|IN)/i.test(v.lang) && !/compact/i.test(v.name))
+      || voices.find((v) => /^en/i.test(v.lang))
+      || null
+    );
+  }
+
+  function speakText(text, langOverride, onDone) {
+    let cb = onDone;
+    let targetLang = langOverride;
+    if (typeof langOverride === 'function') {
+      cb = langOverride;
+      targetLang = null;
+    }
+
     const spoken = cleanTextForSpeech(text);
+    const isNepaliText = /[\u0900-\u097F]/.test(spoken);
+    const effectiveLang = targetLang || (isNepaliText ? 'ne' : preferredLang);
     const shouldSpeak = speechSynth && spoken && (voiceRepliesEnabled || lastInputWasVoice);
+
     if (!shouldSpeak) {
-      if (typeof onDone === 'function') window.setTimeout(onDone, 300);
+      if (typeof cb === 'function') window.setTimeout(cb, 260);
       return;
     }
 
@@ -309,26 +438,23 @@
       if (finished) return;
       finished = true;
       if (!isListening) setVoiceStatus('');
-      if (typeof onDone === 'function') onDone();
+      if (typeof cb === 'function') cb();
     };
 
     try {
       const utterance = new SpeechSynthesisUtterance(spoken);
-      utterance.lang = 'en-US';
-      utterance.rate = 1.02;
+      const matchedVoice = pickVoiceForLanguage(effectiveLang);
+      utterance.lang = effectiveLang === 'ne' ? (matchedVoice?.lang || 'ne-NP') : 'en-US';
+      utterance.rate = effectiveLang === 'ne' ? 0.96 : 1.02;
       utterance.pitch = 1;
-      const voices = speechSynth.getVoices ? speechSynth.getVoices() : [];
-      const preferred = voices.find((v) => /en(-|_)(US|GB|IN)/i.test(v.lang) && !/compact/i.test(v.name))
-        || voices.find((v) => /^en/i.test(v.lang));
-      if (preferred) utterance.voice = preferred;
+      if (matchedVoice) utterance.voice = matchedVoice;
 
-      utterance.onstart = () => setVoiceStatus('Speaking response…', true);
+      utterance.onstart = () => setVoiceStatus(copy[effectiveLang].speaking, true);
       utterance.onend = finishOnce;
       utterance.onerror = finishOnce;
       speechSynth.speak(utterance);
 
-      // Safety fallback in case browser speechSynthesis stalls on long strings
-      const fallbackMs = Math.min(14000, Math.max(2500, spoken.length * 65));
+      const fallbackMs = Math.min(16000, Math.max(2800, spoken.length * 75));
       window.setTimeout(finishOnce, fallbackMs);
     } catch (_) {
       finishOnce();
@@ -338,21 +464,21 @@
   ttsToggle.addEventListener('click', () => {
     voiceRepliesEnabled = !voiceRepliesEnabled;
     ttsToggle.setAttribute('aria-pressed', voiceRepliesEnabled ? 'true' : 'false');
-    ttsToggle.textContent = voiceRepliesEnabled ? '🔊 Voice On' : '🔇 Voice Off';
+    ttsToggle.textContent = voiceRepliesEnabled ? '🔊' : '🔇';
     try { localStorage.setItem(TTS_PREF_KEY, String(voiceRepliesEnabled)); } catch (_) {}
     if (!voiceRepliesEnabled) stopSpeaking();
   });
 
   stopSpeechButton.addEventListener('click', stopSpeaking);
 
-  // ── Browser Speech Recognition (with clean fallback if unsupported/denied) ─
+  // ── Browser Speech Recognition (English + Nepali ne-NP with Text Fallback) ─
   if (!SpeechRecognitionAPI) {
     micButton.disabled = true;
     micButton.title = 'Voice input not supported in this browser — type your question below';
   } else {
     try {
       recognition = new SpeechRecognitionAPI();
-      recognition.lang = 'en-US';
+      recognition.lang = preferredLang === 'ne' ? 'ne-NP' : 'en-US';
       recognition.interimResults = true;
       recognition.continuous = false;
       recognition.maxAlternatives = 1;
@@ -362,7 +488,7 @@
         stopSpeaking();
         micButton.classList.add('is-listening');
         micButton.setAttribute('aria-label', 'Stop listening');
-        setVoiceStatus('Listening… speak now');
+        setVoiceStatus(copy[preferredLang].listening);
       };
 
       recognition.onresult = (event) => {
@@ -389,12 +515,11 @@
         if (err === 'not-allowed' || err === 'service-not-allowed' || err === 'audio-capture') {
           micAvailable = false;
           micButton.disabled = true;
-          micButton.title = 'Microphone access unavailable — text assistant is active';
-          setVoiceStatus('Microphone blocked or unavailable — text mode is active.');
+          setVoiceStatus(copy[preferredLang].micBlocked);
         } else if (err === 'no-speech') {
-          setVoiceStatus('No speech detected. Tap the mic to try again or type below.');
+          setVoiceStatus(copy[preferredLang].noSpeech);
         } else if (err !== 'aborted') {
-          setVoiceStatus('Voice input unavailable right now — you can keep typing normally.');
+          setVoiceStatus(copy[preferredLang].micBlocked);
         }
       };
 
@@ -402,7 +527,9 @@
         isListening = false;
         micButton.classList.remove('is-listening');
         micButton.setAttribute('aria-label', 'Speak your question');
-        if (voiceStatus.textContent.startsWith('Listening')) setVoiceStatus('');
+        if (voiceStatus.textContent === copy.en.listening || voiceStatus.textContent === copy.ne.listening) {
+          setVoiceStatus('');
+        }
       };
     } catch (_) {
       micAvailable = false;
@@ -412,7 +539,7 @@
 
   function toggleListening() {
     if (!recognition || !micAvailable) {
-      setVoiceStatus('Microphone is unavailable in this browser — type your question below.');
+      setVoiceStatus(copy[preferredLang].micBlocked);
       input.focus();
       return;
     }
@@ -422,25 +549,14 @@
     }
     try {
       stopSpeaking();
+      recognition.lang = preferredLang === 'ne' ? 'ne-NP' : 'en-US';
       recognition.start();
     } catch (_) {
-      setVoiceStatus('Could not start microphone — text mode is ready.');
+      setVoiceStatus(copy[preferredLang].micBlocked);
     }
   }
 
   micButton.addEventListener('click', toggleListening);
-
-  chips.forEach((label) => {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'aayam-ai-chip';
-    chip.textContent = label;
-    chip.addEventListener('click', () => {
-      lastInputWasVoice = false;
-      submitQuestion(label, false);
-    });
-    chipList.appendChild(chip);
-  });
 
   function addMessage(text, role) {
     const message = document.createElement('div');
@@ -509,7 +625,7 @@
     }
   }
 
-  // ── Direct Email / Contact Workflow (Voice + Text, All Pages) ─────────────
+  // ── Direct Email / Contact Workflow (English + Nepali Voice & Text) ────────
   async function sendEmailToAayam(payload) {
     const response = await fetch('/api/contact', {
       method: 'POST',
@@ -528,42 +644,59 @@
     return true;
   }
 
-  function renderInlineEmailCard(prefill = {}) {
+  function renderInlineEmailCard(prefill = {}, lang = preferredLang) {
     const existing = messageList.querySelector('.aayam-ai-email-card');
     if (existing) existing.remove();
 
+    const isNe = lang === 'ne';
     const card = document.createElement('form');
     card.className = 'aayam-ai-email-card';
-    card.innerHTML = `
-      <h3>✉️ Send Email to Aayam</h3>
-      <input type="text" name="name" placeholder="Your name" maxlength="100" required>
-      <input type="email" name="email" placeholder="Your email address" maxlength="254" required>
-      <input type="text" name="subject" placeholder="Subject" maxlength="160" required>
-      <textarea name="message" placeholder="Write your message for Aayam…" maxlength="5000" required></textarea>
-      <div class="aayam-ai-email-actions">
-        <button type="button" class="aayam-ai-email-cancel">Cancel</button>
-        <button type="submit" class="aayam-ai-email-submit">Send Email</button>
-      </div>
-    `;
+    card.innerHTML = isNe
+      ? `
+        <h3>✉️ आयामलाई इमेल पठाउनुहोस्</h3>
+        <input type="text" name="name" placeholder="तपाईंको नाम" maxlength="100" required>
+        <input type="email" name="email" placeholder="तपाईंको इमेल ठेगाना" maxlength="254" required>
+        <input type="text" name="subject" placeholder="विषय" maxlength="160" required>
+        <textarea name="message" placeholder="आयामलाई पठाउने सन्देश लेख्नुहोस्…" maxlength="5000" required></textarea>
+        <div class="aayam-ai-email-actions">
+          <button type="button" class="aayam-ai-email-cancel">रद्द गर्नुहोस्</button>
+          <button type="submit" class="aayam-ai-email-submit">इमेल पठाउनुहोस्</button>
+        </div>
+      `
+      : `
+        <h3>✉️ Send Email to Aayam</h3>
+        <input type="text" name="name" placeholder="Your name" maxlength="100" required>
+        <input type="email" name="email" placeholder="Your email address" maxlength="254" required>
+        <input type="text" name="subject" placeholder="Subject" maxlength="160" required>
+        <textarea name="message" placeholder="Write your message for Aayam…" maxlength="5000" required></textarea>
+        <div class="aayam-ai-email-actions">
+          <button type="button" class="aayam-ai-email-cancel">Cancel</button>
+          <button type="submit" class="aayam-ai-email-submit">Send Email</button>
+        </div>
+      `;
 
     card.elements.name.value = prefill.name || '';
     card.elements.email.value = prefill.email || '';
-    card.elements.subject.value = prefill.subject || 'Portfolio Inquiry';
+    card.elements.subject.value = prefill.subject || (isNe ? 'वेबसाइट सहायकमार्फत सन्देश' : 'Portfolio Inquiry');
     card.elements.message.value = prefill.message || '';
 
     card.querySelector('.aayam-ai-email-cancel').addEventListener('click', () => {
+      const draftLang = activeEmailDraft?.lang || lang;
       activeEmailDraft = null;
       card.remove();
-      const msg = 'Email cancelled. Let me know if you need anything else.';
+      const msg = draftLang === 'ne'
+        ? 'इमेल रद्द गरियो। अरू केही मद्दत चाहिन्छ भने भन्नुहोस्।'
+        : 'Email cancelled. Let me know if you need anything else.';
       addMessage(msg, 'assistant');
-      speakText(msg);
+      speakText(msg, draftLang);
     });
 
     card.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const draftLang = activeEmailDraft?.lang || lang;
       const submitBtn = card.querySelector('.aayam-ai-email-submit');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending…';
+      submitBtn.textContent = draftLang === 'ne' ? 'पठाउँदैछु…' : 'Sending…';
       try {
         await sendEmailToAayam({
           name: card.elements.name.value.trim(),
@@ -573,15 +706,19 @@
         });
         activeEmailDraft = null;
         card.remove();
-        const okMsg = 'Your email has been sent to Aayam successfully!';
+        const okMsg = draftLang === 'ne'
+          ? 'तपाईंको इमेल आयामलाई सफलतापूर्वक पठाइयो!'
+          : 'Your email has been sent to Aayam successfully!';
         addMessage(okMsg, 'assistant');
-        speakText(okMsg);
+        speakText(okMsg, draftLang);
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Send Email';
-        const errMsg = err instanceof Error ? err.message : 'Failed to send email.';
+        submitBtn.textContent = draftLang === 'ne' ? 'इमेल पठाउनुहोस्' : 'Send Email';
+        const errMsg = draftLang === 'ne'
+          ? 'अहिले इमेल पठाउन सकिएन। कृपया फेरि प्रयास गर्नुहोस्।'
+          : (err instanceof Error ? err.message : 'Failed to send email.');
         addMessage(errMsg, 'assistant');
-        speakText(errMsg);
+        speakText(errMsg, draftLang);
       }
     });
 
@@ -589,26 +726,30 @@
     messageList.scrollTop = messageList.scrollHeight;
   }
 
-  function startEmailComposer(prefill = {}) {
+  function startEmailComposer(prefill = {}, lang = preferredLang) {
     activeEmailDraft = {
+      lang,
       step: prefill.name ? (prefill.email ? (prefill.message ? 'confirm' : 'message') : 'email') : 'name',
       name: prefill.name || '',
       email: prefill.email || '',
-      subject: prefill.subject || 'Message via Website AI Assistant',
+      subject: prefill.subject || (lang === 'ne' ? 'वेबसाइट सहायकमार्फत सन्देश' : 'Message via Website AI Assistant'),
       message: prefill.message || '',
     };
-    renderInlineEmailCard(activeEmailDraft);
+    renderInlineEmailCard(activeEmailDraft, lang);
   }
 
   async function handleEmailDraftTurn(userText) {
     const clean = userText.trim();
-    if (/^(cancel|stop|never mind|nevermind|quit)$/i.test(clean)) {
+    const isNe = activeEmailDraft?.lang === 'ne' || detectNepaliText(clean);
+    const draftLang = isNe ? 'ne' : 'en';
+
+    if (/^(cancel|stop|never mind|nevermind|quit)$/i.test(clean) || /^(रद्द|रोक|पर्दैन|छोड)$/.test(clean)) {
       activeEmailDraft = null;
       const existing = messageList.querySelector('.aayam-ai-email-card');
       if (existing) existing.remove();
-      const msg = 'Email cancelled. How else can I help?';
+      const msg = isNe ? 'इमेल रद्द गरियो। अरू के मद्दत गर्न सक्छु?' : 'Email cancelled. How else can I help?';
       addMessage(msg, 'assistant');
-      speakText(msg);
+      speakText(msg, draftLang);
       return;
     }
 
@@ -618,29 +759,35 @@
       activeEmailDraft.name = clean;
       if (card) card.elements.name.value = clean;
       activeEmailDraft.step = 'email';
-      const prompt = `Thanks, ${clean}. What is your email address?`;
+      const prompt = isNe
+        ? `धन्यवाद, ${clean}। अब तपाईंको इमेल ठेगाना के हो?`
+        : `Thanks, ${clean}. What is your email address?`;
       addMessage(prompt, 'assistant');
-      speakText(prompt);
+      speakText(prompt, draftLang);
       return;
     }
 
     if (activeEmailDraft.step === 'email') {
       const normalizedEmail = clean
-        .replace(/\s+at\s+/gi, '@')
-        .replace(/\s+dot\s+/gi, '.')
+        .replace(/\s+(at|एट)\s+/gi, '@')
+        .replace(/\s+(dot|डट)\s+/gi, '.')
         .replace(/\s+/g, '');
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-        const retry = 'That does not look like a valid email address. Please say or type your email again.';
+        const retry = isNe
+          ? 'यो इमेल ठेगाना मिलेन जस्तो छ। कृपया फेरि आफ्नो इमेल भन्नुहोस् वा लेख्नुहोस्।'
+          : 'That does not look like a valid email address. Please say or type your email again.';
         addMessage(retry, 'assistant');
-        speakText(retry);
+        speakText(retry, draftLang);
         return;
       }
       activeEmailDraft.email = normalizedEmail;
       if (card) card.elements.email.value = normalizedEmail;
       activeEmailDraft.step = 'message';
-      const prompt = 'Got it. What message would you like to send to Aayam?';
+      const prompt = isNe
+        ? 'राम्रो। आयामलाई के सन्देश पठाउन चाहनुहुन्छ?'
+        : 'Got it. What message would you like to send to Aayam?';
       addMessage(prompt, 'assistant');
-      speakText(prompt);
+      speakText(prompt, draftLang);
       return;
     }
 
@@ -648,87 +795,105 @@
       activeEmailDraft.message = clean;
       if (card) card.elements.message.value = clean;
       activeEmailDraft.step = 'confirm';
-      const prompt = 'Ready to send your email to Aayam. Say "send" to confirm, or edit the fields above.';
+      const prompt = isNe
+        ? 'इमेल पठाउन तयार छ। पठाउनको लागि "पठाउनुहोस्" वा "send" भन्नुहोस्, वा माथि सच्याउनुहोस्।'
+        : 'Ready to send your email to Aayam. Say "send" to confirm, or edit the fields above.';
       addMessage(prompt, 'assistant');
-      speakText(prompt);
+      speakText(prompt, draftLang);
       return;
     }
 
     if (activeEmailDraft.step === 'confirm') {
-      if (/\b(send|yes|confirm|submit|go ahead)\b/i.test(clean)) {
-        const pending = addMessage('Sending your email to Aayam…', 'assistant');
+      const confirmed = /\b(send|yes|confirm|submit|go ahead|pathau|pathaunus|hunchha|ho)\b/i.test(clean)
+        || /(पठा|हुन्छ|हो|ठिक छ)/.test(clean);
+      if (confirmed) {
+        const pending = addMessage(isNe ? 'आयामलाई इमेल पठाउँदैछु…' : 'Sending your email to Aayam…', 'assistant');
         try {
           await sendEmailToAayam(activeEmailDraft);
           activeEmailDraft = null;
           if (card) card.remove();
-          const done = 'Your email has been sent to Aayam successfully!';
+          const done = isNe
+            ? 'तपाईंको इमेल आयामलाई सफलतापूर्वक पठाइयो!'
+            : 'Your email has been sent to Aayam successfully!';
           pending.textContent = done;
-          speakText(done);
+          speakText(done, draftLang);
         } catch (err) {
-          const fail = err instanceof Error ? err.message : 'Could not send email right now.';
+          const fail = isNe
+            ? 'अहिले इमेल पठाउन सकिएन। कृपया फेरि प्रयास गर्नुहोस्।'
+            : (err instanceof Error ? err.message : 'Could not send email right now.');
           pending.textContent = fail;
-          speakText(fail);
+          speakText(fail, draftLang);
         }
       } else {
         activeEmailDraft.message = clean;
         if (card) card.elements.message.value = clean;
-        const prompt = 'Updated your message. Say "send" when you are ready to send it.';
+        const prompt = isNe
+          ? 'सन्देश अपडेट गरियो। पठाउन तयार भएपछि "पठाउनुहोस्" भन्नुहोस्।'
+          : 'Updated your message. Say "send" when you are ready to send it.';
         addMessage(prompt, 'assistant');
-        speakText(prompt);
+        speakText(prompt, draftLang);
       }
     }
   }
 
-  // ── Client-Side Explicit Command Detector (Fast Voice/Text Navigation & Email) ─
+  // ── Client-Side Explicit Command Detector (English + Nepali Voice & Text) ─
   function detectExplicitClientIntent(text) {
-    const q = text.toLowerCase().trim();
-    const wantsEmail = /\b(send (an )?email|email (him|aayam)|write (an )?email|send (a )?message to aayam|message aayam|contact aayam via email)\b/.test(q);
+    const raw = text.trim();
+    const q = raw.toLowerCase();
+    const isNe = preferredLang === 'ne' || detectNepaliText(raw);
+
+    const wantsEmail = /\b(send (an )?email|email (him|aayam)|write (an )?email|send (a )?message to aayam|message aayam|contact aayam via email|email pathau|mail pathau|message pathau|sandesh pathau)\b/.test(q)
+      || /(इमेल पठा|मेल पठा|सन्देश पठा|म्यासेज पठा|आयामलाई इमेल|आयामलाई सन्देश)/.test(raw);
     if (wantsEmail) {
       return {
-        reply: 'Sure! Fill in the quick email card below, or tell me your name first and I will send it for you.',
+        reply: isNe
+          ? 'अवश्य! तलको इमेल फारम भर्नुहोस्, वा पहिले तपाईंको नाम भन्नुहोस्—म इमेल पठाइदिन्छु।'
+          : 'Sure! Fill in the quick email card below, or tell me your name first and I will send it for you.',
         action: 'COMPOSE_EMAIL',
         target: '/api/contact',
+        lang: isNe ? 'ne' : 'en',
       };
     }
 
-    const explicitNav = /\b(open|go to|navigate to|take me to|show me|visit)\b/.test(q);
+    const explicitNav = /\b(open|go to|navigate to|take me to|show me|visit|khola|kholnus|dekhau|dekhaunus|jaau|janus)\b/.test(q)
+      || /(खोल|खोल्नुहोस्|देखाऊ|देखाउनुहोस्|जाऊ|जानुहोस्|लैजाऊ)/.test(raw);
     if (!explicitNav) return null;
 
-    if (/\b(home|main page|index)\b/.test(q)) {
-      return { reply: 'Opening the Home page.', action: 'OPEN_HOME', target: '/index.html' };
+    if (/\b(home|main page|index|griha)\b/.test(q) || /(गृह|होम|मुख्य पृष्ठ)/.test(raw)) {
+      return { reply: isNe ? 'गृहपृष्ठ खोल्दैछु।' : 'Opening the Home page.', action: 'OPEN_HOME', target: '/index.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(about)\b/.test(q)) {
-      return { reply: 'Opening the About page.', action: 'OPEN_ABOUT', target: '/about.html' };
+    if (/\b(about|parichay)\b/.test(q) || /(बारेमा|परिचय)/.test(raw)) {
+      return { reply: isNe ? 'आयामको परिचय पृष्ठ खोल्दैछु।' : 'Opening the About page.', action: 'OPEN_ABOUT', target: '/about.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(project|projects|portfolio work)\b/.test(q)) {
-      return { reply: 'Opening the Projects page.', action: 'OPEN_PROJECTS', target: '/projects.html' };
+    if (/\b(project|projects|portfolio work)\b/.test(q) || /(प्रोजेक्ट|परियोजना)/.test(raw)) {
+      return { reply: isNe ? 'प्रोजेक्ट पृष्ठ खोल्दैछु।' : 'Opening the Projects page.', action: 'OPEN_PROJECTS', target: '/projects.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(experience|journey)\b/.test(q)) {
-      return { reply: 'Opening the Experience page.', action: 'OPEN_EXPERIENCE', target: '/experience.html' };
+    if (/\b(experience|journey|anubhav)\b/.test(q) || /(अनुभव|यात्रा)/.test(raw)) {
+      return { reply: isNe ? 'अनुभव पृष्ठ खोल्दैछु।' : 'Opening the Experience page.', action: 'OPEN_EXPERIENCE', target: '/experience.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(namaste suman|business|shop)\b/.test(q)) {
-      return { reply: 'Opening the Namaste Suman Communication page.', action: 'OPEN_BUSINESS', target: '/namaste-suman.html' };
+    if (/\b(namaste suman|business|shop|pasal)\b/.test(q) || /(नमस्ते सुमन|पसल|व्यवसाय)/.test(raw)) {
+      return { reply: isNe ? 'नमस्ते सुमन कम्युनिकेसन पृष्ठ खोल्दैछु।' : 'Opening the Namaste Suman Communication page.', action: 'OPEN_BUSINESS', target: '/namaste-suman.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(playground|games|game)\b/.test(q)) {
-      return { reply: 'Opening the Game Playground.', action: 'OPEN_PLAYGROUND', target: '/playground.html' };
+    if (/\b(playground|games|game|khel)\b/.test(q) || /(प्लेग्राउन्ड|खेल|गेम)/.test(raw)) {
+      return { reply: isNe ? 'गेम प्लेग्राउन्ड खोल्दैछु।' : 'Opening the Game Playground.', action: 'OPEN_PLAYGROUND', target: '/playground.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(studio)\b/.test(q)) {
-      return { reply: 'Opening the Studio page.', action: 'OPEN_STUDIO', target: '/studio.html' };
+    if (/\b(studio)\b/.test(q) || /स्टुडियो/.test(raw)) {
+      return { reply: isNe ? 'स्टुडियो पृष्ठ खोल्दैछु।' : 'Opening the Studio page.', action: 'OPEN_STUDIO', target: '/studio.html', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(github)\b/.test(q)) {
-      return { reply: 'Opening Aayam’s GitHub profile.', action: 'OPEN_GITHUB', target: 'https://github.com/aayampaudel200-sketch' };
+    if (/\b(github)\b/.test(q) || /गिटहब/.test(raw)) {
+      return { reply: isNe ? 'आयामको गिटहब प्रोफाइल खोल्दैछु।' : 'Opening Aayam’s GitHub profile.', action: 'OPEN_GITHUB', target: 'https://github.com/aayampaudel200-sketch', lang: isNe ? 'ne' : 'en' };
     }
-    if (/\b(contact)\b/.test(q)) {
-      return { reply: 'Taking you to the Contact section.', action: 'SCROLL_CONTACT', target: '/index.html#contact' };
+    if (/\b(contact|samparka)\b/.test(q) || /सम्पर्क/.test(raw)) {
+      return { reply: isNe ? 'सम्पर्क खण्डमा लैजाँदैछु।' : 'Taking you to the Contact section.', action: 'SCROLL_CONTACT', target: '/index.html#contact', lang: isNe ? 'ne' : 'en' };
     }
     return null;
   }
 
-  function executeAction(action, target) {
+  function executeAction(action, target, lang = preferredLang) {
     try {
       if (!action || typeof action !== 'string') return;
       if (action === 'COMPOSE_EMAIL') {
-        startEmailComposer();
+        startEmailComposer({}, lang);
         return;
       }
       if (actionRoutes[action]) {
@@ -767,6 +932,14 @@
     const message = String(question || '').trim();
     if (!message || sendButton.disabled) return;
     lastInputWasVoice = Boolean(fromVoice);
+
+    // Auto-switch assistant & voice mode to Nepali when user types or speaks Nepali
+    if (detectNepaliText(message) && preferredLang !== 'ne') {
+      applyLanguageUI('ne', true);
+    }
+
+    const requestLang = detectNepaliText(message) ? 'ne' : preferredLang;
+
     openAssistant();
     input.value = '';
     addMessage(message, 'user');
@@ -780,21 +953,21 @@
     if (directIntent) {
       addMessage(directIntent.reply, 'assistant');
       if (directIntent.action === 'COMPOSE_EMAIL') {
-        executeAction(directIntent.action, directIntent.target);
-        speakText(directIntent.reply);
+        executeAction(directIntent.action, directIntent.target, directIntent.lang);
+        speakText(directIntent.reply, directIntent.lang);
       } else {
-        speakText(directIntent.reply, () => executeAction(directIntent.action, directIntent.target));
+        speakText(directIntent.reply, directIntent.lang, () => executeAction(directIntent.action, directIntent.target, directIntent.lang));
       }
       return;
     }
 
     sendButton.disabled = true;
-    const pending = addMessage('Thinking…', 'assistant');
+    const pending = addMessage(copy[requestLang].thinking, 'assistant');
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, page: window.location.pathname }),
+        body: JSON.stringify({ message, page: window.location.pathname, lang: requestLang }),
       });
       const text = await response.text();
       let data = null;
@@ -803,22 +976,23 @@
       } catch {
         data = null;
       }
-      const reply = data?.reply || assistantGreeting;
+      const replyLang = data?.lang === 'ne' || /[\u0900-\u097F]/.test(data?.reply || '') ? 'ne' : requestLang;
+      const reply = data?.reply || copy[replyLang].greeting;
       pending.textContent = reply;
 
       if (data?.action) {
         if (data.action === 'COMPOSE_EMAIL') {
-          executeAction(data.action, data.target);
-          speakText(reply);
+          executeAction(data.action, data.target, replyLang);
+          speakText(reply, replyLang);
         } else {
-          speakText(reply, () => executeAction(data.action, data.target));
+          speakText(reply, replyLang, () => executeAction(data.action, data.target, replyLang));
         }
       } else {
-        speakText(reply);
+        speakText(reply, replyLang);
       }
     } catch (_) {
-      pending.textContent = assistantGreeting;
-      speakText(assistantGreeting);
+      pending.textContent = copy[requestLang].greeting;
+      speakText(copy[requestLang].greeting, requestLang);
     } finally {
       sendButton.disabled = false;
       input.focus();
